@@ -76,13 +76,10 @@ public class EconomyManager {
             final double currentBalance = getBalance(uuid);
             final double newBalance = currentBalance - amount;
 
-            if (newBalance > 0) {
+            if (newBalance >= 0) {
                 instance.data.set(path, currentBalance - amount);
             } else {
-                instance.log(LogLevel.SEVERE, "Prevented an external plugin from an interaction with the economy!");
-                instance.log(LogLevel.SEVERE, "&8 - &7Attempted to removeBalance where new balance < 0.");
-                instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + amount + "&7, Specified UUID: &a" + uuid.toString() + "&7, Current balance: &a" + currentBalance + "&7, New balance: &a" + newBalance);
-                instance.log(LogLevel.SEVERE, "&8 - &7Please notify the author of such plugin of this as they are using the method incorrectly.");
+                instance.data.set(path, 0);
             }
         } else {
             instance.log(LogLevel.SEVERE, "Prevented an external plugin from an interaction with the economy!");

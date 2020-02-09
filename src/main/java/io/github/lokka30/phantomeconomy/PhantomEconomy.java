@@ -153,7 +153,7 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     public String colorize(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg.replaceAll("%arrow%", "⮩"));
+        return ChatColor.translateAlternateColorCodes('&', msg.replaceAll("%arrow%", "►"));
     }
 
     public void log(final LogLevel level, String msg) {

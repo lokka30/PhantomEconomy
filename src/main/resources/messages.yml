@@ -6,13 +6,14 @@ common:
 economy:
   help:
     - '&a&lPhantomEconomy: &7Available commands:'
-    - '&8 %arrow% &2/eco give <target> <amount> &7add to the target''s balance'
-    - '&8 %arrow% &2/eco take <target> <amount> &7remove from the target''s balance'
+    - '&8 %arrow% &2/balance [target] &7view the target''s balance'
+    - '&8 %arrow% &2/eco add <target> <amount> &7add to the target''s balance'
+    - '&8 %arrow% &2/eco remove <target> <amount> &7remove from the target''s balance'
     - '&8 %arrow% &2/eco set <target> <amount> &7set the target''s balance'
     - '&8 %arrow% &2/eco reset <target> &7reset the target''s balance'
   usage: '&a&lPhantomEconomy: &7For help, try &a/eco&7.'
   add:
-    success: '&a&lPhantomEconomy: &7Added &a$amount% &7to &r%target%&7''s balance.'
+    success: '&a&lPhantomEconomy: &7Added &a$%amount% &7to &r%target%&7''s balance.'
   remove:
     success: '&a&lPhantomEconomy: &7Removed &a$%amount%&7 from &r%target%&7''s balance.'
 file-version: 1
