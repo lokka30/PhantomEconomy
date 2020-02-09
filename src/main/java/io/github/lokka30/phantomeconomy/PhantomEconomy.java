@@ -2,6 +2,7 @@ package io.github.lokka30.phantomeconomy;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
+import io.github.lokka30.phantomeconomy.commands.CBalance;
 import io.github.lokka30.phantomeconomy.commands.CEconomy;
 import io.github.lokka30.phantomeconomy.utils.*;
 import net.milkbowl.vault.economy.Economy;
@@ -60,7 +61,7 @@ public class PhantomEconomy extends JavaPlugin {
 
         log(LogLevel.INFO, "&8[&76&8/&76&8] &7Hooking to bStats metrics...");
         new Metrics(this);
-        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Loaded successfuly, enjoy!");
+        log(LogLevel.INFO, "Loaded successfuly, enjoy!");
         checkUpdates();
     }
 
@@ -148,7 +149,7 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void registerCommands() {
         Objects.requireNonNull(getCommand("economy")).setExecutor(new CEconomy());
-        //TODO getcommand("balance").setExecutor(new CBalance());
+        Objects.requireNonNull(getCommand("balance")).setExecutor(new CBalance());
     }
 
     public void hookVault() {

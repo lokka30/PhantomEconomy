@@ -19,9 +19,14 @@ economy:
     success: '&a&lPhantomEconomy: &7Removed &a$%amount%&7 from &r%target%&7''s balance.'
     usage: '&a&lPhantomEconomy: &7Usage: &2/eco remove <target/uuid> <amount>'
   set:
-    success: '&a&lPhantomCombat: &7Set &r%target%&7''s balance to &a$%amount%&7.'
+    success: '&a&lPhantomEconomy: &7Set &r%target%&7''s balance to &a$%amount%&7.'
     usage: '&a&lPhantomEconomy: &7Usage: &2/eco set <target/uuid> <amount>'
   reset:
-    success: '&a&lPhantomCombat: &7Reset &r%target%&7''s balance to default balance &a$%default-balance%&7.'
+    success: '&a&lPhantomEconomy: &7Reset &r%target%&7''s balance to default balance &a$%default-balance%&7.'
     usage: '&a&lPhantomEconomy: &7Usage: &2/eco reset <target/uuid>'
+balance:
+  your-balance: '&a&lPhantomEconomy: &7Your balance is &a$%amount%&7.'
+  targets-balance: '&a&lPhantomEconomy: &r%target%&7''s balance is &a$%amount%&7.'
+  usage: '&a&lPhantomEconomy: &7Usage: &2/balance [target/uuid]'
+  usage-console: '&a&lPhantomEconomy: &7Usage (console): &2/balance <target/uuid>"'
 file-version: 1

@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -17,15 +16,20 @@ public class CEconomy implements CommandExecutor {
 
     private PhantomEconomy instance = PhantomEconomy.getInstance();
 
-    //ARGS GUIDE
+    // just a reminder for argument checking:
+    // ---------------------------------------
     // args.length: /eco0 task1 player2 amount3
+    //   args.length 1 = task
+    //
     // args[i]: /eco task0 player1 amount2
+    //   args[2] = amount
+
     @Override
     public boolean onCommand(final CommandSender cs, final Command cmd, final String label, final String[] args) {
         final EconomyManager economyManager = instance.getEconomyManager();
         if (checkPermission(cs, "phantomeconomy.economy")) {
             if (args.length == 0) {
-                for (String s : instance.messages.get("economy.help", Arrays.asList("&a&lPhantomEconomy: &7/eco <add/remove/set/reset> <target> [...]"))) {
+                for (String s : instance.messages.get("economy.help", Collections.singletonList("&a&lPhantomEconomy: &7/eco <add/remove/set/reset> <target> [...]"))) {
                     cs.sendMessage(instance.colorize(s));
                 }
                 return true;
@@ -61,11 +65,10 @@ public class CEconomy implements CommandExecutor {
                                             .replaceAll("%target%", args[1])
                                             .replaceAll("%amount%", amount + ""));
                                 }
-                                return true;
                             } else {
                                 cs.sendMessage(getMessage("economy.add.usage", "&a&lPhantomEconomy: &7Usage: &2/eco add <target/uuid> <amount>"));
-                                return true;
                             }
+                            return true;
                         }
                     case "remove":
                         if (checkPermission(cs, "phantomeconomy.economy.remove")) {
@@ -164,7 +167,7 @@ public class CEconomy implements CommandExecutor {
                                     final UUID uuid = target.getUniqueId();
 
                                     economyManager.resetBalance(uuid);
-                                    cs.sendMessage(getMessage("economy.set.success", "&a&lPhantomCombat: &7Reset &r%target%&7's balance to default balance &a$%amount%&7.")
+                                    cs.sendMessage(getMessage("economy.reset.success", "&a&lPhantomCombat: &7Reset &r%target%&7's balance to default balance &a$%default-balance%&7.")
                                             .replaceAll("%target%", args[1])
                                             .replaceAll("%default-balance%", economyManager.getDefaultBalance() + ""));
                                 }
