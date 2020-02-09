@@ -16,7 +16,7 @@ public class EconomyManager {
     //Gets the default balance.
     public double getDefaultBalance() {
         final String path = "default-balance";
-        final double defaultBalance = instance.settings.get(path, 50);
+        final double defaultBalance = instance.settings.get(path, 50.0D);
 
         if (defaultBalance >= 0) {
             return defaultBalance;

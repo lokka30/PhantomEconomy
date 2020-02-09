@@ -6,16 +6,14 @@ public class Utils {
         return "1.15";
     }
 
-    public static String getRecommendedSettingsVersion() {
-        return "1";
+    public static int getRecommendedSettingsVersion() {
+        return 1;
     }
 
-    public static String getRecommendedMessagesVersion() {
-        return "1";
-    }
+    public static int getRecommendedMessagesVersion() { return 1; }
 
-    public static String getRecommendedDataVersion() {
-        return "1";
+    public static int getRecommendedDataVersion() {
+        return 1;
     }
 
 }

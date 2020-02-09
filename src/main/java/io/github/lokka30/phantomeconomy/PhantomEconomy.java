@@ -115,15 +115,15 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         //Check their versions
-        if (settings.get("file-version") != Utils.getRecommendedSettingsVersion()) {
+        if (settings.get("file-version", 0) != Utils.getRecommendedSettingsVersion()) {
             log(LogLevel.SEVERE, "File &asettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (messages.get("file-version") != Utils.getRecommendedMessagesVersion()) {
+        if (messages.get("file-version", 0) != Utils.getRecommendedMessagesVersion()) {
             log(LogLevel.SEVERE, "File &amessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (data.get("file-version") != Utils.getRecommendedDataVersion()) {
+        if (data.get("file-version", 0) != Utils.getRecommendedDataVersion()) {
             log(LogLevel.SEVERE, "File &adata.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
     }
@@ -153,7 +153,7 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     public String colorize(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
+        return ChatColor.translateAlternateColorCodes('&', msg.replaceAll("%arrow%", "⮩"));
     }
 
     public void log(final LogLevel level, String msg) {
