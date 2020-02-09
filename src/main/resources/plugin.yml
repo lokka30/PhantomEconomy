@@ -17,3 +17,30 @@ commands:
     description: Check how much money you've got.
     usage: /money [player]
     aliases: [balance, coins, wallet, purse]
+
+permissions:
+  phantomeconomy.*:
+    children:
+      phantomeconomy.economy.*: true
+      phantomeconomy.balance: true
+    default: op
+  phantomeconomy.economy.*:
+    children:
+      phantomeconomy.economy: true
+      phantomeconomy.economy.add: true
+      phantomeconomy.economy.remove: true
+      phantomeconomy.economy.set: true
+      phantomeconomy.economy.reset: true
+    default: op
+  phantomeconomy.economy:
+    default: op
+  phantomeconomy.economy.add:
+    default: op
+  phantomeconomy.economy.remove:
+    default: op
+  phantomeconomy.economy.set:
+    default: op
+  phantomeconomy.economy.reset:
+    default: op
+  phantomeconomy.balance:
+    default: true

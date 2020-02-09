@@ -40,7 +40,7 @@
                             <shadedPattern>io.github.lokka30.phantomeconomy.bstats</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.github.JavaFactoryDev</pattern>
+                            <pattern>de.leonhard.storage</pattern>
                             <shadedPattern>io.github.lokka30.phantomeconomy.lightningstorage</shadedPattern>
                         </relocation>
                     </relocations>
