@@ -45,7 +45,7 @@ public class CEconomy implements CommandExecutor {
                                     //Check the amount - is it a number?
                                     try {
                                         amount = Double.parseDouble(args[2]);
-                                    } catch (NumberFormatException ex) {
+                                    } catch (Exception ex) {
                                         cs.sendMessage(getMessage("common.invalid-number", "&a&lPhantomEconomy: &7Invalid number &a%amount%&7.").replaceAll("%amount%", args[2]));
                                         return true;
                                     }
@@ -82,7 +82,7 @@ public class CEconomy implements CommandExecutor {
                                     //Check the amount - is it a number?
                                     try {
                                         amount = Double.parseDouble(args[2]);
-                                    } catch (NumberFormatException ex) {
+                                    } catch (Exception ex) {
                                         cs.sendMessage(getMessage("common.invalid-number", "&a&lPhantomEconomy: &7Invalid number &a%amount%&7.")
                                                 .replaceAll("%amount%", args[2]));
                                         return true;
@@ -95,11 +95,13 @@ public class CEconomy implements CommandExecutor {
                                         return true;
                                     }
 
-                                    if (economyManager.getBalance(uuid) - amount < 0) {
+                                    final double balance = economyManager.getBalance(uuid);
+
+                                    if (balance - amount < 0) {
                                         economyManager.setBalance(uuid, 0);
                                         cs.sendMessage(getMessage("economy.remove.success", "&a&lPhantomCombat: &7Removed &a$%amount%&7 from &a%target%&7's balance.")
                                                 .replaceAll("%target%", args[1])
-                                                .replaceAll("%amount%", economyManager.getBalance(uuid) + ""));
+                                                .replaceAll("%amount%", balance + ""));
                                     } else {
                                         economyManager.removeBalance(uuid, amount);
                                         cs.sendMessage(getMessage("economy.remove.success", "&a&lPhantomCombat: &7Removed &a$%amount%&7 from &a%target%&7's balance.")
@@ -127,7 +129,7 @@ public class CEconomy implements CommandExecutor {
                                     //Check the amount - is it a number?
                                     try {
                                         amount = Double.parseDouble(args[2]);
-                                    } catch (NumberFormatException ex) {
+                                    } catch (Exception ex) {
                                         cs.sendMessage(getMessage("common.invalid-number", "&a&lPhantomEconomy: &7Invalid number &a%amount%&7.")
                                                 .replaceAll("%amount%", args[2]));
                                         return true;
@@ -160,7 +162,6 @@ public class CEconomy implements CommandExecutor {
                                             .replaceAll("%target%", args[1]));
                                 } else {
                                     final UUID uuid = target.getUniqueId();
-                                    final double amount;
 
                                     economyManager.resetBalance(uuid);
                                     cs.sendMessage(getMessage("economy.set.success", "&a&lPhantomCombat: &7Reset &r%target%&7's balance to default balance &a$%amount%&7.")

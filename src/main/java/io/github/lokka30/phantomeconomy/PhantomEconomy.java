@@ -3,16 +3,17 @@ package io.github.lokka30.phantomeconomy;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy.commands.CEconomy;
-import io.github.lokka30.phantomeconomy.utils.EconomyManager;
-import io.github.lokka30.phantomeconomy.utils.LogLevel;
-import io.github.lokka30.phantomeconomy.utils.UpdateChecker;
-import io.github.lokka30.phantomeconomy.utils.Utils;
+import io.github.lokka30.phantomeconomy.utils.*;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class PhantomEconomy extends JavaPlugin {
@@ -31,6 +32,9 @@ public class PhantomEconomy extends JavaPlugin {
         return economyManager;
     }
 
+    public boolean hookVault = false;
+    private Economy provider;
+
     @Override
     public void onLoad() {
         instance = this;
@@ -39,27 +43,31 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        log(LogLevel.INFO, "&8&m+------------------------------+");
-        log(LogLevel.INFO, "&8[&71&8/&75&8] &7Checking compatibility...");
+        log(LogLevel.INFO, "&8[&71&8/&76&8] &7Checking compatibility...");
         checkCompatibility();
 
-        log(LogLevel.INFO, "&8[&72&8/&75&8] &7Loading files...");
+        log(LogLevel.INFO, "&8[&72&8/&76&8] &7Loading files...");
         loadFiles();
 
-        log(LogLevel.INFO, "&8[&73&8/&75&8] &7Registering events...");
+        log(LogLevel.INFO, "&8[&73&8/&76&8] &7Registering events...");
         registerEvents();
 
-        log(LogLevel.INFO, "&8[&74&8/&75&8] &7Registering commands...");
+        log(LogLevel.INFO, "&8[&74&8/&76&8] &7Registering commands...");
         registerCommands();
 
-        log(LogLevel.INFO, "&8[&75&8/&75&8] &7Hooking to bStats metrics...");
+        log(LogLevel.INFO, "&8[&75&8/&76&8] &7Hooking to Vault...");
+        hookVault();
+
+        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Hooking to bStats metrics...");
         new Metrics(this);
-        log(LogLevel.INFO, "&8&m+------------------------------+");
+        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Loaded successfuly, enjoy!");
         checkUpdates();
     }
 
     @Override
     public void onDisable() {
+        unhookVault();
+
         instance = null;
         economyManager = null;
     }
@@ -75,6 +83,11 @@ public class PhantomEconomy extends JavaPlugin {
             log(LogLevel.WARNING, "The recommended version is &a" + recommendedVersion + "&7.");
             log(LogLevel.WARNING, "You will not get support with the plugin whilst using an unsupported version!");
             log(LogLevel.WARNING, " ");
+        }
+
+        final PluginManager pm = getServer().getPluginManager();
+        if (pm.getPlugin("Vault") != null) {
+            hookVault = true;
         }
     }
 
@@ -129,20 +142,39 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     private void registerEvents() {
-        final PluginManager pm = getServer().getPluginManager();
+        //TODO final PluginManager pm = getServer().getPluginManager();
         //TODO balance sign
     }
 
     private void registerCommands() {
-        getCommand("economy").setExecutor(new CEconomy());
+        Objects.requireNonNull(getCommand("economy")).setExecutor(new CEconomy());
         //TODO getcommand("balance").setExecutor(new CBalance());
+    }
+
+    public void hookVault() {
+        if (hookVault) {
+            provider = new EconomyImplementer();
+            Bukkit.getServicesManager().register(Economy.class, provider, this, ServicePriority.Normal);
+            log(LogLevel.INFO, "Vault hooked successfuly.");
+        } else {
+            log(LogLevel.INFO, "Vault isn't installed, hook aborted.");
+        }
+    }
+
+    public void unhookVault() {
+        if (hookVault) {
+            Bukkit.getServicesManager().unregister(Economy.class, provider);
+            log(LogLevel.INFO, "Vault unhooked successfuly.");
+        } else {
+            log(LogLevel.INFO, "Vault isn't installed, unhook aborted.");
+        }
     }
 
     private void checkUpdates() {
         if (settings.get("updater", true)) {
             log(LogLevel.INFO, "&8[&7Update Checker&8] &7Starting version comparison...");
             //TODO add resourceID version.
-            new UpdateChecker(this, 00000).getVersion(version -> {
+            new UpdateChecker(this, 12345).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
                     log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");
                 } else {
