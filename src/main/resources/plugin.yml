@@ -1,0 +1,19 @@
+name: PhantomEconomy
+version: ${project.version}
+api-version: '1.15'
+
+main: io.github.lokka30.phantomeconomy.PhantomEconomy
+softdepend: [Vault]
+
+authors: [lokka30]
+description: ${project.description}
+
+commands:
+  economy:
+    description: Manage the server's economy.
+    usage: /economy <add/remove/set/reset> <player> [...]
+    aliases: [phantomeconomy, econ, eco]
+  money:
+    description: Check how much money you've got.
+    usage: /money [player]
+    aliases: [balance, coins, wallet, purse]

@@ -1,0 +1,18 @@
+common:
+  no-permission: '&a&lPhantomEconomy: &7You don''t have access to that.'
+  target-offline: '&a&lPhantomEconomy: &r%target%&7 is offline.'
+  invalid-number: '&a&lPhantomEconomy: &7Invalid number &a%amount%&7.'
+  amount-greater-than-0: '&a&lPhantomEconomy: &7Invalid amount &a%amount%&7, it must be greater than &a0&7.'
+economy:
+  help:
+    - '&a&lPhantomEconomy: &7Available commands:'
+    - '&8 ⮩ &2/eco give <target> <amount> &7add to the target''s balance'
+    - '&8 ⮩ &2/eco take <target> <amount> &7remove from the target''s balance'
+    - '&8 ⮩ &2/eco set <target> <amount> &7set the target''s balance'
+    - '&8 ⮩ &2/eco reset <target> &7reset the target''s balance'
+  usage: '&a&lPhantomEconomy: &7For help, try &a/eco&7.'
+  add:
+    success: '&a&lPhantomEconomy: &7Added &a$amount% &7to &r%target%&7''s balance.'
+  remove:
+    success: '&a&lPhantomEconomy: &7Removed &a$%amount%&7 from &r%target%&7''s balance.'
+file-version: 1
