@@ -1,0 +1,8 @@
+1.3-SNAPSHOT:
+added:
+removed:
+fixes:
+ - [#6] fixed formtted balance returning null
+ - [#6] adding and taking $0 from a player is now supported
+updated:
+- updated file library

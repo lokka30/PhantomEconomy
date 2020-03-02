@@ -174,7 +174,6 @@ public class PhantomEconomy extends JavaPlugin {
     private void checkUpdates() {
         if (settings.get("updater", true)) {
             log(LogLevel.INFO, "&8[&7Update Checker&8] &7Starting version comparison...");
-            //TODO add resourceID version.
             new UpdateChecker(this, 75053).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
                     log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");

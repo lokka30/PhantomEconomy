@@ -29,22 +29,26 @@ public class EconomyImplementer implements Economy {
 
     @Override
     public int fractionalDigits() {
-        return -1;
+        return 2;
     }
 
     @Override
     public String format(double amount) {
-        return null;
+        if (amount == 1) { //Singular format.
+            return String.format("%s%s", amount, currencyNameSingular());
+        } else { //Plural format.
+            return String.format("%s%s", amount, currencyNamePlural());
+        }
     }
 
     @Override
     public String currencyNamePlural() {
-        return "dollars";
+        return instance.settings.get("currency-name.plural", "dollars");
     }
 
     @Override
     public String currencyNameSingular() {
-        return "dollar";
+        return instance.settings.get("currency-name.singular", "dollar");
     }
 
     @Override

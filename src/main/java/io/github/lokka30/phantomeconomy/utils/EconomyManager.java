@@ -26,6 +26,8 @@ public class EconomyManager {
             instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + defaultBalance + "&7.");
             instance.log(LogLevel.SEVERE, "&8 - &7Returned a default balance of 50.");
             instance.log(LogLevel.SEVERE, "&8 - &7Please change 'default-balance' in your config to a value >= 0.");
+            instance.log(LogLevel.SEVERE, "Steps to Fix");
+            instance.log(LogLevel.SEVERE, "&8 - &7Do not use a negative value for the default balance.");
             return 50.0;
         }
     }
@@ -49,29 +51,33 @@ public class EconomyManager {
             instance.log(LogLevel.SEVERE, "&8 - &7Attempted to setBalance where amount < 0.");
             instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + amount + "&7, Specified UUID: &a" + uuid.toString() + "&7.");
             instance.log(LogLevel.SEVERE, "&8 - &7Please notify the author of such plugin of this as they are using the method incorrectly.");
+            instance.log(LogLevel.SEVERE, "Steps to Fix");
+            instance.log(LogLevel.SEVERE, "&8 - &7Do not use negative values in the setBalance method.");
         }
     }
 
     //addBalance(uuid, (double) amount)
     //Adds an amount to the user's balance.
     public void addBalance(UUID uuid, double amount) {
-        if (amount > 0) {
+        if (amount >= 0) {
             final String path = "players." + uuid.toString() + ".balance";
             final double currentBalance = getBalance(uuid);
 
             instance.data.set(path, currentBalance + amount);
         } else {
             instance.log(LogLevel.SEVERE, "Prevented an external plugin from an interaction with the economy!");
-            instance.log(LogLevel.SEVERE, "&8 - &7Attempted to addBalance where amount =< 0.");
+            instance.log(LogLevel.SEVERE, "&8 - &7Attempted to addBalance where amount < 0.");
             instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + amount + "&7, Specified UUID: &a" + uuid.toString() + "&7.");
             instance.log(LogLevel.SEVERE, "&8 - &7Please notify the author of such plugin of this as they are using the method incorrectly.");
+            instance.log(LogLevel.SEVERE, "Steps to Fix");
+            instance.log(LogLevel.SEVERE, "&8 - &7Do not use negative values in the addBalance method.");
         }
     }
 
     //removeBalance(uuid, (double) amount)
     //Removes an amount from the user's balance.
     public void removeBalance(UUID uuid, double amount) {
-        if (amount > 0) {
+        if (amount >= 0) {
             final String path = "players." + uuid.toString() + ".balance";
             final double currentBalance = getBalance(uuid);
             final double newBalance = currentBalance - amount;
@@ -80,15 +86,19 @@ public class EconomyManager {
                 instance.data.set(path, currentBalance - amount);
             } else {
                 instance.log(LogLevel.SEVERE, "Prevented an external plugin from an interaction with the economy!");
-                instance.log(LogLevel.SEVERE, "&8 - &7Attempted to removeBalance where new balance < 0.");
+                instance.log(LogLevel.SEVERE, "&8 - &7Attempted to removeBalance where new balance < 0 (negative value).");
                 instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + amount + "&7, Specified UUID: &a" + uuid.toString() + "&7.");
                 instance.log(LogLevel.SEVERE, "&8 - &7Please notify the author of such plugin of this as they are using the method incorrectly.");
+                instance.log(LogLevel.SEVERE, "Steps to Fix");
+                instance.log(LogLevel.SEVERE, "&8 - &7Check if the target's balance after the transaction is lower than $0.");
             }
         } else {
             instance.log(LogLevel.SEVERE, "Prevented an external plugin from an interaction with the economy!");
-            instance.log(LogLevel.SEVERE, "&8 - &7Attempted to removeBalance where amount =< 0.");
+            instance.log(LogLevel.SEVERE, "&8 - &7Attempted to removeBalance where amount < 0.");
             instance.log(LogLevel.SEVERE, "&8 - &7Specified amount: &a" + amount + "&7, Specified UUID: &a" + uuid.toString() + "&7.");
             instance.log(LogLevel.SEVERE, "&8 - &7Please notify the author of such plugin of this as they are using the method incorrectly.");
+            instance.log(LogLevel.SEVERE, "Steps to Fix");
+            instance.log(LogLevel.SEVERE, "&8 - &7Do not use negative values in the removeBalance method.");
         }
     }
 
