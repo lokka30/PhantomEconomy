@@ -29,4 +29,6 @@ balance:
   targets-balance: '&a&lPhantomEconomy: &r%target%&7''s balance is &a$%amount%&7.'
   usage: '&a&lPhantomEconomy: &7Usage: &2/balance [target/uuid]'
   usage-console: '&a&lPhantomEconomy: &7Usage (console): &2/balance <target/uuid>"'
+
+# This is the file version, it should be unchanged unless updating to the respective version of the messages.yml file.
 file-version: 1

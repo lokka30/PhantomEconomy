@@ -34,21 +34,36 @@ public class EconomyImplementer implements Economy {
 
     @Override
     public String format(double amount) {
-        if (amount == 1) { //Singular format.
-            return String.format("%s%s", amount, currencyNameSingular());
-        } else { //Plural format.
-            return String.format("%s%s", amount, currencyNamePlural());
+        switch (instance.settings.get("currency-format.using", "SYMBOL")) {
+            case "WORD":
+                String format;
+                if (instance.settings.get("currency-format.word.use-space", true)) {
+                    format = "%s %s";
+                } else {
+                    format = "%s%s";
+                }
+
+                if (amount == 1) {
+                    return String.format(format, amount, currencyNameSingular());
+                } else {
+                    return String.format(format, amount, currencyNamePlural());
+                }
+            case "SYMBOL":
+                return String.format("%s%s", instance.settings.get("currency-format.symbol", "$"), amount);
+            default:
+                instance.log(LogLevel.SEVERE, "Invalid setting &acurrency-format.using&7, please set it to an available currency format. Using default &aSYMBOL&7.");
+                return String.format("%s%s", instance.settings.get("currency-format.symbol", "$"), amount);
         }
     }
 
     @Override
     public String currencyNamePlural() {
-        return instance.settings.get("currency-name.plural", "dollars");
+        return instance.settings.get("currency-format.word.plural", "dollars");
     }
 
     @Override
     public String currencyNameSingular() {
-        return instance.settings.get("currency-name.singular", "dollar");
+        return instance.settings.get("currency-format.word.singular", "dollar");
     }
 
     @Override

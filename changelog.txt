@@ -1,8 +1,17 @@
 1.3-SNAPSHOT:
-added:
-removed:
-fixes:
- - [#6] fixed formtted balance returning null
- - [#6] adding and taking $0 from a player is now supported
+file changes:
+ - settings.yml - now version 2 - [link]
+changes:
+ - new config section 'currency-format'.
+  - You can chose your currency format, being a symbol or a word.
+   - Symbol - e.g. '$'
+   - Word - e.g. 'dollar' and 'dollars' (singular, plural).
+    - You can toggle inserting a space. e.g. '25dollars' or '25 dollars'.
+ - new config comments.
+ - better vault implementation.
+  - fixes [#6]: formtted balance returning null
+ - better support for other plugins.
+  - since some plugins don't cancel economy actions with no money being acted upon, support for those has been added.
+  - fixes [#6]: adding and taking $0 from a player is not supported
 updated:
 - updated file library

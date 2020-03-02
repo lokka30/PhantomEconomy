@@ -1,6 +1,32 @@
+# Every new player will have this balance by default.
+# Can't be a negative value.
 default-balance: 50.0
-currency-name:
-  plural: 'dollars'
-  singular: 'dollar'
+
+# When using Vault, currency will be formatted.
+currency-format:
+
+  # Which format should be used?
+  # Available formats: SYMBOL, WORD
+  using: SYMBOL
+
+  # Settings for when SYMBOL is used.
+  # e.g. '$53.61'
+  symbol: '$'
+
+  # Settings for when WORD is used.
+  word:
+    #When the amount is $1.00
+    singular: 'dollar'
+
+    #When the amount is lower or higher than $1.00
+    plural: 'dollars'
+
+    # Should a space be inserted between the amount and the word?
+    # e.g. '25dollars' (false), or '25 dollars' (true)
+    use-space: true
+
+# Should PhantomEconomy use the Update Checker on startup?
 updater: true
+
+# This is the file version, it should be unchanged unless updating to the respective version of the settings.yml file.
 file-version: 2
