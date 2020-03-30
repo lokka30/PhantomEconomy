@@ -1,32 +1,45 @@
-# Every new player will have this balance by default.
-# Can't be a negative value.
-default-balance: 50.0
+# Welcome to the PhantomEconomy settings file.
+# To assist you in its configuration, everything has been accompanied by comments.
 
-# When using Vault, currency will be formatted.
-currency-format:
+# Settings for the default balance system.
+default-balance:
 
-  # Which format should be used?
-  # Available formats: SYMBOL, WORD
-  using: SYMBOL
+  # Should players be given a starting balance for when they first join?
+  enabled: true
 
-  # Settings for when SYMBOL is used.
-  # e.g. '$53.61'
+  # If enabled, this amount will be given to new players.
+  amount: 50.00
+
+# Here, you can manage certain aspects of the currency.
+currency:
+
+  # There are three currency modes - SYMBOL, WORD and BOTH.
+  # SYMBOL: Prefixes the amount with a symbol, such as '$'. e.g. $99.95
+  # WORD: Suffixes the amount with a word, such as 'dollars'. e.g. 95.95 dollars
+  # BOTH: Uses a combination of the modes above.
+  mode: SYMBOL
+
+  # Setting for the SYMBOL mode, only applied if it is enabled above.
   symbol: '$'
 
-  # Settings for when WORD is used.
+  # Settings for the WORD mode, only applied if it is enabled above.
   word:
-    #When the amount is $1.00
+
+    # Should a space be inserted between the word and the amount?
+    # true: 99.95 dollars
+    # false: 99.95dollars
+    prefix-space: true
+
+    # When the amount is exactly $1.00.
     singular: 'dollar'
 
-    #When the amount is lower or higher than $1.00
+    # When the amount isn't exactly $1.00.
     plural: 'dollars'
 
-    # Should a space be inserted between the amount and the word?
-    # e.g. '25dollars' (false), or '25 dollars' (true)
-    use-space: true
-
-# Should PhantomEconomy use the Update Checker on startup?
+# If true, on startup, PE will ask Spigot and tell you if there are any new updates available for the plugin.
 updater: true
 
-# This is the file version, it should be unchanged unless updating to the respective version of the settings.yml file.
-file-version: 2
+# This is the file version.
+# It should be unchanged unless updating to the respective version of the settings.yml file.
+# Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
+file-version: 3

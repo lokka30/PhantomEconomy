@@ -15,3 +15,27 @@ changes:
   - fixes [#6]: adding and taking $0 from a player is not supported
 updated:
 - updated file library
+
+
+1.4-SNAPSHOT:
+file changes:
+ - settings.yml - now version 3 - [link]
+ - messages.yml - now version 2 - [link]
+
+notes:
+ - data.yml hasn't changed in structure, but player balances are now stored to a rounded format.
+ - It is recommended you reset the file if you can so old balances will be rounded.
+ - As players make transactions, their old balance will become rounded though.
+ - Thus I didn't update the data.json version :)
+
+changes:
+ - [issue #7, #8, #5] redone a massive portion of the plugin. everything except for the main class and utility classes have been scrapped and redone.
+  - plugin is now fully dependent on Vault. It's a great API so I decided it couldn't hurt to become dependent on it.
+  - completely changed the settings.yml and messages.yml file.
+   - the files have changed from the ground up. they're filled to the brim with comments, so I doubt you'll ever get confused of what an option does.
+   - you can now use both a symbol and a word in currency formatting.
+ - after a high demand and long wait, I have added in /pay and /baltop
+  - usages:
+   - /pay <player> <amount>
+   - /baltop
+ - after an extreme demand, including one from the Trump administration, I have added in /phantomeconomy. This revolutionary command shows you the version of the plugin you have installed.

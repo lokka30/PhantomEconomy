@@ -1,46 +1,100 @@
 name: PhantomEconomy
 version: ${project.version}
 api-version: '1.15'
+description: ${project.description}
+authors:
+  - lokka30 (Author)
+  - Sleaker (Vault API)
+  - JavaFactory (LightningStorage Lib)
+  - extended_clip (PlaceholderAPI)
+website: https://www.spigotmc.org/resources/phantomeconomy-your-simple-open-source-economy.75053/
 
 main: io.github.lokka30.phantomeconomy.PhantomEconomy
-softdepend: [Vault]
+prefix: 'PhantomEconomy'
+load: STARTUP
 
-authors: [lokka30]
-description: ${project.description}
+depend:
+  - Vault
+softdepend:
+  - PlaceholderAPI
 
 commands:
   economy:
-    description: Manage the server's economy.
-    usage: /economy <add/remove/set/reset> <player> [...]
-    aliases: [phantomeconomy, econ, eco]
-  money:
-    description: Check how much money you've got.
-    usage: /money [player]
-    aliases: [balance, coins, wallet, purse]
+    description: Manage your servers economy.
+    usage: /<command> <action> <player>
+    aliases:
+      - eco
+      - econ
+  balance:
+    description: Check your balance.
+    usage: /<command> [player]
+    aliases:
+      - money
+      - purse
+      - coins
+      - bal
+  pay:
+    description: Send money from your balance to another players balance.
+    usage: /<command> <player> <amount>
+  baltop:
+    description: View the richest players on your server.
+    usage: /<command>
+    aliases:
+      - balancetop
+      - topbal
+      - topbalance
+  phantomeconomy:
+    description: View plugin information, such as the version installed.
+    usage: /<command>
 
 permissions:
   phantomeconomy.*:
+    description: All permissions from PhantomEconomy.
+    default: op
     children:
       phantomeconomy.economy.*: true
       phantomeconomy.balance: true
-    default: op
+      phantomeconomy.balance.others: true
+      phantomeconomy.pay: true
+      phantomeconomy.baltop: true
+
   phantomeconomy.economy.*:
+    description: All permissions related to economy management.
+    default: op
     children:
       phantomeconomy.economy: true
       phantomeconomy.economy.add: true
       phantomeconomy.economy.remove: true
       phantomeconomy.economy.set: true
       phantomeconomy.economy.reset: true
-    default: op
+
   phantomeconomy.economy:
+    description: Access to /economy.
     default: op
   phantomeconomy.economy.add:
+    description: Access to /economy add.
     default: op
   phantomeconomy.economy.remove:
+    description: Access to /economy remove.
     default: op
-  phantomeconomy.economy.set:
+  phantomecconomy.economy.set:
+    description: Access to /economy set.
     default: op
-  phantomeconomy.economy.reset:
+  phantomecconomy.economy.reset:
+    description: Access to /economy reset.
     default: op
+
   phantomeconomy.balance:
+    description: Access to /balance - can only check your own blaance.
+    default: true
+  phantomeconomy.balance.others:
+    description: Access to /balance [player] - can check anyones balance.
+    default: true
+
+  phantomeconomy.pay:
+    description: Access to /pay <player> <amount>.
+    default: true
+
+  phantomeconomy.baltop:
+    description: Access to /baltop.
     default: true

@@ -2,9 +2,13 @@ package io.github.lokka30.phantomeconomy;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
-import io.github.lokka30.phantomeconomy.commands.CBalance;
-import io.github.lokka30.phantomeconomy.commands.CEconomy;
-import io.github.lokka30.phantomeconomy.utils.*;
+import io.github.lokka30.phantomeconomy.commands.*;
+import io.github.lokka30.phantomeconomy.listeners.JoinListener;
+import io.github.lokka30.phantomeconomy.listeners.SignPlaceListener;
+import io.github.lokka30.phantomeconomy.listeners.SignUseListener;
+import io.github.lokka30.phantomeconomy.utils.LogLevel;
+import io.github.lokka30.phantomeconomy.utils.UpdateChecker;
+import io.github.lokka30.phantomeconomy.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -12,6 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.Objects;
@@ -19,81 +24,163 @@ import java.util.logging.Logger;
 
 public class PhantomEconomy extends JavaPlugin {
 
-    private static PhantomEconomy instance;
-    public EconomyManager economyManager;
+/*
+Features
+ Hooks into Vault
+  - Dependent on Vault.
+ Extremely fast
+  - New, non-bloated code.
+ Open Source
+ TODO Transaction Log
+ Extensive configuration
+  Completely translatable*
+     * Certain texts such as commands and console messages can't be translated.
+ Hooks into
+  TODO PlaceholderAPI
+
+  TODO fix format() in VaultImplementer
+
+Commands
+ /economy
+  Manage your server's economy.
+  /economy add <player> <amount>
+   Add the specified amount to the player's balance.
+  /economy remove <player> <amount>
+   Remove the specified amount from the player's balance.
+  /economy set <player> <amount>
+   Set the player's balance to the specified amount.
+  /economy reset <player>
+   Set the player's balance to the default value.
+  /balance [player]
+  Check a player's balance.
+  /phantomeconomy
+  Plugin information, such as the version installed.
+ /pay <player> <amount>
+  Send the specified amount from your balance to the player's balance.
+ /baltop
+  View a list of the richest players on the server.
+
+Permissions
+ phantomeconomy.economy.*:
+  description: Contains all the permissions for economy management.
+  default: op
+ phantomeconomy.economy.add:
+  description: Access to /economy add.
+  default: op
+ phantomeconomy.economy.remove:
+  description: Access to /economy remove.
+  default: op
+ phantomeconomy.economy.set:
+  description: Access to /economy set.
+  default: op
+ phantomeconomy.economy.reset:
+  description: Access to /economy reset.
+  default: op
+ phantomeconomy.balance:
+  description: Access to /balance - can only check your own balance.
+  default: true
+ phantomeconomy.balance.others:
+  description: Access to /balance <player> - can check anyone's balance.
+  default: true
+ phantomeconomy.pay:
+  description: Access to /pay.
+  default: true
+ phantomeconomy.baltop:
+  description: Access to /baltop.
+  default: true
+*/
+
+    public BaltopUpdater baltopUpdater;
+
     public FlatFile settings;
     public FlatFile messages;
     public FlatFile data;
 
-    public static PhantomEconomy getInstance() {
-        return instance;
-    }
-
-    public EconomyManager getEconomyManager() {
-        return economyManager;
-    }
-
-    public boolean hookVault = false;
-    private Economy provider;
+    public Economy provider;
+    public PluginManager pluginManager;
 
     @Override
     public void onLoad() {
-        instance = this;
-        economyManager = new EconomyManager(this);
+        baltopUpdater = new BaltopUpdater();
+        pluginManager = getServer().getPluginManager();
     }
 
     @Override
     public void onEnable() {
-        log(LogLevel.INFO, "&8[&71&8/&76&8] &7Checking compatibility...");
-        checkCompatibility();
+        log(LogLevel.INFO, "--+-- Enabling Began --+--");
 
-        log(LogLevel.INFO, "&8[&72&8/&76&8] &7Loading files...");
-        loadFiles();
+        log(LogLevel.INFO, "Checking for incompatibilities...");
 
-        log(LogLevel.INFO, "&8[&73&8/&76&8] &7Registering events...");
-        registerEvents();
+        if (checkCompatibility()) {
+            log(LogLevel.INFO, "Loading files...");
+            loadFiles();
 
-        log(LogLevel.INFO, "&8[&74&8/&76&8] &7Registering commands...");
-        registerCommands();
+            log(LogLevel.INFO, "Registering events...");
+            registerEvents();
 
-        log(LogLevel.INFO, "&8[&75&8/&76&8] &7Hooking to Vault...");
-        hookVault();
+            log(LogLevel.INFO, "Registering commands...");
+            registerCommands();
 
-        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Hooking to bStats metrics...");
-        new Metrics(this);
-        log(LogLevel.INFO, "Loaded successfuly, enjoy!");
+            log(LogLevel.INFO, "Hooking to Vault...");
+            hookVault();
+
+            log(LogLevel.INFO, "Starting bStats metrics...");
+            new Metrics(this);
+
+            log(LogLevel.INFO, "Starting baltop update task...");
+            new BukkitRunnable() {
+                public void run() {
+                    baltopUpdater.update();
+                }
+            }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
+
+            log(LogLevel.INFO, "--+-- Enabling Complete --+--");
+        } else {
+            pluginManager.disablePlugin(this);
+        }
+
         checkUpdates();
     }
 
     @Override
     public void onDisable() {
+        log(LogLevel.INFO, "--+-- Disabling Began --+--");
+
+        log(LogLevel.INFO, "Unhooking from Vault...");
         unhookVault();
 
-        instance = null;
-        economyManager = null;
+        log(LogLevel.INFO, "--+-- Disabling Began --+--");
     }
 
-    private void checkCompatibility() {
+    private boolean checkCompatibility() {
+        // --- Check if the server version is compatible. ---
+        // Note: This doesn't stop the loading of the plugin. It just informs the server owners that they won't get support.
         final String currentVersion = getServer().getVersion();
         final String recommendedVersion = Utils.getRecommendedServerVersion();
+
         if (currentVersion.contains(recommendedVersion)) {
             log(LogLevel.INFO, "Server is running supported version &a" + currentVersion + "&7.");
         } else {
-            log(LogLevel.WARNING, " ");
-            log(LogLevel.WARNING, "Server is running &cunsupported&7 version &a" + currentVersion + "&7.");
-            log(LogLevel.WARNING, "The recommended version is &a" + recommendedVersion + "&7.");
-            log(LogLevel.WARNING, "You will not get support with the plugin whilst using an unsupported version!");
-            log(LogLevel.WARNING, " ");
+            log(LogLevel.WARNING, "Possible incompatibility found: &cServer is not running " + recommendedVersion + "!");
+            log(LogLevel.WARNING, "Your server version doesn't match with the recommended version above.");
+            log(LogLevel.WARNING, "Support will not be provided from the author if encounter issues if you don't run the recommended server version.");
         }
 
-        final PluginManager pm = getServer().getPluginManager();
-        if (pm.getPlugin("Vault") != null) {
-            hookVault = true;
+        // --- Check if the server has Vault loaded. ---
+        // Note: If Vault isn't found, the plugin will stop loading.
+        if (pluginManager.getPlugin("Vault") == null) {
+            log(LogLevel.SEVERE, "Incompatibility found: &cVault is not installed!");
+            log(LogLevel.SEVERE, "This plugin depends on Vault to interact with other plugins.");
+            log(LogLevel.SEVERE, "Link to dependency: https://www.spigotmc.org/resources/vault.34315/");
+            return false;
         }
+
+        // --- No incompatibilities found, continue loading. ---
+        return true;
     }
 
     private void loadFiles() {
-        //Load the files
+        //Tell LightningStorage to start its business.
         final String path = "plugins/PhantomEconomy/";
         settings = LightningBuilder
                 .fromFile(new File(path + "settings"))
@@ -143,31 +230,35 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     private void registerEvents() {
-        //TODO final PluginManager pm = getServer().getPluginManager();
-        //TODO balance sign
+        pluginManager.registerEvents(new JoinListener(this), this);
+        pluginManager.registerEvents(new SignPlaceListener(this), this);
+        pluginManager.registerEvents(new SignUseListener(this), this);
     }
 
     private void registerCommands() {
-        Objects.requireNonNull(getCommand("economy")).setExecutor(new CEconomy());
-        Objects.requireNonNull(getCommand("balance")).setExecutor(new CBalance());
+        Objects.requireNonNull(getCommand("balance")).setExecutor(new BalanceCommand(this));
+        Objects.requireNonNull(getCommand("baltop")).setExecutor(new BaltopCommand(this));
+        Objects.requireNonNull(getCommand("economy")).setExecutor(new EconomyCommand(this));
+        Objects.requireNonNull(getCommand("pay")).setExecutor(new PayCommand(this));
+        Objects.requireNonNull(getCommand("phantomeconomy")).setExecutor(new PhantomEconomyCommand(this));
     }
 
     public void hookVault() {
-        if (hookVault) {
-            provider = new EconomyImplementer();
-            Bukkit.getServicesManager().register(Economy.class, provider, this, ServicePriority.Normal);
-            log(LogLevel.INFO, "Vault hooked successfuly.");
+        if (pluginManager.getPlugin("Vault") == null) {
+            log(LogLevel.INFO, "Vault isn't installed - this somehow got past the compatibility check - hook task aborted.");
         } else {
-            log(LogLevel.INFO, "Vault isn't installed, hook aborted.");
+            provider = new VaultImplementer(this);
+            Bukkit.getServicesManager().register(Economy.class, provider, this, ServicePriority.Highest);
+            log(LogLevel.INFO, "Hooked to Vault successfuly.");
         }
     }
 
     public void unhookVault() {
-        if (hookVault) {
-            Bukkit.getServicesManager().unregister(Economy.class, provider);
-            log(LogLevel.INFO, "Vault unhooked successfuly.");
+        if (pluginManager.getPlugin("Vault") == null) {
+            log(LogLevel.INFO, "Vault isn't installed - unhook task aborted.");
         } else {
-            log(LogLevel.INFO, "Vault isn't installed, unhook aborted.");
+            Bukkit.getServicesManager().unregister(Economy.class, provider);
+            log(LogLevel.INFO, "Unhooked from Vault successfully.");
         }
     }
 
@@ -185,7 +276,8 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     public String colorize(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg.replaceAll("%arrow%", "►"));
+        return ChatColor.translateAlternateColorCodes('&', msg
+                .replaceAll("%arrow%", "►"));
     }
 
     public void log(final LogLevel level, String msg) {
@@ -201,6 +293,8 @@ public class PhantomEconomy extends JavaPlugin {
             case SEVERE:
                 logger.severe(colorize(msg));
                 break;
+            default:
+                logger.severe(colorize("Unexpected LogLevel specified. message: " + msg));
         }
     }
 }
