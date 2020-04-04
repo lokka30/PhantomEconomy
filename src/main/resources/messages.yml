@@ -112,6 +112,7 @@ commands:
     # Sent if the player incorrectly uses the command.
     usage: '&a&lPhantomEconomy: &7Usage: &a/pay <player> <amount>'
 
+    # Sent if the player tries to pay themself.
     pay-self: '&a&lPhantomEconomy: &7You can''t transfer funds to yourelf, silly. :)'
 
   # Messages to do with the command '/baltop'.
