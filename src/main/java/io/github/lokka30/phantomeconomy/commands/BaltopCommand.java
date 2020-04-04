@@ -53,6 +53,7 @@ public class BaltopCommand implements CommandExecutor {
             sender.sendMessage(instance.colorize(instance.messages.get("commands.baltop.usage", "Usage: /baltop [position]")));
             return true;
         }
+
         sender.sendMessage(instance.colorize(instance.messages.get("commands.baltop.header", "+----------+ Baltop +----------+")));
         for (int i = length - 10; i < length; i++) {
             if (baltop.size() <= i) {

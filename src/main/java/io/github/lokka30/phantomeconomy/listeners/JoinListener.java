@@ -17,13 +17,16 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent e) {
         final Player player = e.getPlayer();
-        if (instance.data.get("players." + player.getUniqueId().toString() + ".balance", null) == null) {
+        final String balancePath = "players." + player.getUniqueId().toString() + ",balance";
+        if (instance.data.get(balancePath, null) == null) {
             if (instance.settings.get("default-balance.enabled", true)) {
-                instance.data.set("players." + player.getUniqueId().toString() + ".balance", instance.settings.get("default-balance.amount", 50.0));
+                instance.data.set(balancePath, instance.settings.get("default-balance.amount", 50.0));
             } else {
-                instance.data.set("players." + player.getUniqueId().toString() + ".balance", 0.0);
+                instance.data.set(balancePath, 0.0);
             }
 
         }
+
+        instance.balanceCache.put(player, instance.data.get(balancePath, 0.0));
     }
 }

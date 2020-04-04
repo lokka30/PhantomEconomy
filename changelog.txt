@@ -17,7 +17,7 @@ updated:
 - updated file library
 
 
-1.4-SNAPSHOT:
+1.4-RELEASE:
 file changes:
  - settings.yml - now version 3 - [link]
  - messages.yml - now version 2 - [link]
@@ -39,3 +39,17 @@ changes:
    - /pay <player> <amount>
    - /baltop
  - after an extreme demand, including one from the Trump administration, I have added in /phantomeconomy. This revolutionary command shows you the version of the plugin you have installed.
+
+
+1.5-RELEASE:
+file changes:
+ - messages.yml
+  - Now version 3
+  - Added message for users trying to pay themselves (located at 'commands.pay.pay-self')
+
+notes:
+ - Not Tested!
+ - Performance optimisation: When a player's balance is requested, it will prefer looking up the cached value. This will improve performance over checking the data file.
+ - Removed 'PlaceholderAPI' soft dependency until the baltop placeholder is added.
+ - Users can't pay themselves anymore. The bank got sick of those useless transactions!
+ - Updated libraries (LightningStorage 3.0.7 -> 3.0.9)

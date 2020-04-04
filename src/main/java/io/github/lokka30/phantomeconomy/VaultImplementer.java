@@ -142,7 +142,11 @@ public class VaultImplementer implements Economy {
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        return instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", 0.0D);
+        if (instance.balanceCache.containsKey(offlinePlayer)) {
+            return instance.balanceCache.get(offlinePlayer);
+        } else {
+            return instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", 0.0D);
+        }
     }
 
     @Override
@@ -188,7 +192,9 @@ public class VaultImplementer implements Economy {
 
         if (hasAccount(offlinePlayer)) {
             if (has(offlinePlayer, amount)) {
-                instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", getBalance(offlinePlayer) - amount);
+                final double total = getBalance(offlinePlayer) - amount;
+                instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", total);
+                instance.balanceCache.put(offlinePlayer, total);
                 return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Funds withdrawn from account.");
             } else {
                 return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.FAILURE, "Account lacking funds.");
@@ -219,7 +225,9 @@ public class VaultImplementer implements Economy {
         amount = Utils.round(amount);
 
         if (hasAccount(offlinePlayer)) {
-            instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", getBalance(offlinePlayer) + amount);
+            final double total = getBalance(offlinePlayer) + amount;
+            instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", total);
+            instance.balanceCache.put(offlinePlayer, total);
             return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Funds deposited to account.");
         } else {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");

@@ -4,6 +4,7 @@ import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy.commands.*;
 import io.github.lokka30.phantomeconomy.listeners.JoinListener;
+import io.github.lokka30.phantomeconomy.listeners.QuitListener;
 import io.github.lokka30.phantomeconomy.listeners.SignPlaceListener;
 import io.github.lokka30.phantomeconomy.listeners.SignUseListener;
 import io.github.lokka30.phantomeconomy.utils.LogLevel;
@@ -13,12 +14,14 @@ import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -33,10 +36,13 @@ public class PhantomEconomy extends JavaPlugin {
     public Economy provider;
     public PluginManager pluginManager;
 
+    public HashMap<OfflinePlayer, Double> balanceCache;
+
     @Override
     public void onLoad() {
         baltopUpdater = new BaltopUpdater();
         pluginManager = getServer().getPluginManager();
+        balanceCache = new HashMap<>();
     }
 
     @Override
@@ -167,6 +173,7 @@ public class PhantomEconomy extends JavaPlugin {
         pluginManager.registerEvents(new JoinListener(this), this);
         pluginManager.registerEvents(new SignPlaceListener(this), this);
         pluginManager.registerEvents(new SignUseListener(this), this);
+        pluginManager.registerEvents(new QuitListener(this), this);
     }
 
     private void registerCommands() {

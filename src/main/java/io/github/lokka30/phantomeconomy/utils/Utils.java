@@ -17,7 +17,7 @@ public class Utils {
     }
 
     public static int getRecommendedMessagesVersion() {
-        return 2;
+        return 3;
     }
 
     public static int getRecommendedDataVersion() {

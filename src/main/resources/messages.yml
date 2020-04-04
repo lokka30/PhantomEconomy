@@ -112,6 +112,8 @@ commands:
     # Sent if the player incorrectly uses the command.
     usage: '&a&lPhantomEconomy: &7Usage: &a/pay <player> <amount>'
 
+    pay-self: '&a&lPhantomEconomy: &7You can''t transfer funds to yourelf, silly. :)'
+
   # Messages to do with the command '/baltop'.
   baltop:
 
@@ -131,4 +133,4 @@ commands:
 # This is the file version.
 # It should be unchanged unless updating to the respective version of the settings.yml file.
 # Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
-file-version: 2
+file-version: 3

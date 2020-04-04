@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class BaltopUpdater {
 
-    private Map<String, Double> baltopMap = new HashMap<>();
+    private HashMap<String, Double> baltopMap = new HashMap<>();
 
     /*
     Credit: Big thanks to Dkbay for providing the baltop code.
@@ -34,7 +34,7 @@ public class BaltopUpdater {
                 updatedTreeMap.put(key, balance);
             }
 
-            final Map<String, Double> newBaltop = updatedTreeMap.entrySet()
+            final HashMap<String, Double> newBaltop = updatedTreeMap.entrySet()
                     .stream()
                     .sorted((Map.Entry.<String, Double>comparingByValue().reversed()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -45,7 +45,7 @@ public class BaltopUpdater {
         }
     }
 
-    public void updateBaltop(Map<String, Double> tm) {
+    public void updateBaltop(HashMap<String, Double> tm) {
         baltopMap = tm;
     }
 

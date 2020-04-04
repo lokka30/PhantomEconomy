@@ -15,8 +15,6 @@ load: STARTUP
 
 depend:
   - Vault
-softdepend:
-  - PlaceholderAPI
 
 commands:
   economy:

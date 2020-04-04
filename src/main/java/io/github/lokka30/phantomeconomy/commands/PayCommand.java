@@ -30,6 +30,11 @@ public class PayCommand implements CommandExecutor {
                     if (instance.provider.hasAccount(args[0])) {
                         final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
 
+                        if (target.getUniqueId().equals(player.getUniqueId())) {
+                            player.sendMessage(instance.colorize(instance.messages.get("commands.pay.pay-self", "You can't transfer funds to yourself, silly. :)")));
+                            return true;
+                        }
+
                         double amount;
 
                         try {
