@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 public class PayCommand implements CommandExecutor {
@@ -58,7 +59,7 @@ public class PayCommand implements CommandExecutor {
                                 player.sendMessage(instance.colorize(instance.messages.get("commands.pay.success", "Sent %amount% to %player%.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", args[0]));
 
                                 if (target.isOnline()) {
-                                    player.sendMessage(instance.colorize(instance.messages.get("commands.pay.received", "Received %amount% from %player%.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", player.getName()));
+                                    Objects.requireNonNull(target.getPlayer()).sendMessage(instance.colorize(instance.messages.get("commands.pay.received", "Received %amount% from %player%.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", player.getName()));
                                 }
                             } else {
                                 player.sendMessage(instance.colorize(instance.messages.get("commands.pay.lacking-funds", "You lack the funds to make this transaction.")));
