@@ -1,5 +1,6 @@
 package io.github.lokka30.phantomeconomy;
 
+import io.github.lokka30.phantomeconomy.utils.LogLevel;
 import io.github.lokka30.phantomeconomy.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -112,10 +113,20 @@ public class VaultImplementer implements Economy {
     public boolean hasAccount(String name) {
         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
 
-        if (!offlinePlayer.hasPlayedBefore()) {
+        if (offlinePlayer == null) {
+            if (instance.settings.get("debug", false)) {
+                instance.log(LogLevel.INFO, "hasAccount = false, " + name + " as an OfflinePlayer is null.");
+            }
             return false;
         } else {
-            return hasAccount(offlinePlayer);
+            if (offlinePlayer.hasPlayedBefore()) {
+                return hasAccount(offlinePlayer);
+            } else {
+                if (instance.settings.get("debug", false)) {
+                    instance.log(LogLevel.INFO, "hasAccount = false, " + name + " hasn't played before.");
+                }
+                return false;
+            }
         }
     }
 

@@ -53,3 +53,10 @@ notes:
  - Removed 'PlaceholderAPI' soft dependency until the baltop placeholder is added.
  - Users can't pay themselves anymore. The bank got sick of those useless transactions!
  - Updated libraries (LightningStorage 3.0.7 -> 3.0.9)
+
+1.6-RELEASE:
+file changes: none
+changes:
+- Not Tested!
+- Merged PR from Dkbay: Fixed warning on baltop update when there are no players in the baltop.
+- Added debugging to hasAccount as it seems to be causing a few users issues about 'the player hasn't played before'.
