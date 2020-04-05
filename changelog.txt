@@ -60,3 +60,4 @@ changes:
 - Not Tested!
 - Merged PR from Dkbay: Fixed warning on baltop update when there are no players in the baltop.
 - Added debugging to hasAccount as it seems to be causing a few users issues about 'the player hasn't played before'.
+- fixed /pay command sending message 'received' to sender instead of target
