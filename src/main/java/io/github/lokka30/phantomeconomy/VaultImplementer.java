@@ -113,20 +113,13 @@ public class VaultImplementer implements Economy {
     public boolean hasAccount(String name) {
         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
 
-        if (offlinePlayer == null) {
+        if (offlinePlayer.hasPlayedBefore()) {
+            return hasAccount(offlinePlayer);
+        } else {
             if (instance.settings.get("debug", false)) {
-                instance.log(LogLevel.INFO, "hasAccount = false, " + name + " as an OfflinePlayer is null.");
+                instance.log(LogLevel.INFO, "hasAccount = false, " + name + " hasn't played before.");
             }
             return false;
-        } else {
-            if (offlinePlayer.hasPlayedBefore()) {
-                return hasAccount(offlinePlayer);
-            } else {
-                if (instance.settings.get("debug", false)) {
-                    instance.log(LogLevel.INFO, "hasAccount = false, " + name + " hasn't played before.");
-                }
-                return false;
-            }
         }
     }
 
