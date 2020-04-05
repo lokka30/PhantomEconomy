@@ -25,6 +25,9 @@ public class BaltopUpdater {
         try {
             JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path + "data.json"));
             JSONObject players = (JSONObject) jsonObject.get("players");
+            if(players == null) {
+                return;
+            }
             ArrayList<String> keys = new ArrayList<String>(players.keySet());
             Map<String, Double> updatedTreeMap = new HashMap<>();
 
