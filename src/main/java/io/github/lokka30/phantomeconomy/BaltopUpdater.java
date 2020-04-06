@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class BaltopUpdater {
 
-    private HashMap<String, Double> baltopMap = new HashMap<>();
+    private Map<String, Double> baltopMap = new HashMap<>();
 
     /*
     Credit: Big thanks to Dkbay for providing the baltop code.
@@ -25,19 +25,19 @@ public class BaltopUpdater {
         try {
             JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path + "data.json"));
             JSONObject players = (JSONObject) jsonObject.get("players");
-            if(players == null) {
+            if (players == null) {
                 return;
             }
-            ArrayList<String> keys = new ArrayList<String>(players.keySet());
+            ArrayList<String> uuids = new ArrayList<String>(players.keySet());
             Map<String, Double> updatedTreeMap = new HashMap<>();
 
-            for (String key : keys) {
-                JSONObject JSONBalance = (JSONObject) players.get(key);
-                double balance = Double.parseDouble(JSONBalance.get("balance").toString());
-                updatedTreeMap.put(key, balance);
+            for (String uuid : uuids) {
+                JSONObject playerBalance = (JSONObject) players.get(uuid);
+                double balance = Double.parseDouble(playerBalance.get("balance").toString());
+                updatedTreeMap.put(uuid, balance);
             }
 
-            final HashMap<String, Double> newBaltop = updatedTreeMap.entrySet()
+            final Map<String, Double> newBaltop = updatedTreeMap.entrySet()
                     .stream()
                     .sorted((Map.Entry.<String, Double>comparingByValue().reversed()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -48,7 +48,7 @@ public class BaltopUpdater {
         }
     }
 
-    public void updateBaltop(HashMap<String, Double> tm) {
+    public void updateBaltop(Map<String, Double> tm) {
         baltopMap = tm;
     }
 

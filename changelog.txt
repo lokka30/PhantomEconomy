@@ -61,3 +61,11 @@ changes:
 - Merged PR from Dkbay: Fixed warning on baltop update when there are no players in the baltop.
 - Added debugging to hasAccount as it seems to be causing a few users issues about 'the player hasn't played before'.
 - fixed /pay command sending message 'received' to sender instead of target
+
+1.7-RELEASE:
+file changes:
+- none
+
+changes:
+- Fixed balances not being loaded properly when users join (thanks CACGaming)
+- Reverted back to old baltop code, fixed the annoying 'Long cannot be cast to class' issue in the console.

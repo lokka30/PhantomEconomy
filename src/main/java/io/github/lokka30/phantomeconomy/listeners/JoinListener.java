@@ -17,7 +17,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent e) {
         final Player player = e.getPlayer();
-        final String balancePath = "players." + player.getUniqueId().toString() + ",balance";
+        final String balancePath = "players." + player.getUniqueId().toString() + ".balance";
         if (instance.data.get(balancePath, null) == null) {
             if (instance.settings.get("default-balance.enabled", true)) {
                 instance.data.set(balancePath, instance.settings.get("default-balance.amount", 50.0));
