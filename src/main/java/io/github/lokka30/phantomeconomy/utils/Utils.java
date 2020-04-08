@@ -13,7 +13,7 @@ public class Utils {
     }
 
     public static int getRecommendedSettingsVersion() {
-        return 3;
+        return 4;
     }
 
     public static int getRecommendedMessagesVersion() {

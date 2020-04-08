@@ -68,11 +68,15 @@ public class PhantomEconomy extends JavaPlugin {
             new Metrics(this);
 
             log(LogLevel.INFO, "Starting baltop update task...");
-            new BukkitRunnable() {
-                public void run() {
-                    baltopUpdater.update();
-                }
-            }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
+            if (settings.get("use-baltop-update-task", true)) {
+                new BukkitRunnable() {
+                    public void run() {
+                        baltopUpdater.update();
+                    }
+                }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
+            } else {
+                log(LogLevel.INFO, "Baltop update task cancelled - disabled in settings.");
+            }
 
             log(LogLevel.INFO, "--+-- Enabling Complete --+--");
         } else {
@@ -237,5 +241,22 @@ public class PhantomEconomy extends JavaPlugin {
             default:
                 logger.severe(colorize("Unexpected LogLevel specified. message: " + msg));
         }
+    }
+
+    public double getDefaultBalance() {
+        double defaultBalance;
+
+        if (settings.get("default-balance.enabled", true)) {
+            try {
+                defaultBalance = settings.get("default-balance.amount", 50.00);
+            } catch (NumberFormatException e) {
+                log(LogLevel.SEVERE, "Invalid default balance! Please set it to a valid number. Using default $50.00.");
+                defaultBalance = 50.00;
+            }
+        } else {
+            defaultBalance = 0.00;
+        }
+
+        return defaultBalance;
     }
 }

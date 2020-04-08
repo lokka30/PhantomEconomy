@@ -153,7 +153,7 @@ public class EconomyCommand implements CommandExecutor {
                                 if (instance.provider.hasAccount(args[1])) {
                                     final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                                     instance.provider.withdrawPlayer(offlinePlayer, instance.provider.getBalance(offlinePlayer));
-                                    instance.provider.depositPlayer(offlinePlayer, instance.settings.get("default-balance.amount", 50.0));
+                                    instance.provider.depositPlayer(offlinePlayer, instance.getDefaultBalance());
                                     sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.reset.success", "Set %player%'s balance to the default balance.")).replaceAll("%player%", args[1]));
                                 } else {
                                     sender.sendMessage(instance.colorize(instance.messages.get("common.target-never-played-before", "%player% hasn't joined the server before.")).replaceAll("%player%", args[1]));

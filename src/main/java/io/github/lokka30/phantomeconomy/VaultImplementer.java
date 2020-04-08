@@ -309,9 +309,7 @@ public class VaultImplementer implements Economy {
         if (hasAccount(offlinePlayer)) {
             return false;
         } else {
-            final double defaultBalance = instance.settings.get("default-balance", 50.0);
-
-            instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", Utils.round(defaultBalance));
+            instance.data.set("players." + offlinePlayer.getUniqueId().toString() + ".balance", Utils.round(instance.getDefaultBalance()));
             return true;
         }
     }

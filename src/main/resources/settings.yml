@@ -36,6 +36,9 @@ currency:
     # When the amount isn't exactly $1.00.
     plural: 'dollars'
 
+# If you have issues with the baltop update task, you can disable it here by setting the value to false.
+use-baltop-update-task: true
+
 # If true, on startup, PE will ask Spigot and tell you if there are any new updates available for the plugin.
 updater: true
 
@@ -45,4 +48,4 @@ debug: false
 # This is the file version.
 # It should be unchanged unless updating to the respective version of the settings.yml file.
 # Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
-file-version: 3
+file-version: 4
