@@ -54,6 +54,7 @@ notes:
  - Users can't pay themselves anymore. The bank got sick of those useless transactions!
  - Updated libraries (LightningStorage 3.0.7 -> 3.0.9)
 
+
 1.6-RELEASE:
 file changes: none
 changes:
@@ -69,3 +70,14 @@ file changes:
 changes:
 - Fixed balances not being loaded properly when users join (thanks CACGaming)
 - Reverted back to old baltop code, fixed the annoying 'Long cannot be cast to class' issue in the console.
+
+
+
+1.8-release
+file changes;
+- settinmgs.yml
+
+changes:
+- Added toggle to baltop update task.
+- Added method to retrieve default balance.
+- Fixed incorrect default balance path.
