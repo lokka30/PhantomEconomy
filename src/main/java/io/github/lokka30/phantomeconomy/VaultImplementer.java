@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
 import java.util.List;
 
@@ -153,6 +154,16 @@ public class VaultImplementer implements Economy {
         return getBalance(offlinePlayer);
     }
 
+    @SuppressWarnings("unused")
+    public double getBalance(String name, World world) {
+        return getBalance(name);
+    }
+
+    @SuppressWarnings("unused")
+    public void removeAccount(String name) {
+        setBalance(name, instance.getDefaultBalance());
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public boolean has(String name, double amount) {
@@ -172,6 +183,11 @@ public class VaultImplementer implements Economy {
     @Override
     public boolean has(OfflinePlayer offlinePlayer, String world, double amount) {
         return has(offlinePlayer, amount);
+    }
+
+    @SuppressWarnings("unused")
+    public boolean hasEnough(String name, double amount, World world) {
+        return has(name, amount);
     }
 
     @Override
@@ -208,6 +224,11 @@ public class VaultImplementer implements Economy {
         return withdrawPlayer(offlinePlayer, amount);
     }
 
+    @SuppressWarnings("unused")
+    public boolean subtract(String name, double amount, World world) {
+        return withdrawPlayer(name, world.getName(), amount).transactionSuccess();
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse depositPlayer(String name, double amount) {
@@ -236,6 +257,28 @@ public class VaultImplementer implements Economy {
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, String world, double amount) {
         return depositPlayer(offlinePlayer, amount);
+    }
+
+    @SuppressWarnings("unused")
+    public boolean add(String name, double amount, World world) {
+        return depositPlayer(name, world.getName(), amount).transactionSuccess();
+    }
+
+    public boolean setBalance(String name, Double amount) {
+        boolean withdrawSuccess = withdrawPlayer(name, getBalance(name)).transactionSuccess();
+        boolean depositSuccess = depositPlayer(name, amount).transactionSuccess();
+
+        return withdrawSuccess && depositSuccess;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean setBalance(String name, Double amount, World world) {
+        return setBalance(name, amount);
+    }
+
+    @SuppressWarnings("unused")
+    public String getFormattedBalance(double balance) {
+        return format(balance);
     }
 
     @Override

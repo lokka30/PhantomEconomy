@@ -55,6 +55,8 @@ notes:
  - Updated libraries (LightningStorage 3.0.7 -> 3.0.9)
 
 
+
+
 1.6-RELEASE:
 file changes: none
 changes:
@@ -62,6 +64,9 @@ changes:
 - Merged PR from Dkbay: Fixed warning on baltop update when there are no players in the baltop.
 - Added debugging to hasAccount as it seems to be causing a few users issues about 'the player hasn't played before'.
 - fixed /pay command sending message 'received' to sender instead of target
+
+
+
 
 1.7-RELEASE:
 file changes:
@@ -73,6 +78,7 @@ changes:
 
 
 
+
 1.8-release
 file changes;
 - settinmgs.yml
@@ -81,3 +87,14 @@ changes:
 - Added toggle to baltop update task.
 - Added method to retrieve default balance.
 - Fixed incorrect default balance path.
+
+
+
+
+1.9-RELEASE:
+NOT RELEASED YET.
+file changes:
+- none
+
+changes:
+- Attempted to add more compatibility with plugins which use other Vault methods (Towny)
