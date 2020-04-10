@@ -16,6 +16,9 @@ load: STARTUP
 depend:
   - Vault
 
+softdepend:
+  - Towny
+
 commands:
   economy:
     description: Manage your servers economy.
