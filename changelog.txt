@@ -92,12 +92,14 @@ changes:
 
 
 1.9-RELEASE:
-NOT RELEASED YET.
+notes:
+- big thanks to paulhlschr for being a significant force behind rolling Towny compatibility through.
+
 file changes:
 - none
 
 changes:
 - Added more Vault methods in case plugins need to use them
-- Added more compatibility with Towny
+- Attempted to create compatibility with Towny
 - Updated bStats from v1.5 -> v1.7
 - Fixed bStats plugin identifier missing
