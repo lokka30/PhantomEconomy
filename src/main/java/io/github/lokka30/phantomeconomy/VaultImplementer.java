@@ -112,7 +112,11 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean hasAccount(String name) {
-        return hasAccount(Bukkit.getOfflinePlayer(name));
+        if (isTowny(name)) {
+            return instance.data.get("towny." + name + ".balance", null) != null;
+        } else {
+            return hasAccount(Bukkit.getOfflinePlayer(name));
+        }
     }
 
     @Override
@@ -133,7 +137,11 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public double getBalance(String name) {
-        return getBalance(Bukkit.getOfflinePlayer(name));
+        if (isTowny(name)) {
+            return instance.data.get("towny." + name + ".balance", 0.00D);
+        } else {
+            return getBalance(Bukkit.getOfflinePlayer(name));
+        }
     }
 
     @Override
@@ -168,7 +176,11 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean has(String name, double amount) {
-        return has(Bukkit.getOfflinePlayer(name), amount);
+        if (isTowny(name)) {
+            return getBalance(name) >= amount;
+        } else {
+            return has(Bukkit.getOfflinePlayer(name), amount);
+        }
     }
 
     @Override
@@ -368,8 +380,17 @@ public class VaultImplementer implements Economy {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean createPlayerAccount(String s) {
-        return createPlayerAccount(Bukkit.getOfflinePlayer(s));
+    public boolean createPlayerAccount(String name) {
+        if (isTowny(name)) {
+            if (hasAccount(name)) {
+                return false;
+            } else {
+                instance.data.set("towny." + name + ".balance", 0);
+                return true;
+            }
+        } else {
+            return createPlayerAccount(Bukkit.getOfflinePlayer(name));
+        }
     }
 
     @Override
