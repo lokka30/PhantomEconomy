@@ -1,5 +1,6 @@
 package io.github.lokka30.phantomeconomy;
 
+import com.palmergames.bukkit.towny.TownySettings;
 import io.github.lokka30.phantomeconomy.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -193,7 +194,19 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse withdrawPlayer(String name, double amount) {
-        return withdrawPlayer(Bukkit.getOfflinePlayer(name), amount);
+        if (isTowny(name)) {
+            amount = Utils.round(amount);
+
+            if (hasAccount(name)) {
+                final double total = getBalance(name) - amount;
+                instance.data.set("towny." + name + ".balance", total);
+                return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Funds withdrawn from account.");
+            } else {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+            }
+        } else {
+            return withdrawPlayer(Bukkit.getOfflinePlayer(name), amount);
+        }
     }
 
     @Override
@@ -232,7 +245,19 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse depositPlayer(String name, double amount) {
-        return depositPlayer(Bukkit.getOfflinePlayer(name), amount);
+        if (isTowny(name)) {
+            amount = Utils.round(amount);
+
+            if (hasAccount(name)) {
+                final double total = getBalance(name) + amount;
+                instance.data.set("towny." + name + ".balance", total);
+                return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Funds deposited to account.");
+            } else {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+            }
+        } else {
+            return depositPlayer(Bukkit.getOfflinePlayer(name), amount);
+        }
     }
 
     @Override
@@ -365,5 +390,9 @@ public class VaultImplementer implements Economy {
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer, String s) {
         return createPlayerAccount(offlinePlayer);
+    }
+
+    private boolean isTowny(String name) {
+        return (name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix()));
     }
 }

@@ -97,6 +97,6 @@ file changes:
 - none
 
 changes:
-- Added more Vault methods in case plugins want to use them
-- Added better compatibility with Towny
+- Added more Vault methods in case plugins need to use them
+- Added more compatibility with Towny
 - Updated bStats from v1.5 -> v1.7
