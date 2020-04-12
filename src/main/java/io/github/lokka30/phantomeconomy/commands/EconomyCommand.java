@@ -4,14 +4,18 @@ import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 
-public class EconomyCommand implements CommandExecutor {
+public class EconomyCommand implements TabExecutor {
 
     private PhantomEconomy instance;
 
@@ -182,5 +186,28 @@ public class EconomyCommand implements CommandExecutor {
             sender.sendMessage(instance.colorize(instance.messages.get("common.no-permission", "You don't have access to that.")));
             return true;
         }
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        List<String> suggestions = new ArrayList<>();
+        if (args.length == 1) {
+            if (sender.hasPermission("phantomeconomy.economy.add"))
+                suggestions.add("add");
+            if (sender.hasPermission("phantomeconomy.economy.remove"))
+                suggestions.add("remove");
+            if (sender.hasPermission("phantomeconomy.economy.set"))
+                suggestions.add("set");
+            if (sender.hasPermission("phantomeconomy.economy.reset"))
+                suggestions.add("reset");
+        }
+        if (args.length == 2) {
+            Player[] players = new Player[Bukkit.getOnlinePlayers().size()];
+            players = Bukkit.getOnlinePlayers().toArray(players);
+            for (Player player : players) {
+                suggestions.add(player.getName());
+            }
+        }
+        return suggestions;
     }
 }
