@@ -65,7 +65,7 @@ public class PhantomEconomy extends JavaPlugin {
             hookVault();
 
             log(LogLevel.INFO, "Starting bStats metrics...");
-            new Metrics(this);
+            new Metrics(this, 6463);
 
             log(LogLevel.INFO, "Starting baltop update task...");
             if (settings.get("use-baltop-update-task", true)) {

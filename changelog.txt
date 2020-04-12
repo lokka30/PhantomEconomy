@@ -100,3 +100,4 @@ changes:
 - Added more Vault methods in case plugins need to use them
 - Added more compatibility with Towny
 - Updated bStats from v1.5 -> v1.7
+- Fixed bStats plugin identifier missing
