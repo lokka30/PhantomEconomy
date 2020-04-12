@@ -1,15 +1,21 @@
 package io.github.lokka30.phantomeconomy.commands;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 
-public class BalanceCommand implements CommandExecutor {
+public class BalanceCommand implements TabExecutor {
 
     private PhantomEconomy instance;
 
@@ -46,5 +52,18 @@ public class BalanceCommand implements CommandExecutor {
             return true;
         }
         return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        List<String> suggestions = new ArrayList<>();
+        if (args.length == 1 && sender.hasPermission("phantomeconomy.balance.others")) {
+            Player[] players = new Player[Bukkit.getOnlinePlayers().size()];
+            players = Bukkit.getOnlinePlayers().toArray(players);
+            for (Player player : players) {
+                suggestions.add(player.getName());
+            }
+        }
+        return suggestions;
     }
 }
