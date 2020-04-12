@@ -414,6 +414,8 @@ public class VaultImplementer implements Economy {
     }
 
     private boolean isTowny(String name) {
-        return (name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix()));
+        if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+            return (name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix()));
+        return false;
     }
 }
