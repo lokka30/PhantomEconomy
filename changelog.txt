@@ -103,3 +103,10 @@ changes:
 - Attempted to create compatibility with Towny
 - Updated bStats from v1.5 -> v1.7
 - Fixed bStats plugin identifier missing
+
+1.9-RELEASE BUILD-6
+file changes:
+ none
+
+changes:
+- Added check if Towny is installed before trying to access methods
