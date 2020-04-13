@@ -5,15 +5,18 @@ import io.github.lokka30.phantomeconomy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
-public class PayCommand implements CommandExecutor {
+public class PayCommand implements TabExecutor {
 
     private PhantomEconomy instance;
 
@@ -78,5 +81,18 @@ public class PayCommand implements CommandExecutor {
             sender.sendMessage(instance.colorize(instance.messages.get("common.players-only", "Only players may use this command.")));
         }
         return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        List<String> suggestions = new ArrayList<>();
+        if (args.length == 1) {
+            Player[] players = new Player[Bukkit.getOnlinePlayers().size()];
+            players = Bukkit.getOnlinePlayers().toArray(players);
+            for (Player player : players) {
+                suggestions.add(player.getName());
+            }
+        }
+        return suggestions;
     }
 }
