@@ -38,6 +38,8 @@ public class PhantomEconomy extends JavaPlugin {
 
     public HashMap<OfflinePlayer, Double> balanceCache;
 
+    public boolean hasTownyCompatibility = false;
+
     @Override
     public void onLoad() {
         baltopUpdater = new BaltopUpdater();
@@ -117,6 +119,16 @@ public class PhantomEconomy extends JavaPlugin {
             log(LogLevel.SEVERE, "This plugin depends on Vault to interact with other plugins.");
             log(LogLevel.SEVERE, "Link to dependency: https://www.spigotmc.org/resources/vault.34315/");
             return false;
+        }
+
+        // --- Check if the server has Towny loaded. ---
+        // Note: If Towny isn't found, then the plugin will keep loading, but disable Towny compatibility.
+        if (pluginManager.getPlugin("Towny") == null) {
+            hasTownyCompatibility = false;
+            log(LogLevel.INFO, "Towny isn't installed. Towny compatibility disabled.");
+        } else {
+            hasTownyCompatibility = true;
+            log(LogLevel.INFO, "Towny is installed. Towny compatibility enabled.");
         }
 
         // --- No incompatibilities found, continue loading. ---

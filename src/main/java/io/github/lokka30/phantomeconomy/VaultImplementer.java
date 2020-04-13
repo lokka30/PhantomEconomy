@@ -414,8 +414,12 @@ public class VaultImplementer implements Economy {
     }
 
     private boolean isTowny(String name) {
-        if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
-            return (name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix()));
-        return false;
+        if (instance.hasTownyCompatibility) {
+            //Check if the name specified has a town or nation account prefix.
+            return name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix());
+        } else {
+            //Towny isn't installed. Don't try to ask for Towny stuff when it isn't installed!
+            return false;
+        }
     }
 }
