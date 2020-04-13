@@ -106,15 +106,13 @@ changes:
 
 
 
-1.9-RELEASE BUILD-6
-file changes:
- none
-
-changes:
-- Added check if Towny is installed before trying to access methods
-
-
-
-1.9.7-RELEASE
+1.9.7-PRE-RELEASE
 changes:
 - Modified Towny compatibility check
+
+
+
+1.9.8-RELEASE
+changes:
+- Added tab completion (Cheers Paul H)
+- Added check if Towny is installed before trying to access methods
