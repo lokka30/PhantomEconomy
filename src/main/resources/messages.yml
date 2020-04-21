@@ -46,6 +46,10 @@ commands:
       # Sent if the player successfuly deposited funds into the target balance.
       success: '&a&lPhantomEconomy: &7Deposited &a%amount%&7 into &r%player%&7''s balance.'
 
+      # Sent if the player had an amount deposited in their own balance by a sender which used this command.
+      # E.g. if Notch ran '/eco add jeb_ 50', Jeb would see '$30 was deposited by Notch'
+      by: '&a&lPhantomEconomy: &a%amount%&7 was deposited by &r%sender%&7.'
+
       # Sent if the player incorrectly uses '/economy add'.
       usage: '&a&lPhantomEconomy: &7Usage: &a/economy add <player> <amount>'
 
@@ -58,6 +62,10 @@ commands:
       # Sent if the player tried to withdraw funds from an account that doesn't have a balance greater than or equal to the specified amount.
       not-enough-funds: '&a&lPhantomEconomy: &r%player%&7 doesn''t have a balance equal to or greater than &a%amount%&7.'
 
+      # Sent if the player had an amount withdrawn from their own balance by a sender which used this command.
+      # E.g. if Notch ran '/eco remove jeb_ 50', Jeb would see '$30 was withdrawn by Notch'
+      by: '&a&lPhantomEconomy: &a%amount%&7 was withdrawn by &r%sender%&7.'
+
       # Sent if the player incorrectly uses '/economy remove'.
       usage: '&a&lPhantomEconomy: &7Usage: &a/economy remove <player> <amount>'
 
@@ -67,6 +75,9 @@ commands:
       # Sent if the player successfully set the target balance.
       success: '&a&lPhantomEconomy: &7Set &r%player%&7''s balance to &a%amount%&7.'
 
+      # Sent if the player's balance was set by someone else
+      by: '&a&lPhantomEconomy: &7Your balance was set to &a%amount%&7 by &r%sender%&7.'
+
       # Sent if the player incorrectly uses '/economy set'.
       usage: '&a&lPhantomEconomy: &7Usage: &a/economy set <player> <amount>'
 
@@ -75,6 +86,9 @@ commands:
 
       # Sent if the player successfully reset the target balance.
       success: '&a&lPhantomEconomy: &7Reset &r%player%&7''s balance to the default balance.'
+
+      # Sent if the player's balance was reset by someone else
+      by: '&a&lPhantomEconomy: &7Your balance was &areset&7 by &r%sender%&7.'
 
       # Sent if the player incorrectly uses '/economy reset'.
       usage: '&a&lPhantomEconomy: &7Usage: &a/economy reset <player>'
@@ -134,4 +148,4 @@ commands:
 # This is the file version.
 # It should be unchanged unless updating to the respective version of the settings.yml file.
 # Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
-file-version: 3
+file-version: 4

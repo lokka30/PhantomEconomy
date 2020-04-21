@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 public class EconomyCommand implements TabExecutor {
@@ -63,10 +64,18 @@ public class EconomyCommand implements TabExecutor {
                                     } else {
                                         instance.provider.depositPlayer(offlinePlayer, amount);
                                         sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.add.success", "Deposited %amount% to %player%'s balance.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", args[1]));
+
+                                        if (offlinePlayer.isOnline()) {
+                                            Objects.requireNonNull(offlinePlayer.getPlayer()).sendMessage(instance.colorize(instance.messages.get("commands.economy.add.by", "%amount% was deposited by %sender%."))
+                                                    .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount)))
+                                                    .replaceAll("%sender%", sender.getName()));
+                                        }
+
                                         return true;
                                     }
                                 } else {
-                                    sender.sendMessage(instance.colorize(instance.messages.get("common.target-never-played-before", "%player% hasn't joined the server before.")).replaceAll("%player%", args[1]));
+                                    sender.sendMessage(instance.colorize(instance.messages.get("common.target-never-played-before", "%player% hasn't joined the server before."))
+                                            .replaceAll("%player%", args[1]));
                                     return true;
                                 }
                             } else {
@@ -88,12 +97,14 @@ public class EconomyCommand implements TabExecutor {
                                     try {
                                         amount = Double.parseDouble(args[2]);
                                     } catch (NumberFormatException exception) {
-                                        sender.sendMessage(instance.colorize(instance.messages.get("common.invalid-number-double", "Invalid number - %arg% is not a valid number.")).replaceAll("%arg%", args[2]));
+                                        sender.sendMessage(instance.colorize(instance.messages.get("common.invalid-number-double", "Invalid number - %arg% is not a valid number."))
+                                                .replaceAll("%arg%", args[2]));
                                         return true;
                                     }
 
                                     if (amount < 0) {
-                                        sender.sendMessage(instance.colorize(instance.messages.get("common.invalid-number-negative", "Invalid number - %number% is negative.")).replaceAll("%number%", args[2]));
+                                        sender.sendMessage(instance.colorize(instance.messages.get("common.invalid-number-negative", "Invalid number - %number% is negative."))
+                                                .replaceAll("%number%", args[2]));
                                         return true;
                                     } else if (amount == 0) {
                                         sender.sendMessage(instance.colorize(instance.messages.get("common.invalid-number-zero", "Invalid number - 0 is not allowed.")));
@@ -101,7 +112,15 @@ public class EconomyCommand implements TabExecutor {
                                     } else {
                                         if (instance.provider.has(offlinePlayer, amount)) {
                                             instance.provider.withdrawPlayer(offlinePlayer, amount);
-                                            sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.remove.success", "Withdrew %amount% from %player%'s balance.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", args[1]));
+                                            sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.remove.success", "Withdrew %amount% from %player%'s balance."))
+                                                    .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount)))
+                                                    .replaceAll("%player%", args[1]));
+
+                                            if (offlinePlayer.isOnline()) {
+                                                Objects.requireNonNull(offlinePlayer.getPlayer()).sendMessage(instance.colorize(instance.messages.get("commands.economy.remove.by", "%amount% was withdrawn by %sender%."))
+                                                        .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount)))
+                                                        .replaceAll("%sender%", sender.getName()));
+                                            }
                                         } else {
                                             sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.remove.not-enough-funds", "%player% doesn't have a balance equal to or greater than %amount%.")).replaceAll("%player%", args[1]).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))));
                                         }
@@ -139,6 +158,13 @@ public class EconomyCommand implements TabExecutor {
                                     } else {
                                         instance.provider.withdrawPlayer(offlinePlayer, instance.provider.getBalance(offlinePlayer));
                                         instance.provider.depositPlayer(offlinePlayer, amount);
+
+                                        if (offlinePlayer.isOnline()) {
+                                            Objects.requireNonNull(offlinePlayer.getPlayer()).sendMessage(instance.colorize(instance.messages.get("commands.economy.set.by", "Your balance was set to %amount% by %sender%."))
+                                                    .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount)))
+                                                    .replaceAll("%sender%", sender.getName()));
+                                        }
+
                                         sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.set.success", "Set %player%'s balance to %amount%.")).replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(amount))).replaceAll("%player%", args[1]));
                                     }
                                 } else {
@@ -158,6 +184,12 @@ public class EconomyCommand implements TabExecutor {
                                     final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
                                     instance.provider.withdrawPlayer(offlinePlayer, instance.provider.getBalance(offlinePlayer));
                                     instance.provider.depositPlayer(offlinePlayer, instance.getDefaultBalance());
+
+                                    if (offlinePlayer.isOnline()) {
+                                        Objects.requireNonNull(offlinePlayer.getPlayer()).sendMessage(instance.colorize(instance.messages.get("commands.economy.reset.by", "%sender% reset your balance."))
+                                                .replaceAll("%sender%", sender.getName()));
+                                    }
+
                                     sender.sendMessage(instance.colorize(instance.messages.get("commands.economy.reset.success", "Set %player%'s balance to the default balance.")).replaceAll("%player%", args[1]));
                                 } else {
                                     sender.sendMessage(instance.colorize(instance.messages.get("common.target-never-played-before", "%player% hasn't joined the server before.")).replaceAll("%player%", args[1]));

@@ -116,3 +116,14 @@ changes:
 changes:
 - Added tab completion (Cheers Paul H)
 - Added check if Towny is installed before trying to access methods
+
+
+1.9.9-RELEASE
+notes:
+- File changes:
+ - messages.yml (Now version 4)
+changes:
+- Tried to fix issue where players have to rejoin after their first join otherwise 'they haven't joined before'
+- Added 'by' messages to all economy management commands. Requested by seblishus1 on Spigot
+ - '$3 was withdrawn by Notch'
+ - 'Your balance was reset by lokka30'

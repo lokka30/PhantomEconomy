@@ -4,10 +4,6 @@ import java.text.DecimalFormat;
 
 public class Utils {
 
-    public Utils() {
-
-    }
-
     public static String getRecommendedServerVersion() {
         return "1.15";
     }
@@ -17,7 +13,7 @@ public class Utils {
     }
 
     public static int getRecommendedMessagesVersion() {
-        return 3;
+        return 4;
     }
 
     public static int getRecommendedDataVersion() {
