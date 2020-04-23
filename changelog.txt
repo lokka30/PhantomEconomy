@@ -130,3 +130,7 @@ changes:
 
 1.9.10-RELEASE
 - Fixed baltop permission not being checked
+
+1.9.11-RELEASE
+- No file changes
+- Changed 'api-version' to '1.13' so 1.13.x and 1.14.x can load the plugin too
