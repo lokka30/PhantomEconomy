@@ -127,3 +127,6 @@ changes:
 - Added 'by' messages to all economy management commands. Requested by seblishus1 on Spigot
  - '$3 was withdrawn by Notch'
  - 'Your balance was reset by lokka30'
+
+1.9.10-RELEASE
+- Fixed baltop permission not being checked
