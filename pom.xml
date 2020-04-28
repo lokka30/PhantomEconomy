@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>PhantomEconomy</artifactId>
-    <version>1.9.11-RELEASE</version>
+    <version>1.9.12-RELEASE</version>
 
     <name>PhantomEconomy</name>
     <description>A lightweight and powerful economy plugin</description>

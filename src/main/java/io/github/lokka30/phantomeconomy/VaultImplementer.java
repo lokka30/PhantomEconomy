@@ -121,7 +121,7 @@ public class VaultImplementer implements Economy {
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        return offlinePlayer.hasPlayedBefore();
+        return offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline();
     }
 
     @Override
