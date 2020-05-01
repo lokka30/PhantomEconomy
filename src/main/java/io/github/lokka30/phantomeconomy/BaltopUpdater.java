@@ -23,7 +23,7 @@ public class BaltopUpdater {
         JSONParser parser = new JSONParser();
         final String path = "plugins/PhantomEconomy/";
         try {
-            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path + "data.json"));
+            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path + "old/data.json"));
             JSONObject players = (JSONObject) jsonObject.get("players");
             if (players == null) {
                 return;

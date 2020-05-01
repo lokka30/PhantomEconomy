@@ -214,7 +214,7 @@ public class VaultImplementer implements Economy {
                 instance.data.set("towny." + name + ".balance", total);
                 return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Funds withdrawn from account.");
             } else {
-                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PlayerAccount not found.");
             }
         } else {
             return withdrawPlayer(Bukkit.getOfflinePlayer(name), amount);
@@ -232,10 +232,10 @@ public class VaultImplementer implements Economy {
                 instance.balanceCache.put(offlinePlayer, total);
                 return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Funds withdrawn from account.");
             } else {
-                return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.FAILURE, "Account lacking funds.");
+                return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.FAILURE, "PlayerAccount lacking funds.");
             }
         } else {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PlayerAccount not found.");
         }
     }
 
@@ -265,7 +265,7 @@ public class VaultImplementer implements Economy {
                 instance.data.set("towny." + name + ".balance", total);
                 return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Funds deposited to account.");
             } else {
-                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PlayerAccount not found.");
             }
         } else {
             return depositPlayer(Bukkit.getOfflinePlayer(name), amount);
@@ -282,7 +282,7 @@ public class VaultImplementer implements Economy {
             instance.balanceCache.put(offlinePlayer, total);
             return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Funds deposited to account.");
         } else {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Account not found.");
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PlayerAccount not found.");
         }
     }
 

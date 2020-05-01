@@ -140,35 +140,35 @@ public class PhantomEconomy extends JavaPlugin {
         final String path = "plugins/PhantomEconomy/";
         settings = LightningBuilder
                 .fromFile(new File(path + "settings"))
-                .addInputStreamFromResource("settings.yml")
+                .addInputStreamFromResource("old/settings.yml")
                 .createYaml();
         messages = LightningBuilder
                 .fromFile(new File(path + "messages"))
-                .addInputStreamFromResource("messages.yml")
+                .addInputStreamFromResource("old/messages.yml")
                 .createYaml();
         data = LightningBuilder
                 .fromFile(new File(path + "data"))
-                .addInputStreamFromResource("data.json")
+                .addInputStreamFromResource("old/data.json")
                 .createJson();
 
         //Check if they exist
-        final File settingsFile = new File(path + "settings.yml");
-        final File messagesFile = new File(path + "messages.yml");
-        final File dataFile = new File(path + "data.json");
+        final File settingsFile = new File(path + "old/settings.yml");
+        final File messagesFile = new File(path + "old/messages.yml");
+        final File dataFile = new File(path + "old/data.json");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             log(LogLevel.INFO, "File &asettings.yml&7 doesn't exist. Creating it now.");
-            saveResource("settings.yml", false);
+            saveResource("old/settings.yml", false);
         }
 
         if (!(messagesFile.exists() && !messagesFile.isDirectory())) {
             log(LogLevel.INFO, "File &amessages.yml&7 doesn't exist. Creating it now.");
-            saveResource("messages.yml", false);
+            saveResource("old/messages.yml", false);
         }
 
         if (!(dataFile.exists() && !dataFile.isDirectory())) {
             log(LogLevel.INFO, "File &adata.json&7 doesn't exist. Creating it now.");
-            saveResource("data.json", false);
+            saveResource("old/data.json", false);
         }
 
         //Check their versions

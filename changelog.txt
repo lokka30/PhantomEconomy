@@ -137,3 +137,9 @@ changes:
 
 1.9.12-RELEASE:
 - Tried to fix 'player hasn't joined before' bug
+
+TODO: Any releases in between for versions 1.x.x?
+
+2.0.0-RELEASE:
+- TODO: NOT RELEASED YET
+- ...
