@@ -149,7 +149,7 @@ public class VaultImplementer implements Economy {
         if (instance.balanceCache.containsKey(offlinePlayer)) {
             return instance.balanceCache.get(offlinePlayer);
         } else {
-            return instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", 0.0D);
+            return instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", 0.00D);
         }
     }
 

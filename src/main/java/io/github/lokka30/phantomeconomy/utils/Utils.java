@@ -1,6 +1,5 @@
 package io.github.lokka30.phantomeconomy.utils;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class Utils {
@@ -22,15 +21,10 @@ public class Utils {
     }
 
     public static double round(double value) {
-        DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        return Double.parseDouble(decimalFormat.format(value));
+        return Math.round(value * 100.0) / 100.0;
     }
 
     public static String roundToString(double value) {
-        //Old Code:
-        //DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        //return decimalFormat.format(value);
-
         //New Code:
         //Credit to duffymo and daiscog on StackOverflow.
         NumberFormat formatter = NumberFormat.getCurrencyInstance();

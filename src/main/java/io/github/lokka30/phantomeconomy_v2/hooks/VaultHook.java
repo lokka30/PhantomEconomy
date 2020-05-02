@@ -2,9 +2,12 @@ package io.github.lokka30.phantomeconomy_v2.hooks;
 
 import com.palmergames.bukkit.towny.TownySettings;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
-import io.github.lokka30.phantomeconomy_v2.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -56,18 +59,33 @@ public class VaultHook extends AbstractEconomy {
     }
 
     @Override
-    public String format(double v) {
-        return economyManager.formatBalance(v);
+    public String format(double balance) {
+        try {
+            return economyManager.getVaultCurrency().formatFinalBalance(balance);
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return Double.toString(balance);
     }
 
     @Override
     public String currencyNamePlural() {
-        return instance.fileCache.SETTINGS_CURRENCY_PLURAL;
+        try {
+            return economyManager.getVaultCurrency().getPlural();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return "dollars";
     }
 
     @Override
     public String currencyNameSingular() {
-        return instance.fileCache.SETTINGS_CURRENCY_SINGULAR;
+        try {
+            return economyManager.getVaultCurrency().getSingular();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return "dollar";
     }
 
     @Override
@@ -99,15 +117,29 @@ public class VaultHook extends AbstractEconomy {
     @SuppressWarnings("deprecation")
     public double getBalance(String name) {
         if (isTowny(name)) {
-            return accountManager.getTownyAccount(name).getBalance();
+            try {
+                return accountManager.getTownyAccount(name).getBalance(economyManager.getVaultCurrency());
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         } else {
-            return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).getBalance();
+            try {
+                return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).getBalance(economyManager.getVaultCurrency());
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         }
+        return 0.00;
     }
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        return accountManager.getPlayerAccount(offlinePlayer).getBalance();
+        try {
+            return accountManager.getPlayerAccount(offlinePlayer).getBalance(economyManager.getVaultCurrency());
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return 0.00;
     }
 
     @Override
@@ -124,15 +156,29 @@ public class VaultHook extends AbstractEconomy {
     @SuppressWarnings("deprecation")
     public boolean has(String name, double amount) {
         if (isTowny(name)) {
-            return accountManager.getTownyAccount(name).has(amount);
+            try {
+                return accountManager.getTownyAccount(name).has(economyManager.getVaultCurrency(), amount);
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         } else {
-            return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).has(amount);
+            try {
+                return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).has(economyManager.getVaultCurrency(), amount);
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         }
+        return false;
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double amount) {
-        return accountManager.getPlayerAccount(offlinePlayer).has(amount);
+        try {
+            return accountManager.getPlayerAccount(offlinePlayer).has(economyManager.getVaultCurrency(), amount);
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -154,9 +200,17 @@ public class VaultHook extends AbstractEconomy {
 
         if (has(name, amount)) {
             if (isTowny(name)) {
-                accountManager.getTownyAccount(name).withdraw(amount);
+                try {
+                    accountManager.getTownyAccount(name).withdraw(economyManager.getVaultCurrency(), amount);
+                } catch (InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
             } else {
-                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).withdraw(amount);
+                try {
+                    accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).withdraw(economyManager.getVaultCurrency(), amount);
+                } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
             }
             return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Success");
         } else {
@@ -170,7 +224,11 @@ public class VaultHook extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't withdraw a negative amount.");
         }
 
-        accountManager.getPlayerAccount(offlinePlayer).withdraw(amount);
+        try {
+            accountManager.getPlayerAccount(offlinePlayer).withdraw(economyManager.getVaultCurrency(), amount);
+        } catch (NegativeAmountException | InvalidCurrencyException | OversizedWithdrawAmountException e) {
+            e.printStackTrace();
+        }
         return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Success");
     }
 
@@ -192,9 +250,17 @@ public class VaultHook extends AbstractEconomy {
         }
 
         if (isTowny(name)) {
-            accountManager.getTownyAccount(name).deposit(amount);
+            try {
+                accountManager.getTownyAccount(name).deposit(economyManager.getVaultCurrency(), amount);
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         } else {
-            accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(amount);
+            try {
+                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(economyManager.getVaultCurrency(), amount);
+            } catch (NegativeAmountException | InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         }
         return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Success");
     }
@@ -205,7 +271,11 @@ public class VaultHook extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't deposit a negative amount.");
         }
 
-        accountManager.getPlayerAccount(offlinePlayer).deposit(amount);
+        try {
+            accountManager.getPlayerAccount(offlinePlayer).deposit(economyManager.getVaultCurrency(), amount);
+        } catch (NegativeAmountException | InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
         return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Success");
     }
 
@@ -280,17 +350,22 @@ public class VaultHook extends AbstractEconomy {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean createPlayerAccount(String name) {
-        if (accountManager.hasTownyAccount(name)) {
-            return false;
-        } else {
-            try {
-                accountManager.getTownyAccount(name).createAccount();
-            } catch (AccountAlreadyExistsException e) {
-                instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount but the town already has an account. The developer should check if this is the case before doing so.");
-                e.printStackTrace();
+        if (isTowny(name)) {
+            if (accountManager.hasTownyAccount(name)) {
+                return false;
+            } else {
+                try {
+                    accountManager.getTownyAccount(name).createAccount();
+                } catch (AccountAlreadyExistsException e) {
+                    instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the town already has an account. The developer should check if this is the case before doing so.");
+                    e.printStackTrace();
+                }
+                return true;
             }
-            return true;
+        } else {
+            createPlayerAccount(Bukkit.getOfflinePlayer(name));
         }
     }
 
@@ -302,7 +377,7 @@ public class VaultHook extends AbstractEconomy {
             try {
                 accountManager.getPlayerAccount(offlinePlayer).createAccount();
             } catch (AccountAlreadyExistsException e) {
-                instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount but the player already has an account. The developer should check if this is the case before doing so.");
+                instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
                 e.printStackTrace();
             }
             return true;

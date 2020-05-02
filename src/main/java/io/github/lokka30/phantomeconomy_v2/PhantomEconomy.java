@@ -2,11 +2,12 @@ package io.github.lokka30.phantomeconomy_v2;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
-import io.github.lokka30.phantomeconomy_v2.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 import io.github.lokka30.phantomeconomy_v2.commands.*;
-import io.github.lokka30.phantomeconomy_v2.database.DatabaseManager;
+import io.github.lokka30.phantomeconomy_v2.databases.mysql.MySQLDatabase;
+import io.github.lokka30.phantomeconomy_v2.databases.sqlite.SQLiteDatabase;
 import io.github.lokka30.phantomeconomy_v2.listeners.JoinListener;
 import io.github.lokka30.phantomeconomy_v2.listeners.QuitListener;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
@@ -27,12 +28,13 @@ public class PhantomEconomy extends JavaPlugin {
     public FileCache fileCache;
     public AccountManager accountManager;
     public EconomyManager economyManager;
-    public DatabaseManager databaseManager;
     public FlatFile settingsYaml;
     public FlatFile messagesYaml;
     public FlatFile dataJson;
     public boolean isTownyCompatibilityEnabled;
     private PluginManager pluginManager;
+    private MySQLDatabase mysqlDatabase;
+    private SQLiteDatabase sqliteDatabase;
 
     @Override
     public void onLoad() {
@@ -132,8 +134,30 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void loadDatabase() {
         utils.log(LogLevel.INFO, "&8(&33/5&8) &7Loading database...");
-        databaseManager = new DatabaseManager(this);
-        //TODO connection
+        switch (fileCache.SETTINGS_DATABASE_TYPE.toLowerCase()) {
+            case "sqlite":
+                utils.log(LogLevel.INFO, "Using SQLite database");
+                if (mysqlDatabase != null) {
+                    mysqlDatabase = null;
+                }
+                sqliteDatabase = new SQLiteDatabase(this);
+                sqliteDatabase.load();
+                utils.log(LogLevel.INFO, "Loaded database");
+                break;
+            case "mysql":
+                utils.log(LogLevel.INFO, "Using MySQL database");
+                if (sqliteDatabase != null) {
+                    sqliteDatabase = null;
+                }
+                mysqlDatabase = new MySQLDatabase(this);
+                mysqlDatabase.updateSettings();
+                mysqlDatabase.startSQLConnection();
+                utils.log(LogLevel.INFO, "Started SQL connection");
+                break;
+            default:
+                utils.log(LogLevel.SEVERE, "Invalid database type in settings!");
+                break;
+        }
     }
 
     private void registerEvents() {

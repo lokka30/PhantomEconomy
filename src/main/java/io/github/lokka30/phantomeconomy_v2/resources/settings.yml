@@ -1,0 +1,77 @@
+# Configure how data is stored here.
+database:
+
+  # What database should be used?
+  # Valid types: 'SQLite', 'MySQL'
+  database-type: 'SQLite'
+
+  # Table to use?
+  table: 'phantomeconomy'
+
+  # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
+  mysql-settings:
+    host: 'localhost'
+    port: 3306
+    username: 'root'
+    password: 'password123'
+    database: 'minecraft'
+    ssl: 'true'
+
+
+# You can customise each currency here.
+currencies:
+
+  # This is the list of currencies which can be used on the server.
+  # Warning: Make sure you include a currency here!
+  enabled-currencies:
+    - 'default'
+
+
+  # When users are using /pay, /baltop, etc, and don't specify a specific currency to use, what will be used by default?
+  default-currency: 'default'
+
+  # If you are using Vault, you must specify a currency to use.
+  # Warning: If plugins are using Vault and you haven't set a valid currency, serious issues could occur with other plugins!
+  vault-currency: 'default'
+
+  # Here you can edit all of the enabled currencies.
+  # Warning: Make sure you put your currency in 'enabled-currencies' once you have made it!
+  # Warning: You shouldn't rename currencies! People's balances will not transfer, their balances will stick with the currency name previous to when it was changed.
+  currencies:
+
+    # The default currency.
+    default:
+
+      formatting:
+
+        # This is the format used when numbers are being formatted.
+        # e.g. trimming decimals - 2.22222 = 2.22
+        format-number: '0.00'
+
+        # The format when displaying as a human-readable balance.
+        # You can include %word% and it will add the singular/plural word customised below.
+        # e.g. '$%balance% %word%' = '$5 dollars' or '$1 dollar'
+        # Default: '$%balance'
+        format-final: '$%balance%'
+
+      # You can edit the words placeholder here if you are using it in the format above.
+      words:
+
+        # When the balance is $1, e.g. 1 dollar
+        # Default: 'dollar'
+        singular: 'dollar'
+
+        # When the balance is not $1, e.g. 5 dollars
+        # Default: 'dollars'
+        plural: 'dollars'
+
+# Other options not related to the economy
+other-options:
+
+  # Should PE check for updates on startup?
+  # Disable if you check your Spigot alerts regularly.
+  use-update-checker: true
+
+  # Only change this if you know what you are doing!
+  # It is recommended to backup your old settings.yml file and edit a newly generated one instead.
+  file-version: 1

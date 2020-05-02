@@ -1,5 +1,6 @@
-package io.github.lokka30.phantomeconomy_v2.accounts;
+package io.github.lokka30.phantomeconomy_v2.api.accounts;
 
+import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
 
 public class TownyAccount {
@@ -7,7 +8,6 @@ public class TownyAccount {
     private AccountManager accountManager;
 
     private String name;
-    private double balance;
 
     public TownyAccount(AccountManager accountManager, String name) {
         this.accountManager = accountManager;
@@ -18,36 +18,36 @@ public class TownyAccount {
         return name;
     }
 
-    public double getBalance() {
+    public double getBalance(Currency currency) {
+        //TODO
+        return 0.0;
+    }
+
+    public void setBalance(Currency currency, double amount) {
         //TODO
     }
 
-    public void setBalance(double amount) {
-        this.balance = amount;
+    public void deposit(Currency currency, double amount) {
         //TODO
     }
 
-    public void deposit(double amount) {
+    public void withdraw(Currency currency, double amount) {
         //TODO
     }
 
-    public void withdraw(double amount) {
-        //TODO
-    }
-
-    public boolean has(double amount) {
-        return balance >= amount;
+    public boolean has(Currency currency, double amount) {
+        return getBalance(currency) >= amount;
     }
 
     public boolean hasAccount() {
         //TODO
+        return false;
     }
 
     public void createAccount() throws AccountAlreadyExistsException {
         if (hasAccount()) {
             throw new AccountAlreadyExistsException("Tried to create account for Towny string '" + name + "' but it already has an account.");
         } else {
-            setBalance(accountManager.getInstance().fileCache.SETTINGS_DEFAULT_MONEY);
             //TODO
         }
     }

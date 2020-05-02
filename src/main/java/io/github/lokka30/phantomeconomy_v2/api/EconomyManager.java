@@ -1,32 +1,58 @@
 package io.github.lokka30.phantomeconomy_v2.api;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
-
-import java.text.DecimalFormat;
+import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
 public class EconomyManager {
 
     private PhantomEconomy instance;
-    private DecimalFormat decimalFormat;
 
     public EconomyManager(final PhantomEconomy instance) {
         this.instance = instance;
-        this.decimalFormat = new DecimalFormat(instance.fileCache.SETTINGS_DECIMAL_FORMAT);
     }
 
-    public String getSingularOrPlural(double balance) {
-        if (balance == 1.00) {
-            return instance.fileCache.SETTINGS_CURRENCY_SINGULAR;
+    // Other classes can get the instance if they need it
+    public PhantomEconomy getInstance() {
+        return instance;
+    }
+
+    // Returns new Currency class form the currency's name
+    public Currency getCurrency(String name) throws InvalidCurrencyException {
+        if (isCurrency(name)) {
+            return new Currency(this, name);
         } else {
-            return instance.fileCache.SETTINGS_CURRENCY_PLURAL;
+            throw new InvalidCurrencyException(name + " is not a valid currency");
         }
     }
 
-    public String formatBalance(final double balance) {
-        final String formattedBalance = decimalFormat.format(balance);
-        return instance.fileCache.SETTINGS_CURRENCY_FORMAT
-                .replaceAll("%money%", formattedBalance
-                        .replaceAll("%word%", getSingularOrPlural(balance)));
+    // Check if the currency 'name' is enabled
+    public boolean isCurrency(String name) {
+        return instance.fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES.contains(name);
+    }
+
+    // Returns the default currency
+    @SuppressWarnings("unused")
+    public Currency getDefaultCurrency() throws InvalidCurrencyException {
+        String defaultCurrencyName = instance.fileCache.SETTINGS_DEFAULT_CURRENCY;
+        if (isCurrency(defaultCurrencyName)) {
+            return getCurrency(defaultCurrencyName);
+        } else {
+            instance.utils.log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + defaultCurrencyName + "' as was specified as the default currency. Check the default currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as major issues could occur.");
+            return null;
+        }
+    }
+
+    // Returns the currency that Vault is used for
+    public Currency getVaultCurrency() throws InvalidCurrencyException {
+        String vaultCurrencyName = instance.fileCache.SETTINGS_VAULT_CURRENCY;
+        if (isCurrency(vaultCurrencyName)) {
+            return getCurrency(vaultCurrencyName);
+        } else {
+            instance.utils.log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + vaultCurrencyName + "' as was specified as the Vault currency. Check the vault currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as it is likely to cause major issues with the plugins trying to use the Vault API.");
+            return null;
+        }
     }
 
 

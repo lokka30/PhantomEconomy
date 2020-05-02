@@ -138,6 +138,9 @@ changes:
 1.9.12-RELEASE:
 - Tried to fix 'player hasn't joined before' bug
 
+1.9.13-RELEASE:
+- Tried to fix 'comma NFException' bug
+
 TODO: Any releases in between for versions 1.x.x?
 
 2.0.0-RELEASE:

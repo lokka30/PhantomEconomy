@@ -1,4 +1,4 @@
-package io.github.lokka30.phantomeconomy_v2.accounts;
+package io.github.lokka30.phantomeconomy_v2.api.accounts;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import org.bukkit.OfflinePlayer;
@@ -15,17 +15,9 @@ public class AccountManager {
         this.instance = instance;
     }
 
-    //This is here so the 'xAccount' classes can get the main class if required.
+    //This is here so the 'Account' classes can get the main class if required.
     public PhantomEconomy getInstance() {
         return instance;
-    }
-
-    public void updateAccount(final PlayerAccount playerAccount) {
-        //TODO
-    }
-
-    public void updateAccount(final TownyAccount townyAccount) {
-        //TODO
     }
 
     public PlayerAccount getPlayerAccount(final OfflinePlayer offlinePlayer) {
@@ -38,9 +30,11 @@ public class AccountManager {
 
     public boolean hasTownyAccount(final String name) {
         //TODO
+        return false;
     }
 
     public boolean hasPlayerAccount(final OfflinePlayer offlinePlayer) {
         //TODO
+        return false;
     }
 }
