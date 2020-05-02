@@ -366,6 +366,7 @@ public class VaultHook extends AbstractEconomy {
             }
         } else {
             createPlayerAccount(Bukkit.getOfflinePlayer(name));
+            return true;
         }
     }
 

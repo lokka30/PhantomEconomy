@@ -5,7 +5,7 @@ database:
   # Valid types: 'SQLite', 'MySQL'
   database-type: 'SQLite'
 
-  # Table to use?
+  # Table to use in the database
   table: 'phantomeconomy'
 
   # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
@@ -15,7 +15,7 @@ database:
     username: 'root'
     password: 'password123'
     database: 'minecraft'
-    ssl: 'true'
+    ssl: 'true' #Keep it in String format ('true'), not Boolean format (true).
 
 
 # You can customise each currency here.

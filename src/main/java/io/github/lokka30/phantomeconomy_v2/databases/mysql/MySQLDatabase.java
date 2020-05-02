@@ -1,15 +1,14 @@
 package io.github.lokka30.phantomeconomy_v2.databases.mysql;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.PlayerAccount;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.TownyAccount;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
-import org.bukkit.OfflinePlayer;
 
 import java.sql.*;
 
 public class MySQLDatabase {
-
-    //todo add towny support
 
     public Connection connection;
     public String username;
@@ -46,7 +45,7 @@ public class MySQLDatabase {
             url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + use_ssl;
             connection = DriverManager.getConnection(url, username, password);
             try {
-                PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS balance ( currency VARCHAR(32) NOT NULL, uuid VARCHAR(32) NOT NULL, amount DOUBLE(32) NOT NULL, UNIQUE (uuid));");
+                PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + instance.fileCache.SETTINGS_DATABASE_TABLE + " (accounttype VARCHAR(32) NOT NULL, currency VARCHAR(32) NOT NULL, identifier VARCHAR(32) NOT NULL, balance DOUBLE(48) NOT NULL, UNIQUE (identifier));");
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
             } catch (SQLException exception) {
@@ -74,19 +73,20 @@ public class MySQLDatabase {
         }
     }
 
-    public double getBalance(Currency currency, OfflinePlayer offlinePlayer) {
+    public double getBalance(Currency currency, PlayerAccount playerAccount) {
         PreparedStatement preparedStatement = null;
         double balance = 0.00;
         try {
-            preparedStatement = connection.prepareStatement("SELECT amount FROM balance WHERE currency = ?,uuid = ?");
-            preparedStatement.setString(1, currency.getName());
-            preparedStatement.setString(2, offlinePlayer.getUniqueId().toString());
+            preparedStatement = connection.prepareStatement("SELECT balance FROM " + instance.fileCache.SETTINGS_DATABASE_TABLE + " WHERE accounttype = ?,currency = ?,identifier = ?;");
+            preparedStatement.setString(1, "PlayerAccount");
+            preparedStatement.setString(2, currency.getName());
+            preparedStatement.setString(3, playerAccount.getUUIDStr());
             ResultSet result = preparedStatement.executeQuery();
             if (result == null) {
-                setBalance(currency, offlinePlayer, 0.00D);
+                setBalance(currency, playerAccount, 0.00D); //TODO DEFAULT BALANCE INSTEAD OF 0.00D
             } else {
                 while (result.next()) {
-                    balance = result.getDouble("amount");
+                    balance = result.getDouble("balance");
                 }
             }
         } catch (SQLException e) {
@@ -102,22 +102,87 @@ public class MySQLDatabase {
         return balance;
     }
 
-    public void setBalance(Currency currency, OfflinePlayer offlinePlayer, double balance) {
+    public void setBalance(Currency currency, PlayerAccount playerAccount, double balance) {
         PreparedStatement preparedStatement1 = null;
         PreparedStatement preparedStatement2 = null;
         try {
-            String query = "UPDATE balance SET amount = ? WHERE currency = ?,uuid = ?;";
+            String query = "UPDATE " + instance.fileCache.SETTINGS_DATABASE_TABLE + " SET balance = ? WHERE accounttype = ?,currency = ?,identifier = ?;";
             preparedStatement1 = connection.prepareStatement(query);
             preparedStatement1.setDouble(1, balance);
-            preparedStatement1.setString(2, currency.getName());
-            preparedStatement1.setString(3, offlinePlayer.getUniqueId().toString());
+            preparedStatement1.setString(2, "PlayerAccount");
+            preparedStatement1.setString(3, currency.getName());
+            preparedStatement1.setString(4, playerAccount.getUUIDStr());
             int changed = preparedStatement1.executeUpdate();
             if (changed == 0) {
-                String query2 = "INSERT INTO balance (currency, uuid, amount) VALUES (?, ?, ?);";
+                String query2 = "INSERT INTO " + instance.fileCache.SETTINGS_DATABASE_TABLE + " (accounttype, currency, identifier, amount) VALUES (?, ?, ?, ?);";
                 preparedStatement2 = connection.prepareStatement(query2);
-                preparedStatement2.setString(1, currency.getName());
-                preparedStatement2.setString(2, offlinePlayer.getUniqueId().toString());
-                preparedStatement2.setDouble(3, balance);
+                preparedStatement2.setString(1, "PlayerAccount");
+                preparedStatement2.setString(2, currency.getName());
+                preparedStatement2.setString(3, playerAccount.getUUIDStr());
+                preparedStatement2.setDouble(4, balance);
+                preparedStatement2.executeUpdate();
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement1 != null)
+                    preparedStatement1.close();
+                if (preparedStatement2 != null)
+                    preparedStatement2.close();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    public double getBalance(Currency currency, TownyAccount townyAccount) {
+        PreparedStatement preparedStatement = null;
+        double balance = 0.00;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT balance FROM " + instance.fileCache.SETTINGS_DATABASE_TABLE + " WHERE accounttype = ?,currency = ?,identifier = ?;");
+            preparedStatement.setString(1, "TownyAccount");
+            preparedStatement.setString(2, currency.getName());
+            preparedStatement.setString(3, townyAccount.getName());
+            ResultSet result = preparedStatement.executeQuery();
+            if (result == null) {
+                setBalance(currency, townyAccount, 0.00D); //TODO DEFAULT BALANCE INSTEAD OF 0.00D
+            } else {
+                while (result.next()) {
+                    balance = result.getDouble("balance");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null)
+                    preparedStatement.close();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+        return balance;
+    }
+
+    public void setBalance(Currency currency, TownyAccount townyAccount, double balance) {
+        PreparedStatement preparedStatement1 = null;
+        PreparedStatement preparedStatement2 = null;
+        try {
+            String query = "UPDATE " + instance.fileCache.SETTINGS_DATABASE_TABLE + " SET balance = ? WHERE accounttype = ?,currency = ?,identifier = ?;";
+            preparedStatement1 = connection.prepareStatement(query);
+            preparedStatement1.setDouble(1, balance);
+            preparedStatement1.setString(2, "TownyAccount");
+            preparedStatement1.setString(3, currency.getName());
+            preparedStatement1.setString(4, townyAccount.getName());
+            int changed = preparedStatement1.executeUpdate();
+            if (changed == 0) {
+                String query2 = "INSERT INTO " + instance.fileCache.SETTINGS_DATABASE_TABLE + " (accounttype, currency, identifier, amount) VALUES (?, ?, ?, ?);";
+                preparedStatement2 = connection.prepareStatement(query2);
+                preparedStatement2.setString(1, "TownyAccount");
+                preparedStatement2.setString(2, currency.getName());
+                preparedStatement2.setString(3, townyAccount.getName());
+                preparedStatement2.setDouble(4, balance);
                 preparedStatement2.executeUpdate();
             }
         } catch (SQLException exception) {

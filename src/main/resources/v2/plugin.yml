@@ -1,0 +1,4 @@
+name: PhantomEconomy
+version: ${project.version}
+main: io.github.lokka30.phantomeconomy.PhantomEconomy
+#TODO

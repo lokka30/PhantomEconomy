@@ -144,5 +144,5 @@ changes:
 TODO: Any releases in between for versions 1.x.x?
 
 2.0.0-RELEASE:
-- TODO: NOT RELEASED YET
-- ...
+- 3/05/2020
+ - Added Towny support to database, fixed incorrect database commands

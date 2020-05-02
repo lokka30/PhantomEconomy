@@ -85,35 +85,35 @@ public class PhantomEconomy extends JavaPlugin {
 
         settingsYaml = LightningBuilder
                 .fromFile(new File(getDataFolder() + "settings"))
-                .addInputStreamFromResource("old/settings.yml")
+                .addInputStreamFromResource("settings.yml")
                 .createYaml();
         messagesYaml = LightningBuilder
                 .fromFile(new File(getDataFolder() + "messages"))
-                .addInputStreamFromResource("old/messages.yml")
+                .addInputStreamFromResource("messages.yml")
                 .createYaml();
         dataJson = LightningBuilder
                 .fromFile(new File(getDataFolder() + "data"))
-                .addInputStreamFromResource("old/data.json")
+                .addInputStreamFromResource("data.json")
                 .createJson();
 
         //Check if they exist
-        final File settingsFile = new File(getDataFolder() + "old/settings.yml");
-        final File messagesFile = new File(getDataFolder() + "old/messages.yml");
-        final File dataFile = new File(getDataFolder() + "old/data.json");
+        final File settingsFile = new File(getDataFolder() + "settings.yml");
+        final File messagesFile = new File(getDataFolder() + "messages.yml");
+        final File dataFile = new File(getDataFolder() + "data.json");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             utils.log(LogLevel.INFO, "File '&bsettings.yml&7' doesn't exist. Creating it now.");
-            saveResource("old/settings.yml", false);
+            saveResource("settings.yml", false);
         }
 
         if (!(messagesFile.exists() && !messagesFile.isDirectory())) {
             utils.log(LogLevel.INFO, "File '&bmessages.yml&7' doesn't exist. Creating it now.");
-            saveResource("old/messages.yml", false);
+            saveResource("messages.yml", false);
         }
 
         if (!(dataFile.exists() && !dataFile.isDirectory())) {
             utils.log(LogLevel.INFO, "File '&bdata.json&7' doesn't exist. Creating it now.");
-            saveResource("old/data.json", false);
+            saveResource("data.json", false);
         }
 
         //Check their versions

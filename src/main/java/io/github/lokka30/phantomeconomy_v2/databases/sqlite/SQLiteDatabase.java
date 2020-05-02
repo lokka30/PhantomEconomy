@@ -12,8 +12,6 @@ import java.sql.Statement;
 
 public class SQLiteDatabase extends Database {
 
-    //todo add towny support
-
     Connection connection;
     private PhantomEconomy instance;
 
@@ -55,7 +53,7 @@ public class SQLiteDatabase extends Database {
         connection = getSQLConnection();
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.fileCache.SETTINGS_DATABASE_TABLE + " (`currency` varchar(32) NOT NULL,`uuid` varchar(32) NOT NULL,`balance` int(16) NOT NULL,PRIMARY KEY (`currency`));");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.fileCache.SETTINGS_DATABASE_TABLE + " (`accounttype` varchar(32) NOT NULL,`currency` varchar(32) NOT NULL,`identifier` varchar(32) NOT NULL,`balance` double(48) NOT NULL,PRIMARY KEY (`accounttype`));");
             statement.close();
         } catch (SQLException exception) {
             exception.printStackTrace();
