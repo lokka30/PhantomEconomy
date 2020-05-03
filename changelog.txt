@@ -136,10 +136,10 @@ changes:
 - Changed 'api-version' to '1.13' so 1.13.x and 1.14.x can load the plugin too
 
 1.9.12-RELEASE:
-- Tried to fix 'player hasn't joined before' bug
+- Fixed 'player hasn't joined before' bug
 
 1.9.13-RELEASE:
-- Tried to fix 'comma NFException' bug
+- Fixed 'comma NFException' bug
 
 TODO: Any releases in between for versions 1.x.x?
 

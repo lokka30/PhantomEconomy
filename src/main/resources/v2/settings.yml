@@ -3,19 +3,34 @@ database:
 
   # What database should be used?
   # Valid types: 'SQLite', 'MySQL'
+  # Expected: [String], Default: ['SQLite']
   database-type: 'SQLite'
 
   # Table to use in the database
+  # Expected: [String], Default: ['phantomeconomy']
   table: 'phantomeconomy'
 
   # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
   mysql-settings:
+
+    # Expected: [String], Default: ['localhost']
     host: 'localhost'
+
+    # Expected: [Integer], Default: [3306]
     port: 3306
+
+    # Expected: [String], Default: ['root']
     username: 'root'
+
+    # Expected: [String], Default: ['password123']
     password: 'password123'
+
+    # Expected: [String], Default: ['minecraft']
     database: 'minecraft'
-    ssl: 'true' #Keep it in String format ('true'), not Boolean format (true).
+
+    # Expected: [String], Default: ['true']
+    # Warning: Remember to keep this as a String, not a Boolean!
+    ssl: 'true'
 
 
 # You can customise each currency here.
@@ -23,15 +38,18 @@ currencies:
 
   # This is the list of currencies which can be used on the server.
   # Warning: Make sure you include a currency here!
+  # Expected: [List<String>], Default: ['default']
   enabled-currencies:
     - 'default'
 
 
   # When users are using /pay, /baltop, etc, and don't specify a specific currency to use, what will be used by default?
+  # Expected: [String], Default: ['default']
   default-currency: 'default'
 
   # If you are using Vault, you must specify a currency to use.
   # Warning: If plugins are using Vault and you haven't set a valid currency, serious issues could occur with other plugins!
+  # Expected: [String], Default: ['default']
   vault-currency: 'default'
 
   # Here you can edit all of the enabled currencies.
@@ -42,27 +60,33 @@ currencies:
     # The default currency.
     default:
 
+      # Users will be given this amount of money when they use the currency for the first time
+      # e.g. give $50 to players so they can get started
+      # Expected: [Double], Default: [50.00]
+      default-balance: 50.00
+
       formatting:
 
         # This is the format used when numbers are being formatted.
         # e.g. trimming decimals - 2.22222 = 2.22
+        # Expected: [String], Default: ['0.00']
         format-number: '0.00'
 
         # The format when displaying as a human-readable balance.
         # You can include %word% and it will add the singular/plural word customised below.
         # e.g. '$%balance% %word%' = '$5 dollars' or '$1 dollar'
-        # Default: '$%balance'
+        # Expected: [String], Default: ['$%balance']
         format-final: '$%balance%'
 
       # You can edit the words placeholder here if you are using it in the format above.
       words:
 
         # When the balance is $1, e.g. 1 dollar
-        # Default: 'dollar'
+        # Expected: [String], Default: ['dollar']
         singular: 'dollar'
 
         # When the balance is not $1, e.g. 5 dollars
-        # Default: 'dollars'
+        # Expected: [String], Default: ['dollars']
         plural: 'dollars'
 
 # Other options not related to the economy
@@ -70,8 +94,10 @@ other-options:
 
   # Should PE check for updates on startup?
   # Disable if you check your Spigot alerts regularly.
+  # Expected: [Boolean], Default: [true]
   use-update-checker: true
 
   # Only change this if you know what you are doing!
   # It is recommended to backup your old settings.yml file and edit a newly generated one instead.
+  # Expected: [Integer]
   file-version: 1
