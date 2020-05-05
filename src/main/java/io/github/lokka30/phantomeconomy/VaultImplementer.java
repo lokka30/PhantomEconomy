@@ -138,7 +138,7 @@ public class VaultImplementer implements Economy {
     @SuppressWarnings("deprecation")
     public double getBalance(String name) {
         if (isTowny(name)) {
-            return instance.data.get("towny." + name + ".balance", 0.00D);
+            return instance.data.getOrSetDefault("towny." + name + ".balance", 0.00D);
         } else {
             return getBalance(Bukkit.getOfflinePlayer(name));
         }
@@ -149,6 +149,7 @@ public class VaultImplementer implements Economy {
         if (!instance.balanceCache.containsKey(offlinePlayer)) {
             instance.balanceCache.put(offlinePlayer, instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", instance.getDefaultBalance()));
         }
+
         return instance.balanceCache.get(offlinePlayer);
     }
 

@@ -145,8 +145,10 @@ changes:
 - Fix | Fixed an issue where new players didn't get the default balance deposited
 - Improvement | Stopped caching players' balances unless they are actually requested
 
-TODO: Any releases in between for versions 1.x.x?
+1.9.15-RELEASE:
+- Attempted Fix | Tried to fix an issue where players would randomly lose their balance.
+- Improvement | Only run 'createPlayerAccount' if the player hasn't joined the server before
+- Revert improvement 'stopped caching balances unless requested'
 
 2.0.0-RELEASE:
-- 3/05/2020
- - Added Towny support to database, fixed incorrect database commands
+- ...

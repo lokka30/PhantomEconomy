@@ -18,6 +18,12 @@ public class JoinListener implements Listener {
     public void onJoin(final PlayerJoinEvent e) {
         final Player player = e.getPlayer();
 
-        instance.provider.createPlayerAccount(player);
+        if (!instance.provider.hasAccount(player)) {
+            instance.provider.createPlayerAccount(player);
+        }
+
+        if (!instance.balanceCache.containsKey(player)) {
+            instance.balanceCache.put(player, instance.data.get("players." + player.getUniqueId().toString() + ".balance", instance.getDefaultBalance()));
+        }
     }
 }
