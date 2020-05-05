@@ -146,11 +146,10 @@ public class VaultImplementer implements Economy {
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        if (instance.balanceCache.containsKey(offlinePlayer)) {
-            return instance.balanceCache.get(offlinePlayer);
-        } else {
-            return instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", 0.00D);
+        if (!instance.balanceCache.containsKey(offlinePlayer)) {
+            instance.balanceCache.put(offlinePlayer, instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", instance.getDefaultBalance()));
         }
+        return instance.balanceCache.get(offlinePlayer);
     }
 
     @Override

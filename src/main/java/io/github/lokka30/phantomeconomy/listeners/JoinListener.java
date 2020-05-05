@@ -19,6 +19,5 @@ public class JoinListener implements Listener {
         final Player player = e.getPlayer();
 
         instance.provider.createPlayerAccount(player);
-        instance.balanceCache.put(player, instance.data.get("players." + player.getUniqueId().toString() + ".balance", 0.00D));
     }
 }

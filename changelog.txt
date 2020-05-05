@@ -141,6 +141,10 @@ changes:
 1.9.13-RELEASE:
 - Fixed 'comma NFException' bug
 
+1.9.14-RELEASE:
+- Fix | Fixed an issue where new players didn't get the default balance deposited
+- Improvement | Stopped caching players' balances unless they are actually requested
+
 TODO: Any releases in between for versions 1.x.x?
 
 2.0.0-RELEASE:
