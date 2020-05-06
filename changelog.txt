@@ -150,5 +150,10 @@ changes:
 - Improvement | Only run 'createPlayerAccount' if the player hasn't joined the server before
 - Revert improvement 'stopped caching balances unless requested'
 
+1.9.16-RELEASE:
+- Added | '/phantomeconomy backup' command, it copies your current settings, messages and data file to a 'backup' folder. (it was added in the last version, I forgot to add it into the changelog)
+- Fixed | '/phantomeconomy backup' now checks if you have the permission 'phantomeconomy.backup'
+- Fixed | '/phantomeconomy backup' not saving 'messages.yml' file
+
 2.0.0-RELEASE:
 - ...

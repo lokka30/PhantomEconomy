@@ -29,12 +29,17 @@ public class PhantomEconomyCommand implements CommandExecutor {
                 sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7To backup the data file, use &a/" + label + " backup&7."));
             }
         } else if (args.length == 1 && args[0].equalsIgnoreCase("backup")) {
-            sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Started backup ..."));
+            if (sender.hasPermission("phantomeconomy.backup")) {
+                sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Started backup ..."));
 
-            backupFile("settings.yml");
-            backupFile("data.json");
+                backupFile("settings.yml");
+                backupFile("messages.yml");
+                backupFile("data.json");
 
-            sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7... Backup complete successfuly."));
+                sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7... Backup complete successfuly."));
+            } else {
+                sender.sendMessage(instance.colorize(instance.messages.get("common.no-permission", "No permission")));
+            }
         } else {
             sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Usage: &a/" + label + " [backup]"));
         }
