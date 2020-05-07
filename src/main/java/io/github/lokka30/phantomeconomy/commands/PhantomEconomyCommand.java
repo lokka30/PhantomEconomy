@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PhantomEconomyCommand implements CommandExecutor {
 
@@ -49,20 +51,43 @@ public class PhantomEconomyCommand implements CommandExecutor {
         final String fullFileName = fileName + "." + fileType;
 
         try {
-            final String backupsFolderPath = instance.getDataFolder() + File.separator + "backups" + File.separator + System.currentTimeMillis();
-            final String sourceFilePath = instance.getDataFolder() + File.separator + fullFileName;
-            final String targetFilePath = backupsFolderPath + File.separator + fullFileName;
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+            LocalDateTime now = LocalDateTime.now();
 
-            File backupsFolder = new File(backupsFolderPath);
+            final String backupFolderPath = instance.getDataFolder() + File.separator + "backups";
+            final String finalBackupFolderPath = backupFolderPath + File.separator + dtf.format(now);
+            final String sourceFilePath = instance.getDataFolder() + File.separator + fullFileName;
+            final String targetFilePath = finalBackupFolderPath + File.separator + fullFileName;
+
+            File backupsFolder = new File(backupFolderPath);
+            File finalBackupsFolder = new File(finalBackupFolderPath);
             File source = new File(sourceFilePath);
             File target = new File(targetFilePath);
 
-            if (!backupsFolder.isDirectory() && backupsFolder.mkdir()) {
-                instance.log(LogLevel.INFO, "'&bbackups&7' folder didn't exist, created it now.");
+            if (!backupsFolder.exists() && !backupsFolder.isDirectory()) {
+                instance.log(LogLevel.INFO, "'&b" + backupFolderPath + "&7' folder didn't exist, created it now.");
+                if (backupsFolder.mkdir()) {
+                    instance.log(LogLevel.INFO, "Folder created successfuly.");
+                } else {
+                    instance.log(LogLevel.WARNING, "Unable to create folder, cancelling backup of the file.");
+                    return;
+                }
+
+            }
+
+            if (!finalBackupsFolder.exists() && !finalBackupsFolder.isDirectory()) {
+                instance.log(LogLevel.INFO, "'&b" + finalBackupFolderPath + "&7' folder didn't exist, created it now.");
+                if (finalBackupsFolder.mkdir()) {
+                    instance.log(LogLevel.INFO, "Folder created successfuly.");
+                } else {
+                    instance.log(LogLevel.WARNING, "Unable to create folder, cancelling backup of the file.");
+                    return;
+                }
+
             }
 
             if (!source.exists()) {
-                instance.log(LogLevel.INFO, "File '&b" + fullFileName + "&7' didn't exist, created it now.");
+                instance.log(LogLevel.INFO, "File '&b" + fullFileName + "&7' didn't exist, creating it now...");
 
                 if (source.createNewFile()) {
                     instance.log(LogLevel.INFO, "File '&b" + fullFileName + "&7' created successfuly.");
