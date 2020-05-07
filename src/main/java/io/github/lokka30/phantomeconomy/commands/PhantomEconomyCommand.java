@@ -46,42 +46,39 @@ public class PhantomEconomyCommand implements CommandExecutor {
     }
 
     private void backupFile(String fileName, String fileType) {
+        final String fullFileName = fileName + "." + fileType;
 
         try {
-            File backupsFolder = new File(instance.getDataFolder(), File.separator + "backups");
-            File source = new File(instance.getDataFolder() + File.separator + fileName + "." + fileType);
-            File target = new File(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis() + "." + fileType));
+            final String backupsFolderPath = instance.getDataFolder() + File.separator + "backups" + File.separator + System.currentTimeMillis();
+            final String sourceFilePath = instance.getDataFolder() + File.separator + fullFileName;
+            final String targetFilePath = backupsFolderPath + File.separator + fullFileName;
+
+            File backupsFolder = new File(backupsFolderPath);
+            File source = new File(sourceFilePath);
+            File target = new File(targetFilePath);
 
             if (!backupsFolder.isDirectory() && backupsFolder.mkdir()) {
                 instance.log(LogLevel.INFO, "'&bbackups&7' folder didn't exist, created it now.");
             }
 
             if (!source.exists()) {
-                instance.log(LogLevel.INFO, "File '&b" + source.getName() + "&7' didn't exist, created it now.");
+                instance.log(LogLevel.INFO, "File '&b" + fullFileName + "&7' didn't exist, created it now.");
 
                 if (source.createNewFile()) {
-                    instance.log(LogLevel.INFO, "File created successfuly.");
+                    instance.log(LogLevel.INFO, "File '&b" + fullFileName + "&7' created successfuly.");
                 } else {
-                    instance.log(LogLevel.WARNING, "Unable to create file, cancelling backup of the file.");
+                    instance.log(LogLevel.WARNING, "Unable to create file '&b" + fullFileName + "&7', cancelling backup of the file.");
                     return;
                 }
             }
 
-            if (!target.exists()) {
-                instance.log(LogLevel.INFO, "File '&b" + target.getName() + "&7' didn't exist, created it now.");
+            instance.log(LogLevel.INFO, "Creating backup of file '&b" + fullFileName + "&7'...");
 
-                if (target.createNewFile()) {
-                    instance.log(LogLevel.INFO, "File created successfuly.");
-                } else {
-                    instance.log(LogLevel.WARNING, "Unable to create file, cancelling backup of the file.");
-                    return;
-                }
-            }
-
-            instance.log(LogLevel.INFO, "Creating backup of file '&b" + source.getName() + "&7'...");
             Files.copy(source.toPath(), target.toPath());
+
+            instance.log(LogLevel.INFO, "Backup of file '&b" + fullFileName + "&7'complete.");
         } catch (IOException exception) {
-            instance.log(LogLevel.SEVERE, "IOException was thrown whilst attempting to backup file '&b" + fileName + "." + fileType + "&7', stack trace:");
+            instance.log(LogLevel.SEVERE, "IOException was thrown whilst attempting to backup file '&b" + fullFileName + "&7', stack trace:");
             exception.printStackTrace();
         }
     }
