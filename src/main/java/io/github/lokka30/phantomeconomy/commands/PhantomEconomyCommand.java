@@ -31,9 +31,9 @@ public class PhantomEconomyCommand implements CommandExecutor {
             if (sender.hasPermission("phantomeconomy.backup")) {
                 sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Started backup ..."));
 
-                backupFile("settings.yml");
-                backupFile("messages.yml");
-                backupFile("data.json");
+                backupFile("settings", "yml");
+                backupFile("messages", "yml");
+                backupFile("data", "json");
 
                 sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7... Backup complete successfuly."));
             } else {
@@ -45,28 +45,31 @@ public class PhantomEconomyCommand implements CommandExecutor {
         return true;
     }
 
-    private void backupFile(String fileName) {
+    private void backupFile(String fileName, String fileType) {
 
         try {
             File backupsFolder = new File(instance.getDataFolder(), File.separator + "backups");
-            File source = new File(instance.getDataFolder() + File.separator + fileName);
-            File target = new File(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis()));
+            File source = new File(instance.getDataFolder() + File.separator + fileName + "." + fileType);
+            File target = new File(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis() + "." + fileType));
 
             if (!backupsFolder.isDirectory() && backupsFolder.mkdir()) {
                 instance.log(LogLevel.INFO, "'&bbackups&7' folder didn't exist, created it now.");
             }
 
-            if (!source.exists() && source.createNewFile()) {
+            if (!source.exists()) {
+                source.createNewFile();
                 instance.log(LogLevel.INFO, "File '&b" + source.getName() + "&7' didn't exist, created it now.");
             }
 
-            if (!target.exists() && target.createNewFile()) {
+            if (!target.exists()) {
+                target.createNewFile();
                 instance.log(LogLevel.INFO, "File '&b" + target.getName() + "&7' didn't exist, created it now.");
             }
 
+            instance.log(LogLevel.INFO, "Creating backup of file '&b" + source.getName() + "&7'...");
             Files.copy(source.toPath(), target.toPath());
         } catch (IOException exception) {
-            instance.log(LogLevel.SEVERE, "IOException was thrown whilst attempting to backup file '&b" + fileName + "&7', stack trace:");
+            instance.log(LogLevel.SEVERE, "IOException was thrown whilst attempting to backup file '&b" + fileName + "." + fileType + "&7', stack trace:");
             exception.printStackTrace();
         }
     }
