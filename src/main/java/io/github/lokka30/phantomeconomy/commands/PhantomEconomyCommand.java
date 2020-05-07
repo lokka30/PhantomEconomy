@@ -57,13 +57,25 @@ public class PhantomEconomyCommand implements CommandExecutor {
             }
 
             if (!source.exists()) {
-                source.createNewFile();
                 instance.log(LogLevel.INFO, "File '&b" + source.getName() + "&7' didn't exist, created it now.");
+
+                if (source.createNewFile()) {
+                    instance.log(LogLevel.INFO, "File created successfuly.");
+                } else {
+                    instance.log(LogLevel.WARNING, "Unable to create file, cancelling backup of the file.");
+                    return;
+                }
             }
 
             if (!target.exists()) {
-                target.createNewFile();
                 instance.log(LogLevel.INFO, "File '&b" + target.getName() + "&7' didn't exist, created it now.");
+
+                if (target.createNewFile()) {
+                    instance.log(LogLevel.INFO, "File created successfuly.");
+                } else {
+                    instance.log(LogLevel.WARNING, "Unable to create file, cancelling backup of the file.");
+                    return;
+                }
             }
 
             instance.log(LogLevel.INFO, "Creating backup of file '&b" + source.getName() + "&7'...");
