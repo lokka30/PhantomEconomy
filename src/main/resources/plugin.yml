@@ -54,6 +54,7 @@ permissions:
       phantomeconomy.balance.others: true
       phantomeconomy.pay: true
       phantomeconomy.baltop: true
+      phantomeconomy.backup: true
 
   phantomeconomy.economy.*:
     description: All permissions related to economy management.
@@ -95,3 +96,7 @@ permissions:
   phantomeconomy.baltop:
     description: Access to /baltop.
     default: true
+
+  phantomeconomy.backup:
+    description: access to /phantomeconomy backup
+    default: op

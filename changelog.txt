@@ -155,5 +155,9 @@ changes:
 - Fixed | '/phantomeconomy backup' now checks if you have the permission 'phantomeconomy.backup'
 - Fixed | '/phantomeconomy backup' not saving 'messages.yml' file
 
+1.9.17-RELEASE:
+- Attempted Fix | Improved '/phantomeconomy backup' methods which should fix issues
+- Improvement | Added permission 'phantomeconomy.backup' to 'plugin.yml'
+
 2.0.0-RELEASE:
 - ...

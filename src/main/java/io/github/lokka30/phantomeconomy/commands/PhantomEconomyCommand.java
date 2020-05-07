@@ -1,6 +1,7 @@
 package io.github.lokka30.phantomeconomy.commands;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
+import io.github.lokka30.phantomeconomy.utils.LogLevel;
 import io.github.lokka30.phantomeconomy.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class PhantomEconomyCommand implements CommandExecutor {
 
@@ -47,13 +46,28 @@ public class PhantomEconomyCommand implements CommandExecutor {
     }
 
     private void backupFile(String fileName) {
-        Path source = Paths.get(instance.getDataFolder() + File.separator + fileName);
-        Path target = Paths.get(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis()));
 
         try {
-            Files.copy(source, target);
-        } catch (IOException e1) {
-            e1.printStackTrace();
+            File backupsFolder = new File(instance.getDataFolder(), File.separator + "backups");
+            File source = new File(instance.getDataFolder() + File.separator + fileName);
+            File target = new File(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis()));
+
+            if (backupsFolder.mkdir()) {
+                instance.log(LogLevel.INFO, "'&bbackups&7' folder didn't exist, created it now.");
+            }
+
+            if (source.createNewFile()) {
+                instance.log(LogLevel.INFO, "File '&b" + source.getName() + "&7' didn't exist, created it now.");
+            }
+
+            if (target.createNewFile()) {
+                instance.log(LogLevel.INFO, "File '&b" + target.getName() + "&7' didn't exist, created it now.");
+            }
+
+            Files.copy(source.toPath(), target.toPath());
+        } catch (IOException exception) {
+            instance.log(LogLevel.SEVERE, "IOException was thrown whilst attempting to backup file '&b" + fileName + "&7', stack trace:");
+            exception.printStackTrace();
         }
     }
 }
