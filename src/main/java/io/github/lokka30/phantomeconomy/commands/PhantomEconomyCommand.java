@@ -52,15 +52,15 @@ public class PhantomEconomyCommand implements CommandExecutor {
             File source = new File(instance.getDataFolder() + File.separator + fileName);
             File target = new File(instance.getDataFolder() + File.separator + "backups" + File.separator + (fileName + "_backup" + System.currentTimeMillis()));
 
-            if (backupsFolder.mkdir()) {
+            if (!backupsFolder.isDirectory() && backupsFolder.mkdir()) {
                 instance.log(LogLevel.INFO, "'&bbackups&7' folder didn't exist, created it now.");
             }
 
-            if (source.createNewFile()) {
+            if (!source.exists() && source.createNewFile()) {
                 instance.log(LogLevel.INFO, "File '&b" + source.getName() + "&7' didn't exist, created it now.");
             }
 
-            if (target.createNewFile()) {
+            if (!target.exists() && target.createNewFile()) {
                 instance.log(LogLevel.INFO, "File '&b" + target.getName() + "&7' didn't exist, created it now.");
             }
 
