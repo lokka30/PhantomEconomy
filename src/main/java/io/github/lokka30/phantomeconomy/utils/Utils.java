@@ -30,26 +30,6 @@ public class Utils {
         numberFormat.setMinimumFractionDigits(2);
         numberFormat.setMaximumFractionDigits(2);
         return numberFormat.format(value);
-
-
-        /*
-
-        Old Code
-
-        //Credit to duffymo and daiscog on StackOverflow.
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        String formattedValue = formatter.format(value);
-
-        if (formattedValue.endsWith(".00")) {
-            int centsIndex = formattedValue.lastIndexOf(".00");
-            if (centsIndex != -1) {
-                formattedValue = formattedValue.substring(1, centsIndex);
-            }
-        }
-
-        return formattedValue.replaceFirst("$", "");
-
-         */
     }
 
 }

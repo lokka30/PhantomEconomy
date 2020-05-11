@@ -160,7 +160,6 @@ changes:
 - Improvement | Added permission 'phantomeconomy.backup' to 'plugin.yml'
 
 1.9.18-RELEASE:
-- TODO NOT RELEASED YET!
 - Improvement | Changed currency formatting method to remove the 'double $' issue.
 - Fixed | Error on baltop when the main world resets.
 
