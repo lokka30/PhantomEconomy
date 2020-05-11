@@ -1,6 +1,7 @@
 package io.github.lokka30.phantomeconomy.utils;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 public class Utils {
 
@@ -25,7 +26,16 @@ public class Utils {
     }
 
     public static String roundToString(double value) {
-        //New Code:
+        NumberFormat numberFormat = NumberFormat.getInstance(new Locale("en", "US"));
+        numberFormat.setMinimumFractionDigits(2);
+        numberFormat.setMaximumFractionDigits(2);
+        return numberFormat.format(value);
+
+
+        /*
+
+        Old Code
+
         //Credit to duffymo and daiscog on StackOverflow.
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String formattedValue = formatter.format(value);
@@ -37,7 +47,9 @@ public class Utils {
             }
         }
 
-        return formattedValue;
+        return formattedValue.replaceFirst("$", "");
+
+         */
     }
 
 }

@@ -66,12 +66,15 @@ public class BaltopCommand implements CommandExecutor {
                 int counter = i + 1;
                 UUID uuid = UUID.fromString(keyList.get(i));
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                BigDecimal balance = BigDecimal.valueOf(valueList.get(i)).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros();
 
-                sender.sendMessage(instance.colorize(instance.messages.get("commands.baltop.counter", "#%position% - %player% - %amount%"))
-                        .replaceAll("%position%", Integer.toString(counter))
-                        .replaceAll("%player%", Objects.requireNonNull(offlinePlayer.getName()))
-                        .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(balance.doubleValue()))));
+                if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+                    BigDecimal balance = BigDecimal.valueOf(valueList.get(i)).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros();
+
+                    sender.sendMessage(instance.colorize(instance.messages.get("commands.baltop.counter", "#%position% - %player% - %amount%"))
+                            .replaceAll("%position%", Integer.toString(counter))
+                            .replaceAll("%player%", Objects.requireNonNull(offlinePlayer.getName()))
+                            .replaceAll("%amount%", Matcher.quoteReplacement(instance.provider.format(balance.doubleValue()))));
+                }
             }
         } else {
             sender.sendMessage(instance.colorize(instance.messages.get("common.no-permission", "You don't have access to that.")));
