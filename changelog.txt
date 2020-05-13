@@ -163,5 +163,8 @@ changes:
 - Improvement | Changed currency formatting method to remove the 'double $' issue.
 - Fixed | Error on baltop when the main world resets.
 
+1.9.19-RELEASE:
+- Improvement | (Code) Rounding on more methods
+
 2.0.0-RELEASE:
 - ...

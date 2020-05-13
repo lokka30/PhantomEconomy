@@ -138,7 +138,7 @@ public class VaultImplementer implements Economy {
     @SuppressWarnings("deprecation")
     public double getBalance(String name) {
         if (isTowny(name)) {
-            return instance.data.getOrSetDefault("towny." + name + ".balance", 0.00D);
+            return Utils.round(instance.data.getOrSetDefault("towny." + name + ".balance", 0.00D));
         } else {
             return getBalance(Bukkit.getOfflinePlayer(name));
         }
@@ -147,7 +147,7 @@ public class VaultImplementer implements Economy {
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
         if (!instance.balanceCache.containsKey(offlinePlayer)) {
-            instance.balanceCache.put(offlinePlayer, instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", instance.getDefaultBalance()));
+            instance.balanceCache.put(offlinePlayer, Utils.round(instance.data.get("players." + offlinePlayer.getUniqueId().toString() + ".balance", instance.getDefaultBalance())));
         }
 
         return instance.balanceCache.get(offlinePlayer);
@@ -206,9 +206,9 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse withdrawPlayer(String name, double amount) {
-        if (isTowny(name)) {
-            amount = Utils.round(amount);
+        amount = Utils.round(amount);
 
+        if (isTowny(name)) {
             if (hasAccount(name)) {
                 final double total = getBalance(name) - amount;
                 instance.data.set("towny." + name + ".balance", total);
@@ -257,9 +257,9 @@ public class VaultImplementer implements Economy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse depositPlayer(String name, double amount) {
-        if (isTowny(name)) {
-            amount = Utils.round(amount);
+        amount = Utils.round(amount);
 
+        if (isTowny(name)) {
             if (hasAccount(name)) {
                 final double total = getBalance(name) + amount;
                 instance.data.set("towny." + name + ".balance", total);
