@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class UpdateChecker {
 
     /*
-    UpdateChecker class, created by MSWS, DevCyntrix, patri9ck, Emilius123.
+    UpdateChecker class, created by the wiki page's editors.
     Wiki page: https://www.spigotmc.org/wiki/creating-an-update-checker-that-checks-for-updates/
      */
 

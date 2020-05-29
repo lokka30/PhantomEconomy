@@ -166,5 +166,17 @@ changes:
 1.9.19-RELEASE:
 - Improvement | (Code) Rounding on more methods
 
+1.9.20-RELEASE:
+- No file changes.
+- Improvement | (Code) Changed rounding method again to attempt to fix a data loss bug. It is also a more reliable method.
+- Addition | (Code) Now using the Apache Commons Math3 library (see pom.xml dep) for the Precision class (see Utils#round)
+
+1.9.21-RELEASE:
+- No file changes.
+- Addition | Added 'lastUsername' to a player's UUID in the data file when they join. Makes for easier diagnostics. Suggested by BusiedBat306.
+- Improvement (Code) | Added more comments to classes
+- Improvement (Code) | Split the JoinListener's code into various methods so they're more organised.
+- Improvement (Code) | Stopped running code in the Sign listener classes as it's pointless to do so
+
 2.0.0-RELEASE:
 - ...

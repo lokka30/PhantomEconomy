@@ -1,5 +1,7 @@
 package io.github.lokka30.phantomeconomy.utils;
 
+import org.apache.commons.math3.util.Precision;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -22,7 +24,16 @@ public class Utils {
     }
 
     public static double round(double value) {
-        return Math.round(value * 100.0) / 100.0;
+        /*
+        Important! Avoid conversion from 'double -> String -> double' wherever possible.
+
+        Known methods used previously that don't play nicely with PhantomEconomy:
+        - Math.round
+        - DecimalFormat, and other number formatters alike
+
+        Try to use a method which is fast as well. DecimalFormat is very, very slow at its calculations.
+         */
+        return Precision.round(value, 2);
     }
 
     public static String roundToString(double value) {

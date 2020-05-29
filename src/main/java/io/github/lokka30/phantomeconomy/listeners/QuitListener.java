@@ -14,9 +14,16 @@ public class QuitListener implements Listener {
         this.instance = instance;
     }
 
+    /**
+     * This event checks when a player quits the server.
+     *
+     * @param e the PlayerQuitEvent.
+     */
     @EventHandler
     public void onQuit(final PlayerQuitEvent e) {
         final Player player = e.getPlayer();
+
+        // Remove their balance from the balance cache, otherwise larger servers would have their memory taken up by storing balances of offline players.
         instance.balanceCache.remove(player);
     }
 }

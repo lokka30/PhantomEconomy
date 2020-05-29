@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 
 public class BaltopUpdater {
 
-    private Map<String, Double> baltopMap = new HashMap<>();
+    // Credit to Dkbay for their baltop code.
 
-    /*
-    Credit: Big thanks to Dkbay for providing the baltop code.
-     */
+    private Map<String, Double> baltopMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     public void update() {
