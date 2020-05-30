@@ -178,5 +178,13 @@ changes:
 - Improvement (Code) | Split the JoinListener's code into various methods so they're more organised.
 - Improvement (Code) | Stopped running code in the Sign listener classes as it's pointless to do so
 
+1.9.22-RELEASE:
+- No file changes.
+- Improvement (Code) | When a player joins, their balance put in memory will now be rounded.
+
+1.9.23-RELEASE:
+- File version hasn't changed, but added an optional setting in 'settings.yml', check below.
+- Addition | Added an option to settings.yml where you can allow a task to run which updates everyone's balance every 10 minutes. requested by BusiedBat306.
+
 2.0.0-RELEASE:
 - ...

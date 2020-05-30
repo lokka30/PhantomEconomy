@@ -1,6 +1,7 @@
 package io.github.lokka30.phantomeconomy.listeners;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
+import io.github.lokka30.phantomeconomy.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,7 +59,7 @@ public class JoinListener implements Listener {
             // Check if the data file contains the player's balance already.
             if (instance.data.contains(path)) {
                 // Yep, it does. Store the balance in the file into the balance cache. If for some reason the balance in the file is null, then the default balance will be used.
-                instance.balanceCache.put(player, instance.data.get(path, defaultBalance));
+                instance.balanceCache.put(player, Utils.round(instance.data.get(path, defaultBalance)));
             } else {
                 // Nope, it doesn't. Get the default balance and set their balance as that value. Store that in the data file.
                 instance.balanceCache.put(player, defaultBalance);

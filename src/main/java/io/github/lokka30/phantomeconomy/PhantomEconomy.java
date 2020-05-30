@@ -15,6 +15,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -77,7 +78,7 @@ public class PhantomEconomy extends JavaPlugin {
                     }
                 }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
             } else {
-                log(LogLevel.INFO, "Baltop update task cancelled - disabled in settings.");
+                log(LogLevel.INFO, "Cancelled baltop update task as it is disabled in the settings file.");
             }
 
             log(LogLevel.INFO, "--+-- Enabling Complete --+--");
@@ -86,6 +87,8 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         checkUpdates();
+
+        startBalanceUpdateTask();
     }
 
     @Override
@@ -229,6 +232,27 @@ public class PhantomEconomy extends JavaPlugin {
                     log(LogLevel.WARNING, "&8[&7Update Checker&8] &7There's a new update available: &a" + version + "&7. You're running &a" + getDescription().getVersion() + "&7.");
                 }
             });
+        }
+    }
+
+    private void startBalanceUpdateTask() {
+        if (settings.get("use-balance-update-task", false)) {
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        double balance = provider.getBalance(player);
+                        balanceCache.put(player, balance);
+                        data.set("players." + player.getUniqueId().toString() + ".balance", balance);
+                    }
+                }
+            }.runTaskTimer(this, 0L, 20L * 60 * 10);
+            /*
+            20 as there are 20 ticks per second
+            60 as there are 60 seconds per minute
+            10 as it should run every 10 minutes
+             */
         }
     }
 
