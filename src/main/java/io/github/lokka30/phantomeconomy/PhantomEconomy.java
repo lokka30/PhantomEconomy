@@ -43,7 +43,7 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        baltopUpdater = new BaltopUpdater();
+        baltopUpdater = new BaltopUpdater(this);
         pluginManager = getServer().getPluginManager();
         balanceCache = new HashMap<>();
     }
@@ -70,15 +70,26 @@ public class PhantomEconomy extends JavaPlugin {
             log(LogLevel.INFO, "Starting bStats metrics...");
             new Metrics(this, 6463);
 
-            log(LogLevel.INFO, "Starting baltop update task...");
             if (settings.get("use-baltop-update-task", true)) {
+                log(LogLevel.INFO, "Starting baltop update task...");
+
                 new BukkitRunnable() {
                     public void run() {
                         baltopUpdater.update();
                     }
                 }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
-            } else {
-                log(LogLevel.INFO, "Cancelled baltop update task as it is disabled in the settings file.");
+            }
+
+            if (settings.get("use-balance-update-task", false)) {
+                log(LogLevel.INFO, "Starting balance update task...");
+
+                new BukkitRunnable() {
+                    public void run() {
+                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                            balanceCache.put(onlinePlayer, Utils.round(provider.getBalance(onlinePlayer)));
+                        }
+                    }
+                }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
             }
 
             log(LogLevel.INFO, "--+-- Enabling Complete --+--");

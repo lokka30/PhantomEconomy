@@ -36,11 +36,20 @@ currency:
     # When the amount isn't exactly $1.00.
     plural: 'dollars'
 
-# If you have issues with the baltop update task, you can disable it here by setting the value to false.
+# The 'Baltop Update Task Error Repair' is a thing which tries to repair issues when the baltop searches through all of the balances.
+# If you are having issues with it, you can turn it off here.
+# Expected: [bpolean], Default: [true]
+baltop-update-task-error-repair: true
+
+# You can toggle if the baltop update task should run every 10 minutes or not here.
+# Disable it if it is causing you issues. If you disable this, then baltop functionality will not be available.
+# If you change this setting you must restart your server.
+# Expected: [bpolean], Default: [true]
 use-baltop-update-task: true
 
-# If you want player balances to be updated every 10 minutes, you can enable that here
-# If you change this setting you must restart your server
+# User-requested addition which allows you to make a task run on startup which updates online player's balances every 10 minutes.
+# If you change this setting you must restart your server.
+# Expected: [bpolean], Default: [false]
 use-balance-update-task: false
 
 # If true, on startup, PE will ask Spigot and tell you if there are any new updates available for the plugin.
@@ -52,4 +61,4 @@ debug: false
 # This is the file version.
 # It should be unchanged unless updating to the respective version of the settings.yml file.
 # Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
-file-version: 4
+file-version: 5

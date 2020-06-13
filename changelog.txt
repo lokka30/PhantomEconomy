@@ -186,5 +186,11 @@ changes:
 - File version hasn't changed, but added an optional setting in 'settings.yml', check below.
 - Addition | Added an option to settings.yml where you can allow a task to run which updates everyone's balance every 10 minutes. requested by BusiedBat306.
 
+1.9.24-RELEASE:
+- File update | settings.yml has been updated to version 5. Please reset your settings file. I apologise for the inconvenience.
+- Addition | Added an option to settings.yml which allows you to disable the new baltop error repair service.
+- Addition | Baltop Updater Repair Service -- this will attempt to fix errors in your data file when the baltop updater scans over them. -- Thanks to all who reported the baltop issue, especially Hugo5551 and Rebellion
+- Addition | Balance Update Task -- optional task which rounds online player's balances every 10 minutes, most likely won't be useful to you -- requested by BusiedBat
+
 2.0.0-RELEASE:
 - ...
