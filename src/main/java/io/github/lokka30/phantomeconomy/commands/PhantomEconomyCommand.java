@@ -2,7 +2,6 @@ package io.github.lokka30.phantomeconomy.commands;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import io.github.lokka30.phantomeconomy.utils.LogLevel;
-import io.github.lokka30.phantomeconomy.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +24,7 @@ public class PhantomEconomyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Running &aPhantomEconomy v" + instance.getDescription().getVersion() + "&7, developed for server version &a" + Utils.getRecommendedServerVersion() + "&7."));
+            sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7Running &aPhantomEconomy v" + instance.getDescription().getVersion() + "&7 by &flokka30&7."));
             if (sender.hasPermission("phantomeconomy.backup")) {
                 sender.sendMessage(instance.colorize("&a&lPhantomEconomy: &7To backup the data file, use &a/" + label + " backup&7."));
             }
