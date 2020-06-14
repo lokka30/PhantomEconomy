@@ -116,12 +116,15 @@ public class PhantomEconomy extends JavaPlugin {
         // --- Check if the server version is compatible. ---
         // Note: This doesn't stop the loading of the plugin. It just informs the server owners that they won't get support.
         final String currentVersion = getServer().getVersion();
-        final String recommendedVersion = Utils.getRecommendedServerVersion();
-
-        if (currentVersion.contains(recommendedVersion)) {
-            log(LogLevel.INFO, "Server is running supported version &a" + currentVersion + "&7.");
-        } else {
-            log(LogLevel.WARNING, "Possible incompatibility found: &cServer is not running " + recommendedVersion + "!");
+        boolean isSupportedVersion = false;
+        for (String supportedVersion : Utils.getSupportedServerVersions()) {
+            if (currentVersion.contains(supportedVersion)) {
+                isSupportedVersion = true;
+                break;
+            }
+        }
+        if (!isSupportedVersion) {
+            log(LogLevel.WARNING, "Possible incompatibility found: &cServer is not running a supported version!");
             log(LogLevel.WARNING, "Your server version doesn't match with the recommended version above.");
             log(LogLevel.WARNING, "Support will not be provided from the author if encounter issues if you don't run the recommended server version.");
         }
@@ -132,6 +135,7 @@ public class PhantomEconomy extends JavaPlugin {
             log(LogLevel.SEVERE, "Incompatibility found: &cVault is not installed!");
             log(LogLevel.SEVERE, "This plugin depends on Vault to interact with other plugins.");
             log(LogLevel.SEVERE, "Link to dependency: https://www.spigotmc.org/resources/vault.34315/");
+            log(LogLevel.SEVERE, "The plugin will now disable itself.");
             return false;
         }
 
@@ -139,10 +143,9 @@ public class PhantomEconomy extends JavaPlugin {
         // Note: If Towny isn't found, then the plugin will keep loading, but disable Towny compatibility.
         if (pluginManager.getPlugin("Towny") == null) {
             hasTownyCompatibility = false;
-            log(LogLevel.INFO, "Towny isn't installed. Towny compatibility disabled.");
         } else {
             hasTownyCompatibility = true;
-            log(LogLevel.INFO, "Towny is installed. Towny compatibility enabled.");
+            log(LogLevel.INFO, "Towny found -- towny compatibility enabled.");
         }
 
         // --- No incompatibilities found, continue loading. ---

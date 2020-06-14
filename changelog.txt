@@ -192,5 +192,9 @@ changes:
 - Addition | Baltop Updater Repair Service -- this will attempt to fix errors in your data file when the baltop updater scans over them. -- Thanks to all who reported the baltop issue, especially Hugo5551 and Rebellion
 - Addition | Balance Update Task -- optional task which rounds online player's balances every 10 minutes, most likely won't be useful to you -- requested by BusiedBat
 
+1.9.25-RELEASE:
+- Improvement | The Compatibility Checker on startup no longer states that 1.7.10 - 1.14 is unsupported. (Thanks ImCurvin for reporting this)
+- Improvement | Removed a few useless messages on startup.
+
 2.0.0-RELEASE:
 - ...
