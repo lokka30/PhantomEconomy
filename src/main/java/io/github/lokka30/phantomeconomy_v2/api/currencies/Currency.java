@@ -21,26 +21,26 @@ public class Currency {
 
     // The *number* format, this is the string that the DecimalFormat uses
     public String getNumberFormat() {
-        //TODO Return 'format-number' from the config.
+        //TODO Retrieve from the file cache
         return "0.00";
     }
 
     // The *final* format, the human-readable form which adds dollar signs and whatever the user has configured for the currency
     public String getFinalFormat() {
-        //TODO Return 'format-final' from the config.
+        //TODO Retrieve from the file cache
         return "$%balance%";
     }
 
     // Returns 'plural' word from settings
     public String getPlural() {
         return "dollars";
-        //TODO
+        //TODO Retrieve from the file cache
     }
 
     // Returns 'singular' word from settings
     public String getSingular() {
         return "dollar";
-        //TODO
+        //TODO Retrieve from the file cache
     }
 
     // Gets the 'singular' or 'plural' word for the balance.

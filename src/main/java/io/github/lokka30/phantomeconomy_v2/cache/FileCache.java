@@ -2,7 +2,12 @@ package io.github.lokka30.phantomeconomy_v2.cache;
 
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
+import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class FileCache {
@@ -20,13 +25,12 @@ public class FileCache {
     public String SETTINGS_DEFAULT_CURRENCY;
     public String SETTINGS_VAULT_CURRENCY;
 
-    /* TODO CHANGE TO ALLOW FOR MULTI CURRENCY.
-    public String SETTINGS_DECIMAL_FORMAT;
-    public double SETTINGS_DEFAULT_MONEY;
-    public String SETTINGS_CURRENCY_PLURAL;
-    public String SETTINGS_CURRENCY_SINGULAR;
-    public String SETTINGS_CURRENCY_FORMAT;
-    */
+    public HashMap<Currency, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
+    public HashMap<Currency, Integer> SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP;
 
     private PhantomEconomy instance;
 
@@ -51,12 +55,29 @@ public class FileCache {
         SETTINGS_DEFAULT_CURRENCY = settings.get("default-currency", null);
         SETTINGS_VAULT_CURRENCY = settings.get("vault-currency", null);
 
-        /* TODO CHANGE TO ALLOW FOR MULTI CURRENCY.
-        SETTINGS_DECIMAL_FORMAT = settings.get("economy.formatting.decimal-format", "#,##0.00");
-        SETTINGS_DEFAULT_MONEY = settings.get("economy.default-money", 50.00);
-        SETTINGS_CURRENCY_PLURAL = settings.get("economy.formatting.vault.plural", "dollars");
-        SETTINGS_CURRENCY_SINGULAR = settings.get("economy.formatting.vault.singular", "dollar");
-        SETTINGS_CURRENCY_FORMAT = settings.get("economy.formatting.format", "$%money%");
-         */
+
+        SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP = new HashMap<>();
+        for (String currencyName : settings.get("currencies.enabled-currencies", new ArrayList<String>())) {
+            Currency currency;
+            final String path = "currencies.currency-settings." + currencyName + ".";
+            try {
+                currency = instance.economyManager.getCurrency(currencyName);
+            } catch (InvalidCurrencyException exception) {
+                instance.utils.log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
+                continue;
+            }
+
+            SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currency, settings.get(path + "default-balance", 50.00));
+            SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP.put(currency, settings.get(path + "formatting.storage-rounding", 2));
+            SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP.put(currency, settings.get(path + "formatting.decimal-readable-format", "0.00"));
+            SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP.put(currency, settings.get(path + "formatting.final-readable-format", "$%balance% %word%"));
+            SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currency, settings.get(path + "formatting.words.singular", "dollar"));
+            SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.put(currency, settings.get(path + "formatting.words.plural", "dollars"));
+        }
     }
 }

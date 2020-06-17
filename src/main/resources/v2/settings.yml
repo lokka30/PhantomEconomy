@@ -38,27 +38,26 @@ currencies:
 
   # This is the list of currencies which can be used on the server.
   # Warning: Make sure you include a currency here!
-  # Expected: [List<String>], Default: ['default']
+  # Expected: [List<String>], Default: ['dollars']
   enabled-currencies:
-    - 'default'
-
+    - 'dollars'
 
   # When users are using /pay, /baltop, etc, and don't specify a specific currency to use, what will be used by default?
-  # Expected: [String], Default: ['default']
-  default-currency: 'default'
+  # Expected: [String], Default: ['dollars']
+  default-currency: 'dollars'
 
   # If you are using Vault, you must specify a currency to use.
   # Warning: If plugins are using Vault and you haven't set a valid currency, serious issues could occur with other plugins!
-  # Expected: [String], Default: ['default']
-  vault-currency: 'default'
+  # Expected: [String], Default: ['dollars']
+  vault-currency: 'dollars'
 
   # Here you can edit all of the enabled currencies.
   # Warning: Make sure you put your currency in 'enabled-currencies' once you have made it!
   # Warning: You shouldn't rename currencies! People's balances will not transfer, their balances will stick with the currency name previous to when it was changed.
-  currencies:
+  currency-settings:
 
     # The default currency.
-    default:
+    dollars:
 
       # Users will be given this amount of money when they use the currency for the first time
       # e.g. give $50 to players so they can get started
@@ -67,27 +66,43 @@ currencies:
 
       formatting:
 
-        # This is the format used when numbers are being formatted.
-        # e.g. trimming decimals - 2.22222 = 2.22
+        # To how many decimal places should stored balances have in the database?
+        # e.g. round them to 2 or 3 decimal places (e.g. 2.2251345219 -> 2.23)
+        # Expected: [Integer], Default: [2]
+        storage-rounding: 2
+
+        # This is the format used for the %balance% plcaeholder in the final readable format.
+        # e.g. trimming decimals - 2.22222 -> 2.22
         # Expected: [String], Default: ['0.00']
-        format-number: '0.00'
+        decimal-readable-format: '0.00'
 
         # The format when displaying as a human-readable balance.
         # You can include %word% and it will add the singular/plural word customised below.
         # e.g. '$%balance% %word%' = '$5 dollars' or '$1 dollar'
-        # Expected: [String], Default: ['$%balance']
-        format-final: '$%balance%'
+        # Expected: [String], Default: ['$%balance %word%']
+        final-readable-format: '$%balance% %word%'
 
-      # You can edit the words placeholder here if you are using it in the format above.
-      words:
+        # You can edit the words placeholder here if you are using it in the format above.
+        words:
 
-        # When the balance is $1, e.g. 1 dollar
-        # Expected: [String], Default: ['dollar']
-        singular: 'dollar'
+          # When the balance is $1, e.g. 1 dollar
+          # Expected: [String], Default: ['dollar']
+          singular: 'dollar'
 
-        # When the balance is not $1, e.g. 5 dollars
-        # Expected: [String], Default: ['dollars']
-        plural: 'dollars'
+          # When the balance is not $1, e.g. 5 dollars
+          # Expected: [String], Default: ['dollars']
+          plural: 'dollars'
+
+    # An example 'coins' currency. You can delete it if you want. It is disabled by default as it is not added to the 'enabled-currencies' list.
+    coins:
+      default-balance: 10.50
+      formatting:
+        storage-rounding: 2
+        decimal-readable-format: '0.00'
+        final-readable-format: '%balance% %word%'
+        words:
+          singular: 'coin'
+          plural: 'coins'
 
 # Other options not related to the economy
 other-options:

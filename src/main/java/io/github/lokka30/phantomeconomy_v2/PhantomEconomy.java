@@ -4,10 +4,12 @@ import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
 import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.PlayerAccount;
+import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 import io.github.lokka30.phantomeconomy_v2.commands.*;
-import io.github.lokka30.phantomeconomy_v2.databases.mysql.MySQLDatabase;
-import io.github.lokka30.phantomeconomy_v2.databases.sqlite.SQLiteDatabase;
 import io.github.lokka30.phantomeconomy_v2.listeners.JoinListener;
 import io.github.lokka30.phantomeconomy_v2.listeners.QuitListener;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
@@ -20,9 +22,21 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class PhantomEconomy extends JavaPlugin {
+
+    /*
+    TODO DATABASE LAYOUT
+
+    AccountType, AccountId, CurrencyName, Balance
+    ---------------------------------------------
+    NonPlayerAccount, TownyNationBal, dollars, 25.23
+    PlayerAccount, notch-uuid-eh51-35151, dollars, 23.13
+    PlayerAccount, notch-uuid-eh51-35151, coins, 3.19
+    BankAccount, lokka30sbank, (vault currency), 2536156.67
+     */
 
     public Utils utils;
     public FileCache fileCache;
@@ -31,10 +45,7 @@ public class PhantomEconomy extends JavaPlugin {
     public FlatFile settingsYaml;
     public FlatFile messagesYaml;
     public FlatFile dataJson;
-    public boolean isTownyCompatibilityEnabled;
     private PluginManager pluginManager;
-    private MySQLDatabase mysqlDatabase;
-    private SQLiteDatabase sqliteDatabase;
 
     @Override
     public void onLoad() {
@@ -62,7 +73,29 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8+---+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+---+");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            //TODO update accounts async
+            if (!accountManager.hasPlayerAccount(player)) {
+                try {
+                    accountManager.createPlayerAccount(player);
+                } catch (AccountAlreadyExistsException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
+            Currency currency = null;
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+
+            for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
+                try {
+                    currency = economyManager.getCurrency(currencyName);
+                } catch (InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
+
+                balanceMap.put(currency, playerAccount.getBalance(currency));
+            }
+
+            accountManager.cachedPlayerAccountBalances.put(playerAccount, balanceMap);
         }
 
         checkForUpdates();
@@ -133,29 +166,22 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     private void loadDatabase() {
-        utils.log(LogLevel.INFO, "&8(&33/5&8) &7Loading database...");
+        utils.log(LogLevel.INFO, "&8(&33/5&8) &7Connecting to the database...");
         switch (fileCache.SETTINGS_DATABASE_TYPE.toLowerCase()) {
             case "sqlite":
-                utils.log(LogLevel.INFO, "Using SQLite database");
-                if (mysqlDatabase != null) {
-                    mysqlDatabase = null;
-                }
-                sqliteDatabase = new SQLiteDatabase(this);
-                sqliteDatabase.load();
-                utils.log(LogLevel.INFO, "Loaded database");
+                utils.log(LogLevel.INFO, "Using SQLite database, connecting ...");
+                //TODO
+                utils.log(LogLevel.INFO, "... connection completed.");
                 break;
             case "mysql":
-                utils.log(LogLevel.INFO, "Using MySQL database");
-                if (sqliteDatabase != null) {
-                    sqliteDatabase = null;
-                }
-                mysqlDatabase = new MySQLDatabase(this);
-                mysqlDatabase.updateSettings();
-                mysqlDatabase.startSQLConnection();
-                utils.log(LogLevel.INFO, "Started SQL connection");
+                utils.log(LogLevel.INFO, "Using MySQL database, connecting ...");
+                //TODO
+                utils.log(LogLevel.INFO, "... connection completed.");
                 break;
             default:
-                utils.log(LogLevel.SEVERE, "Invalid database type in settings!");
+                utils.log(LogLevel.SEVERE, "Invalid database type in settings! Will set it IN MEMORY to SQLite and retry connecting to the database. You will still need to fix the setting inside the file!");
+                fileCache.SETTINGS_DATABASE_TYPE = "sqlite";
+                loadDatabase();
                 break;
         }
     }
@@ -170,19 +196,10 @@ public class PhantomEconomy extends JavaPlugin {
     private void hookAvailablePlugins() {
         utils.log(LogLevel.INFO, "&8(&34/6&8) &7Hooking to available plugins...");
 
-        if (pluginManager.getPlugin("Towny") == null) {
-            utils.log(LogLevel.INFO, "Plugin '&bTowny&7' isn't installed, skipping compatibility");
-            isTownyCompatibilityEnabled = false;
-        } else {
-            utils.log(LogLevel.INFO, "&7Plugin '&bTowny&7' installed, enabling Towny account support...");
-            isTownyCompatibilityEnabled = true;
-        }
-
-        if (pluginManager.getPlugin("Vault") == null) {
-            utils.log(LogLevel.INFO, "Plugin '&bVault&7' isn't installed, skipping hook");
-        } else {
+        if (pluginManager.getPlugin("Vault") != null) {
             utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to hook...");
-            //TODO
+            //TODO HOOK
+            utils.log(LogLevel.INFO, "... Plugin '&bVault&7' hooked.");
         }
     }
 
@@ -232,16 +249,13 @@ public class PhantomEconomy extends JavaPlugin {
     private void unhookAvailablePlugins() {
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7Unhooking from available plugins...");
 
-        if (pluginManager.getPlugin("Vault") == null) {
-            //TODO Not Installed
-        } else {
+        if (pluginManager.getPlugin("Vault") != null) {
             //TODO Unhook
         }
     }
 
     private void disconnectDatabase() {
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7Disconnecting database...");
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage("TODO")); //TODO Update Accounts for all online players.
         //TODO close dtabase.
     }
 }

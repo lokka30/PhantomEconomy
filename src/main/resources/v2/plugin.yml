@@ -1,4 +1,21 @@
 name: PhantomEconomy
 version: ${project.version}
 main: io.github.lokka30.phantomeconomy.PhantomEconomy
-#TODO
+author: lokka30
+
+depend: [PhantomLib]
+softdepend: [Vault, PlaceholderAPI]
+
+commands:
+  balance:
+    description: Check an account's balance.
+  baltop:
+    description: View the top balances on the server.
+  economy:
+    description: Manage account balances for each currency.
+  pay:
+    description: Send money from your account to the target's account.
+  phantomeconomy:
+    description: View information about the plugin or manage it.
+
+permissions: []

@@ -23,7 +23,7 @@ public class EconomyManager {
         if (isCurrency(name)) {
             return new Currency(this, name);
         } else {
-            throw new InvalidCurrencyException(name + " is not a valid currency");
+            throw new InvalidCurrencyException(name + " is not a valid currency.");
         }
     }
 

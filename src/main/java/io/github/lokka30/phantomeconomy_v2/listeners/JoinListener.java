@@ -22,14 +22,14 @@ public class JoinListener implements Listener {
         final Player player = event.getPlayer();
         final PlayerAccount playerAccount = instance.accountManager.getPlayerAccount(player);
 
-        if (!playerAccount.hasAccount()) {
+        if (!instance.accountManager.hasPlayerAccount(player)) {
             try {
-                playerAccount.createAccount();
+                instance.accountManager.createPlayerAccount(player);
             } catch (AccountAlreadyExistsException exception) {
                 exception.printStackTrace();
             }
         }
 
-        //TODO cache player balance
+        //TODO cache player balance from database
     }
 }

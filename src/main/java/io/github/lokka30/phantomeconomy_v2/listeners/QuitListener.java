@@ -15,6 +15,6 @@ public class QuitListener implements Listener {
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
-        //TODO remove cached balance
+        instance.accountManager.cachedPlayerAccountBalances.remove(instance.accountManager.getPlayerAccount(event.getPlayer()));
     }
 }

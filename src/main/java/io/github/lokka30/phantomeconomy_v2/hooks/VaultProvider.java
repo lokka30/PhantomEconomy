@@ -1,6 +1,5 @@
 package io.github.lokka30.phantomeconomy_v2.hooks;
 
-import com.palmergames.bukkit.towny.TownySettings;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
 import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
@@ -16,26 +15,16 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.List;
 
-public class VaultHook extends AbstractEconomy {
+public class VaultProvider extends AbstractEconomy {
 
     private PhantomEconomy instance;
     private EconomyManager economyManager;
     private AccountManager accountManager;
 
-    public VaultHook(final PhantomEconomy instance) {
+    public VaultProvider(final PhantomEconomy instance) {
         this.instance = instance;
         this.economyManager = instance.economyManager;
         this.accountManager = instance.accountManager;
-    }
-
-    private boolean isTowny(String name) {
-        if (instance.isTownyCompatibilityEnabled) {
-            //Check if the name specified has a town or nation account prefix.
-            return name.startsWith(TownySettings.getTownAccountPrefix()) || name.startsWith(TownySettings.getNationAccountPrefix());
-        } else {
-            //Towny isn't installed. Don't try to ask for Towny stuff when it isn't installed!
-            return false;
-        }
     }
 
     @Override
@@ -91,10 +80,13 @@ public class VaultHook extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean hasAccount(String name) {
-        if (isTowny(name)) {
-            return accountManager.hasTownyAccount(name);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+
+        // Check if it is a player or not first.
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+            return accountManager.hasPlayerAccount(offlinePlayer);
         } else {
-            return accountManager.hasPlayerAccount(Bukkit.getOfflinePlayer(name));
+            return accountManager.hasNonPlayerAccount(name);
         }
     }
 
@@ -116,19 +108,24 @@ public class VaultHook extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public double getBalance(String name) {
-        if (isTowny(name)) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+
+        //Check if it is a player account first
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                return accountManager.getTownyAccount(name).getBalance(economyManager.getVaultCurrency());
+                return accountManager.getPlayerAccount(offlinePlayer).getBalance(economyManager.getVaultCurrency());
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).getBalance(economyManager.getVaultCurrency());
+                return accountManager.getNonPlayerAccount(name).getBalance(economyManager.getVaultCurrency());
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         }
+
+        //In case the vault currency setting is invalid, it will return 0.00.
         return 0.00;
     }
 
@@ -139,6 +136,8 @@ public class VaultHook extends AbstractEconomy {
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
+
+        //In case the vault currency setting is invalid, it will return 0.00.
         return 0.00;
     }
 
@@ -155,19 +154,23 @@ public class VaultHook extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean has(String name, double amount) {
-        if (isTowny(name)) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                return accountManager.getTownyAccount(name).has(economyManager.getVaultCurrency(), amount);
+                return accountManager.getPlayerAccount(offlinePlayer).has(economyManager.getVaultCurrency(), amount);
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                return accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).has(economyManager.getVaultCurrency(), amount);
+                return accountManager.getNonPlayerAccount(name).has(economyManager.getVaultCurrency(), amount);
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         }
+
+        //In case the vault currency setting is invalid, it will return false.
         return false;
     }
 
@@ -178,6 +181,8 @@ public class VaultHook extends AbstractEconomy {
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
+
+        //In case the vault currency setting is invalid, it will return false.
         return false;
     }
 
@@ -199,16 +204,18 @@ public class VaultHook extends AbstractEconomy {
         }
 
         if (has(name, amount)) {
-            if (isTowny(name)) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+
+            if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
                 try {
-                    accountManager.getTownyAccount(name).withdraw(economyManager.getVaultCurrency(), amount);
-                } catch (InvalidCurrencyException e) {
+                    accountManager.getPlayerAccount(offlinePlayer).withdraw(economyManager.getVaultCurrency(), amount);
+                } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
                     e.printStackTrace();
                 }
             } else {
                 try {
-                    accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).withdraw(economyManager.getVaultCurrency(), amount);
-                } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
+                    accountManager.getNonPlayerAccount(name).withdraw(economyManager.getVaultCurrency(), amount);
+                } catch (InvalidCurrencyException | NegativeAmountException | OversizedWithdrawAmountException e) {
                     e.printStackTrace();
                 }
             }
@@ -249,16 +256,17 @@ public class VaultHook extends AbstractEconomy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't deposit a negative amount.");
         }
 
-        if (isTowny(name)) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                accountManager.getTownyAccount(name).deposit(economyManager.getVaultCurrency(), amount);
-            } catch (InvalidCurrencyException e) {
+                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(economyManager.getVaultCurrency(), amount);
+            } catch (NegativeAmountException | InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(economyManager.getVaultCurrency(), amount);
-            } catch (NegativeAmountException | InvalidCurrencyException e) {
+                accountManager.getNonPlayerAccount(name).deposit(economyManager.getVaultCurrency(), amount);
+            } catch (InvalidCurrencyException | NegativeAmountException e) {
                 e.printStackTrace();
             }
         }
@@ -352,21 +360,24 @@ public class VaultHook extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean createPlayerAccount(String name) {
-        if (isTowny(name)) {
-            if (accountManager.hasTownyAccount(name)) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+
+        if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
+            createPlayerAccount(Bukkit.getOfflinePlayer(name));
+            return true;
+        } else {
+            if (accountManager.hasNonPlayerAccount(name)) {
                 return false;
             } else {
                 try {
-                    accountManager.getTownyAccount(name).createAccount();
+                    accountManager.createNonPlayerAccount(name);
+                    return true;
                 } catch (AccountAlreadyExistsException e) {
                     instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the town already has an account. The developer should check if this is the case before doing so.");
                     e.printStackTrace();
+                    return false;
                 }
-                return true;
             }
-        } else {
-            createPlayerAccount(Bukkit.getOfflinePlayer(name));
-            return true;
         }
     }
 
@@ -376,12 +387,13 @@ public class VaultHook extends AbstractEconomy {
             return false;
         } else {
             try {
-                accountManager.getPlayerAccount(offlinePlayer).createAccount();
+                accountManager.createPlayerAccount(offlinePlayer);
+                return true;
             } catch (AccountAlreadyExistsException e) {
                 instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
                 e.printStackTrace();
+                return false;
             }
-            return true;
         }
     }
 
