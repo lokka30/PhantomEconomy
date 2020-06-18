@@ -44,7 +44,6 @@ public class PhantomEconomy extends JavaPlugin {
     public EconomyManager economyManager;
     public FlatFile settingsYaml;
     public FlatFile messagesYaml;
-    public FlatFile dataJson;
     private PluginManager pluginManager;
 
     @Override
@@ -60,6 +59,25 @@ public class PhantomEconomy extends JavaPlugin {
     public void onEnable() {
         utils.log(LogLevel.INFO, "&8+---+ &f(Enable Started) &8+---+");
         final long timeStart = System.currentTimeMillis();
+
+        utils.log(LogLevel.INFO, "&8--------------------------------");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, "&b&l&nWARNING!");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, "&8--------------------------------");
+        utils.log(LogLevel.INFO, "&bPhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers in which wouldn't want to risk harm from an economy plugin malfunction. " +
+                "Please use carefully and report all issues to me, make sure to note that you are using 2.0 when reporting them. " +
+                "I will not be responsible if a malfunction occurs in the plugin and damages your server. " +
+                "Thank you, and be careful!");
+        utils.log(LogLevel.INFO, "&8--------------------------------");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, "&b&l&nWARNING!");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, " ");
+        utils.log(LogLevel.INFO, "&8--------------------------------");
 
         checkCompatibility();
         loadFiles();
@@ -124,15 +142,10 @@ public class PhantomEconomy extends JavaPlugin {
                 .fromFile(new File(getDataFolder() + "messages"))
                 .addInputStreamFromResource("messages.yml")
                 .createYaml();
-        dataJson = LightningBuilder
-                .fromFile(new File(getDataFolder() + "data"))
-                .addInputStreamFromResource("data.json")
-                .createJson();
 
         //Check if they exist
         final File settingsFile = new File(getDataFolder() + "settings.yml");
         final File messagesFile = new File(getDataFolder() + "messages.yml");
-        final File dataFile = new File(getDataFolder() + "data.json");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             utils.log(LogLevel.INFO, "File '&bsettings.yml&7' doesn't exist. Creating it now.");
@@ -144,22 +157,13 @@ public class PhantomEconomy extends JavaPlugin {
             saveResource("messages.yml", false);
         }
 
-        if (!(dataFile.exists() && !dataFile.isDirectory())) {
-            utils.log(LogLevel.INFO, "File '&bdata.json&7' doesn't exist. Creating it now.");
-            saveResource("data.json", false);
-        }
-
         //Check their versions
         if (settingsYaml.get("file-version", 0) != utils.getLatestSettingsFileVersion()) {
-            utils.log(LogLevel.SEVERE, "File &asettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+            utils.log(LogLevel.SEVERE, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
         if (messagesYaml.get("file-version", 0) != utils.getLatestMessagesFileVersion()) {
-            utils.log(LogLevel.SEVERE, "File &amessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
-        }
-
-        if (dataJson.get("file-version", 0) != utils.getLatestDataFileVersion()) {
-            utils.log(LogLevel.SEVERE, "File &adata.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+            utils.log(LogLevel.SEVERE, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
         fileCache.loadFromFiles();
@@ -179,7 +183,7 @@ public class PhantomEconomy extends JavaPlugin {
                 utils.log(LogLevel.INFO, "... connection completed.");
                 break;
             default:
-                utils.log(LogLevel.SEVERE, "Invalid database type in settings! Will set it IN MEMORY to SQLite and retry connecting to the database. You will still need to fix the setting inside the file!");
+                utils.log(LogLevel.SEVERE, "Invalid database type in settings! Will set it &f&nIN MEMORY&7 to &fSQLite&7 and retry connecting to the database. &f&nYou will still need to fix the setting inside the file!&7");
                 fileCache.SETTINGS_DATABASE_TYPE = "sqlite";
                 loadDatabase();
                 break;
@@ -197,9 +201,9 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8(&34/6&8) &7Hooking to available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
-            utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to hook...");
+            utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to hook ...");
             //TODO HOOK
-            utils.log(LogLevel.INFO, "... Plugin '&bVault&7' hooked.");
+            utils.log(LogLevel.INFO, "... plugin '&bVault&7' hooked.");
         }
     }
 
@@ -250,12 +254,15 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7Unhooking from available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
+            utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to unhook ...");
             //TODO Unhook
+            utils.log(LogLevel.INFO, "... plugin '&bVault&7' unhooked.");
         }
     }
 
     private void disconnectDatabase() {
-        utils.log(LogLevel.INFO, "&8(&31/2&8) &7Disconnecting database...");
+        utils.log(LogLevel.INFO, "&8(&31/2&8) &7Disconnecting database ...");
         //TODO close dtabase.
+        utils.log(LogLevel.INFO, "&8(&31/2&8) &7... database disconnected.");
     }
 }
