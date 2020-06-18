@@ -1,0 +1,23 @@
+PhantomEconomy v2.0.0 is an in-development version which will completely transform the plugin into what I actually wanted it to become. It will contain a plethora of new features and will hopefully have less bugs and more smiles.
+
+Here's a list of planned features, improvements and fixes over v1:
+1. MySQL and SQLite database storage
+2. Multiple user-configurable currencies
+3. Even better settings file
+4. Fully cached balances and configuration files for much better performance
+5. Full non-player account support (Towny, etc)
+6. Full bank account support (mainly for Vault)
+7. API for other developers
+8. PlaceholderAPI placeholders for scoreboards, etc
+9. No longer Vault-dependent
+10. General code improvements
+11. Baltop will work properly
+12. Import from Essentials Economy
+13. Reliance on PhantomLib
+14. Several more minor things..
+- Command to give money to all online and/or offline players
+- Server total in baltop
+- Customisable 'console added $x to your account' message
+- Transaction log
+- Baltop placeholders for PlaceholderAPI
+- [balance] sign

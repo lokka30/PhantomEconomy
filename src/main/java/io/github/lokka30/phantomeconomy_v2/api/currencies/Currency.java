@@ -1,17 +1,23 @@
 package io.github.lokka30.phantomeconomy_v2.api.currencies;
 
+import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 
 import java.text.DecimalFormat;
 
 public class Currency {
 
+    private PhantomEconomy instance;
+    private FileCache fileCache;
     private EconomyManager economyManager;
     private String name;
 
     public Currency(EconomyManager economyManager, String name) {
         this.economyManager = economyManager;
         this.name = name;
+        this.instance = economyManager.getInstance();
+        this.fileCache = instance.fileCache;
     }
 
     @SuppressWarnings("unused")
@@ -19,28 +25,24 @@ public class Currency {
         return name;
     }
 
-    // The *number* format, this is the string that the DecimalFormat uses
-    public String getNumberFormat() {
-        //TODO Retrieve from the file cache
-        return "0.00";
+    // The *decimal* readable format, this is the string that the DecimalFormat uses
+    public String getDecimalReadableFormat() {
+        return instance.fileCache.SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP.get(this);
     }
 
-    // The *final* format, the human-readable form which adds dollar signs and whatever the user has configured for the currency
+    // The *final* readable format, the human-readable form which adds dollar signs and whatever the user has configured for the currency
     public String getFinalFormat() {
-        //TODO Retrieve from the file cache
-        return "$%balance%";
+        return instance.fileCache.SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP.get(this);
     }
 
     // Returns 'plural' word from settings
     public String getPlural() {
-        return "dollars";
-        //TODO Retrieve from the file cache
+        return instance.fileCache.SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.get(this);
     }
 
     // Returns 'singular' word from settings
     public String getSingular() {
-        return "dollar";
-        //TODO Retrieve from the file cache
+        return instance.fileCache.SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.get(this);
     }
 
     // Gets the 'singular' or 'plural' word for the balance.
@@ -56,7 +58,7 @@ public class Currency {
     // Formats the number
     // e.g. so 2.222222 will return as '2.22' - by default
     public String formatNumberBalance(double balance) {
-        DecimalFormat decimalFormat = new DecimalFormat(getNumberFormat());
+        DecimalFormat decimalFormat = new DecimalFormat(getDecimalReadableFormat());
         return decimalFormat.format(balance);
     }
 

@@ -23,11 +23,11 @@ public class BankAccount {
     public double getBalance(Currency currency) {
         //TODO if the account doesn't have this currency set in the database, then set it with the default amount.
 
-        if (!accountManager.cachedNonPlayerAccountBalances.containsKey(name)) {
+        if (!accountManager.cachedBankAccountBalances.containsKey(name)) {
             //TODO get the balance from the database and put it into the cache
         }
 
-        return accountManager.cachedNonPlayerAccountBalances.get(name).get(currency);
+        return accountManager.cachedBankAccountBalances.get(name).get(currency);
     }
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {

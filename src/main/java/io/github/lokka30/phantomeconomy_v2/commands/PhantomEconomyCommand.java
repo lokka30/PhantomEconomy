@@ -16,6 +16,7 @@ public class PhantomEconomyCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
+        sender.sendMessage("[PhantomEconomy v2]: This command has not been completed yet.");
         return true;
     }
 }
