@@ -40,7 +40,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public boolean hasBankSupport() {
         return false;
-    }
+    } //TODO this should change when bank support is actually added.
 
     @Override
     public int fractionalDigits() {

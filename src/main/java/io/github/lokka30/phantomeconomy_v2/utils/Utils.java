@@ -78,11 +78,11 @@ public class Utils {
     }
 
     public int getLatestSettingsFileVersion() {
-        return 1;
+        return 6;
     }
 
     public int getLatestMessagesFileVersion() {
-        return 1;
+        return 5;
     }
 
     public int getLatestDataFileVersion() {

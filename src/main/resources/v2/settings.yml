@@ -115,4 +115,4 @@ other-options:
   # Only change this if you know what you are doing!
   # It is recommended to backup your old settings.yml file and edit a newly generated one instead.
   # Expected: [Integer]
-  file-version: 1
+  file-version: 6
