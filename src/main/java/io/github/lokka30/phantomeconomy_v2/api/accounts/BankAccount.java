@@ -3,6 +3,9 @@ package io.github.lokka30.phantomeconomy_v2.api.accounts;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;
+import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
+
+import java.util.HashMap;
 
 @SuppressWarnings("unused")
 public class BankAccount {
@@ -21,20 +24,42 @@ public class BankAccount {
     }
 
     public double getBalance(Currency currency) {
-        //TODO if the account doesn't have this currency set in the database, then set it with the default amount.
-
-        if (!accountManager.cachedBankAccountBalances.containsKey(name)) {
-            //TODO get the balance from the database and put it into the cache
+        if (!accountManager.cachedBankAccountBalances.containsKey(this)) {
+            switch (accountManager.getInstance().fileCache.SETTINGS_DATABASE_TYPE) {
+                case "sqlite":
+                    accountManager.getInstance().getSQLiteDatabase().getBalance("BankAccount", getName(), currency.getName());
+                    break;
+                case "mysql":
+                    accountManager.getInstance().getMySQLDatabase().getBalance("BankAccount", getName(), currency.getName());
+                    break;
+                default:
+                    accountManager.getInstance().utils.log(LogLevel.SEVERE, "Invalid database type set in the settings file. Set it to 'sqlite' or 'mysql'.");
+                    break;
+            }
         }
 
-        return accountManager.cachedBankAccountBalances.get(name).get(currency);
+        return accountManager.cachedBankAccountBalances.get(this).get(currency);
     }
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
             throw new NegativeAmountException("Tried to set balance to BankAccount with name '" + getName() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
-            //TODO set tbe balance in the cache and in the database.
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency, amount);
+            accountManager.cachedBankAccountBalances.put(this, balanceMap);
+
+            switch (accountManager.getInstance().fileCache.SETTINGS_DATABASE_TYPE) {
+                case "sqlite":
+                    accountManager.getInstance().getSQLiteDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
+                    break;
+                case "mysql":
+                    accountManager.getInstance().getMySQLDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
+                    break;
+                default:
+                    accountManager.getInstance().utils.log(LogLevel.SEVERE, "Invalid database type set in the settings file. Set it to 'sqlite' or 'mysql'.");
+                    break;
+            }
         }
     }
 
