@@ -239,13 +239,17 @@ public class PhantomEconomy extends JavaPlugin {
     private void checkUpdates() {
         if (settings.get("updater", true)) {
             log(LogLevel.INFO, "&8[&7Update Checker&8] &7Starting version comparison...");
-            new UpdateChecker(this, 75053).getVersion(version -> {
-                if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");
-                } else {
-                    log(LogLevel.WARNING, "&8[&7Update Checker&8] &7There's a new update available: &a" + version + "&7. You're running &a" + getDescription().getVersion() + "&7.");
-                }
-            });
+            try {
+                new UpdateChecker(this, 75053).getVersion(version -> {
+                    if (getDescription().getVersion().equalsIgnoreCase(version)) {
+                        log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");
+                    } else {
+                        log(LogLevel.WARNING, "&8[&7Update Checker&8] &7There's a new update available: &a" + version + "&7. You're running &a" + getDescription().getVersion() + "&7.");
+                    }
+                });
+            } catch (BootstrapMethodError exception) {
+                log(LogLevel.WARNING, "&8[&7Update Checker&8] &7The update checker does not work with your server version, please disable the update checker in the settings file or upgrade to the latest server version.");
+            }
         }
     }
 

@@ -196,5 +196,8 @@ changes:
 - Improvement | The Compatibility Checker on startup no longer states that 1.7.10 - 1.14 is unsupported. (Thanks ImCurvin for reporting this)
 - Improvement | Removed a few useless messages on startup.
 
+1.9.26-RELEASE:
+- Improvement | The plugin now notifies you if the updater doesn't work with your server version on startup, instead of throwing an exception to your logs.
+
 2.0.0-RELEASE:
 - ...
