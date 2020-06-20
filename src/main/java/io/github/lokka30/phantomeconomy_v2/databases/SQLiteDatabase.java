@@ -5,6 +5,8 @@ import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class SQLiteDatabase {
@@ -12,19 +14,24 @@ public class SQLiteDatabase {
     private PhantomEconomy instance;
     private Connection connection;
 
+    HashMap<UUID, Double> baltopMap;
+    double serverTotal;
+
     public SQLiteDatabase(PhantomEconomy instance) {
         this.instance = instance;
+        baltopMap = new HashMap<>();
+        serverTotal = -1;
     }
 
     public Connection getSQLConnection() {
         if (!instance.getDataFolder().exists()) {
             try {
                 if (!instance.getDataFolder().createNewFile()) {
-                    instance.utils.log(LogLevel.SEVERE, "Unable to create data folder for the SQLite database.");
+                    instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7Unable to create data folder");
                     return null;
                 }
             } catch (IOException exception) {
-                instance.utils.log(LogLevel.SEVERE, "Unable to create data folder for the SQLite database. Exception:");
+                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
                 exception.printStackTrace();
                 return null;
             }
@@ -37,7 +44,7 @@ public class SQLiteDatabase {
                 try {
                     Class.forName("org.sqlite.JDBC");
                 } catch (ClassNotFoundException e) {
-                    instance.utils.log(LogLevel.SEVERE, "Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed in the /lib/ folder.");
+                    instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed.");
                     e.printStackTrace();
                     return null;
                 }
@@ -45,7 +52,7 @@ public class SQLiteDatabase {
                 connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder());
                 return connection;
             } catch (SQLException e) {
-                instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
+                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
                 e.printStackTrace();
             }
         }
@@ -61,7 +68,7 @@ public class SQLiteDatabase {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` varchar(32) NOT NULL, `accountid` varchar(32) NOT NULL, `currencyname` varchar(32) NOT NULL, `balance` double(64) NOT NULL, PRIMARY KEY (`accountid`));");
             statement.close();
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to load the SQLite database. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to load the SQLite database. Stack trace:");
             exception.printStackTrace();
         }
 
@@ -76,7 +83,7 @@ public class SQLiteDatabase {
             ResultSet resultSet = preparedStatement.executeQuery();
             close(preparedStatement, resultSet);
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to initialise the SQLite database. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to initialise the SQLite database. Stack trace:");
             exception.printStackTrace();
         }
     }
@@ -100,7 +107,7 @@ public class SQLiteDatabase {
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
-            instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to getBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to getBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -111,7 +118,7 @@ public class SQLiteDatabase {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to close SQLConnection for getBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -132,7 +139,7 @@ public class SQLiteDatabase {
             preparedStatement.setDouble(4, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to setBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to setBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -143,10 +150,26 @@ public class SQLiteDatabase {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to close SQLConnection for setBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
+    }
+
+    public HashMap<UUID, Double> getBaltopMap() {
+        if (baltopMap.size() == 0) {
+            //TODO Set the baltop map from the database
+        }
+
+        return baltopMap;
+    }
+
+    public double getBaltopServerTotal() {
+        if (serverTotal == -1) {
+            //TODO Set the server total from the database
+        }
+
+        return serverTotal;
     }
 
     public void close(PreparedStatement preparedStatement, ResultSet resultSet) {
@@ -158,7 +181,7 @@ public class SQLiteDatabase {
                 resultSet.close();
             }
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
             exception.printStackTrace();
         }
     }
