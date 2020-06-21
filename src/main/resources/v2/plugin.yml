@@ -6,6 +6,8 @@ author: lokka30
 depend: [PhantomLib]
 softdepend: [Vault, PlaceholderAPI]
 
+description: ${project.description}
+
 commands:
   balance:
     description: Check an account's balance.

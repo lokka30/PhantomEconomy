@@ -9,7 +9,7 @@
     <version>1.9.26-RELEASE</version>
 
     <name>PhantomEconomy</name>
-    <description>A lightweight and powerful economy plugin</description>
+    <description>A powerful and configurable economy plugin.</description>
 
     <packaging>jar</packaging>
     <properties>
