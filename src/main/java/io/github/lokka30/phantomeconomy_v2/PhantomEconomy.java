@@ -10,8 +10,7 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsEx
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 import io.github.lokka30.phantomeconomy_v2.commands.*;
-import io.github.lokka30.phantomeconomy_v2.databases.MySQLDatabase;
-import io.github.lokka30.phantomeconomy_v2.databases.SQLiteDatabase;
+import io.github.lokka30.phantomeconomy_v2.databases.Database;
 import io.github.lokka30.phantomeconomy_v2.listeners.JoinListener;
 import io.github.lokka30.phantomeconomy_v2.listeners.QuitListener;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
@@ -22,9 +21,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -48,9 +47,7 @@ public class PhantomEconomy extends JavaPlugin {
     public FlatFile settingsYaml;
     public FlatFile messagesYaml;
     private PluginManager pluginManager;
-
-    private SQLiteDatabase sqliteDatabase;
-    private MySQLDatabase mysqlDatabase;
+    private Database database;
 
     @Override
     public void onLoad() {
@@ -97,12 +94,16 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8+---+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+---+");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!accountManager.hasPlayerAccount(player)) {
-                try {
-                    accountManager.createPlayerAccount(player);
-                } catch (AccountAlreadyExistsException e) {
-                    e.printStackTrace();
+            try {
+                if (!accountManager.hasPlayerAccount(player)) {
+                    try {
+                        accountManager.createPlayerAccount(player);
+                    } catch (AccountAlreadyExistsException e) {
+                        e.printStackTrace();
+                    }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
             PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
@@ -177,36 +178,9 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void loadDatabase() {
         utils.log(LogLevel.INFO, "&8(&33/5&8) &7Connecting to the database...");
-        switch (fileCache.SETTINGS_DATABASE_TYPE.toLowerCase()) {
-            case "sqlite":
-                utils.log(LogLevel.INFO, "Using SQLite database, connecting ...");
-                sqliteDatabase = new SQLiteDatabase(this);
-                sqliteDatabase.load();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        sqliteDatabase.load();
-                        utils.log(LogLevel.INFO, "... connection completed.");
-                    }
-                }.runTaskAsynchronously(this);
-                break;
-            case "mysql":
-                utils.log(LogLevel.INFO, "Using MySQL database, connecting ...");
-                mysqlDatabase = new MySQLDatabase(this);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        mysqlDatabase.load();
-                        utils.log(LogLevel.INFO, "... connection completed.");
-                    }
-                }.runTaskAsynchronously(this);
-                break;
-            default:
-                utils.log(LogLevel.SEVERE, "Invalid database type in settings! Will set it &f&nIN MEMORY&7 to &fSQLite&7 and retry connecting to the database. &f&nYou will still need to fix the setting inside the file!&7");
-                fileCache.SETTINGS_DATABASE_TYPE = "sqlite";
-                loadDatabase();
-                break;
-        }
+        database = new Database(this);
+        database.load();
+        utils.log(LogLevel.INFO, "... connection completed.");
     }
 
     private void registerEvents() {
@@ -285,11 +259,7 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7... database disconnected.");
     }
 
-    public SQLiteDatabase getSQLiteDatabase() {
-        return sqliteDatabase;
-    }
-
-    public MySQLDatabase getMySQLDatabase() {
-        return mysqlDatabase;
+    public Database getDatabase() {
+        return database;
     }
 }

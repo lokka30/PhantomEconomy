@@ -27,7 +27,7 @@ public class BankAccount {
         if (!accountManager.cachedBankAccountBalances.containsKey(this)) {
             switch (accountManager.getInstance().fileCache.SETTINGS_DATABASE_TYPE) {
                 case "sqlite":
-                    accountManager.getInstance().getSQLiteDatabase().getBalance("BankAccount", getName(), currency.getName());
+                    accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName());
                     break;
                 case "mysql":
                     accountManager.getInstance().getMySQLDatabase().getBalance("BankAccount", getName(), currency.getName());
@@ -51,7 +51,7 @@ public class BankAccount {
 
             switch (accountManager.getInstance().fileCache.SETTINGS_DATABASE_TYPE) {
                 case "sqlite":
-                    accountManager.getInstance().getSQLiteDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
+                    accountManager.getInstance().getDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
                     break;
                 case "mysql":
                     accountManager.getInstance().getMySQLDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
