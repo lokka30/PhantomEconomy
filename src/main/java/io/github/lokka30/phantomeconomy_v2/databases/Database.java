@@ -14,6 +14,10 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class Database {
 
+    /*
+    Thanks to Hugo5551 for their contributions in this class.
+     */
+
     private PhantomEconomy instance;
     private Connection connection;
 
