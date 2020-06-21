@@ -65,7 +65,10 @@ public class Currency {
                 .replaceAll("%word%", getSingularOrPlural(balance));
     }
 
-    public double getNewbieBalance() {
+    /**
+     * @return the default balance set in the 'settings.yml' file by the user. Given to all players when they first use the currency.
+     */
+    public double getDefaultBalance() {
         return instance.fileCache.SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.get(this);
     }
 }

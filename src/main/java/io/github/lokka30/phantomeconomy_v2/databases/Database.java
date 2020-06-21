@@ -246,7 +246,7 @@ public class Database {
     }
 
     public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
-        setBalance(accountType, accountId, instance.economyManager.getDefaultCurrency().getName(), instance.economyManager.getDefaultCurrency().getNewbieBalance());
+        setBalance(accountType, accountId, instance.economyManager.getDefaultCurrency().getName(), instance.economyManager.getDefaultCurrency().getDefaultBalance());
     }
 
     public void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
