@@ -111,7 +111,7 @@ public class Database {
         connection = getConnection();
 
         Statement statement = connection.createStatement();
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` varchar(32) NOT NULL, `accountid` varchar(32) PRIMARY KEY NOT NULL, `currencyname` varchar(32) NOT NULL, `balance` double(64) NOT NULL, PRIMARY KEY (`accountid`));");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` VARCHAR(32) NOT NULL, `accountid` VARCHAR(48) PRIMARY KEY NOT NULL, `currencyname` VARCHAR(48) NOT NULL, `balance` DECIMAL(48,2) NOT NULL);");
         statement.close();
 
         if (connection != null) {
