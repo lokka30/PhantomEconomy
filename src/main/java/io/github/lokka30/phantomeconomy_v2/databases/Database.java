@@ -2,6 +2,7 @@ package io.github.lokka30.phantomeconomy_v2.databases;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
@@ -41,48 +42,41 @@ public class Database {
     public Connection getConnection() {
         switch (getDatabaseType()) {
             case SQLITE:
-                if (!instance.getDataFolder().exists()) {
-                    try {
-                        if (!instance.getDataFolder().createNewFile()) {
-                            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
+                synchronized (this) {
+                    if (!instance.getDataFolder().exists()) {
+                        try {
+                            if (!instance.getDataFolder().createNewFile()) {
+                                instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
+                                return null;
+                            }
+                        } catch (IOException exception) {
+                            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
+                            exception.printStackTrace();
                             return null;
                         }
-                    } catch (IOException exception) {
-                        instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
-                        exception.printStackTrace();
-                        return null;
                     }
-                }
-                try {
-                    if (connection != null && !connection.isClosed()) {
-                        return connection;
-                    }
-
                     try {
-                        Class.forName("org.sqlite.JDBC");
-                    } catch (ClassNotFoundException e) {
-                        instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed.");
+                        if (connection != null && !connection.isClosed()) {
+                            return connection;
+                        }
+
+                        try {
+                            Class.forName("org.sqlite.JDBC");
+                        } catch (ClassNotFoundException e) {
+                            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed.");
+                            e.printStackTrace();
+                            return null;
+                        }
+
+                        connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder());
+                    } catch (SQLException e) {
+                        instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
                         e.printStackTrace();
-                        return null;
                     }
 
-                    connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder());
                     return connection;
-                } catch (SQLException e) {
-                    instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
-                    e.printStackTrace();
                 }
-                break;
             case MYSQL:
-                try {
-                    if (connection != null && !connection.isClosed()) {
-                        return connection;
-                    }
-                } catch (SQLException exception) {
-                    instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to check if connection is already available in getsqlconnection");
-                    return null;
-                }
-
                 synchronized (this) {
                     try {
                         if (connection != null && !connection.isClosed()) {
@@ -105,39 +99,23 @@ public class Database {
                     } catch (SQLException exception) {
                         instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to establish connection to MySQL database. Ensure that you have entered the correct details in the MySQL configuration section in the settings file.");
                     }
+
+                    return connection;
                 }
-                break;
             default:
                 throw new IllegalStateException("Invalid database type " + getConnection().toString());
         }
-        return null;
     }
 
-    public void load() {
+    public void load() throws SQLException {
         connection = getConnection();
 
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` varchar(32) NOT NULL, `accountid` varchar(32) NOT NULL, `currencyname` varchar(32) NOT NULL, `balance` double(64) NOT NULL, PRIMARY KEY (`accountid`));");
-            statement.close();
-        } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to load the database. Stack trace:");
-            exception.printStackTrace();
-        }
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` varchar(32) NOT NULL, `accountid` varchar(32) PRIMARY KEY NOT NULL, `currencyname` varchar(32) NOT NULL, `balance` double(64) NOT NULL, PRIMARY KEY (`accountid`));");
+        statement.close();
 
-        initialise();
-    }
-
-    public void initialise() {
-        connection = getConnection();
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accountid = ?");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            close(preparedStatement, resultSet);
-        } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to initialise the database. Stack trace:");
-            exception.printStackTrace();
+        if (connection != null) {
+            connection.close();
         }
     }
 
@@ -148,7 +126,10 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accounttype = '" + accountType + "', accountid = '" + accountId + "', currencyname = '" + currencyName + "';");
+            preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accounttype = '?', accountid = '?', currencyname = '?';");
+            preparedStatement.setString(1, accountType);
+            preparedStatement.setString(2, accountId);
+            preparedStatement.setString(3, currencyName);
             resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
@@ -187,14 +168,14 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("REPLACE INTO phantomeconomy (accounttype,accountid,currencyname,balance) VALUES(?,?,?,?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accounttype,accountid,currencyname,balance) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE balance=?"); //Thanks to Hugo5551 for providing this command.
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);
             preparedStatement.setDouble(4, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to setBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -205,7 +186,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+                instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -223,6 +204,8 @@ public class Database {
                 double balance = resultSet.getDouble("balance");
                 baltopMap.put(uuid, balance);
             }
+
+            close(connection, preparedStatement, resultSet);
         }
 
         return baltopMap;
@@ -230,6 +213,7 @@ public class Database {
 
     public double getBaltopServerTotal(Currency currency) throws SQLException {
         if (serverTotal == -1) {
+            serverTotal = 0.0; //This value is shown if nobody has a balance yet
             connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM phantomeconomy WHERE currency = ?;");
             preparedStatement.setString(1, currency.getName());
@@ -237,33 +221,35 @@ public class Database {
 
             if (resultSet.next()) {
                 serverTotal = resultSet.getDouble("balance");
-                return serverTotal;
             }
 
-            serverTotal = 0.0; //This value is shown if nobody has a balance yet
+            close(connection, preparedStatement, resultSet);
         }
 
         return serverTotal;
     }
 
     public boolean hasAccount(String accountType, String accountId) throws SQLException {
-        Connection connection;
-        PreparedStatement preparedStatement;
-
-        connection = getConnection();
-        preparedStatement = connection.prepareStatement("SELECT 1 FROM phantomeconomy WHERE accounttype = ?, accountid = ?;");
+        boolean hasAccount = false;
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM phantomeconomy WHERE accounttype = ?, accountid = ?;");
         preparedStatement.setString(1, accountType);
         preparedStatement.setString(2, accountId);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            return resultSet.getString("accountid") != null;
+            hasAccount = resultSet.getString("accountid") != null;
+            close(connection, preparedStatement, resultSet);
         }
 
-        return false;
+        return hasAccount;
     }
 
-    public void close(PreparedStatement preparedStatement, ResultSet resultSet) {
+    public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
+        setBalance(accountType, accountId, instance.economyManager.getDefaultCurrency().getName(), instance.economyManager.getDefaultCurrency().getNewbieBalance());
+    }
+
+    public void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
         try {
             if (preparedStatement != null) {
                 preparedStatement.close();

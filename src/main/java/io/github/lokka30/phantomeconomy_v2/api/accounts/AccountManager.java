@@ -3,6 +3,7 @@ package io.github.lokka30.phantomeconomy_v2.api.accounts;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.SQLException;
@@ -50,27 +51,27 @@ public class AccountManager {
         return instance.getDatabase().hasAccount("BankAccount", name);
     }
 
-    public void createPlayerAccount(final OfflinePlayer offlinePlayer) throws AccountAlreadyExistsException, SQLException {
+    public void createPlayerAccount(final OfflinePlayer offlinePlayer) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
         if (hasPlayerAccount(offlinePlayer)) {
             throw new AccountAlreadyExistsException("Tried to create PlayerAccount with uuid '" + offlinePlayer.getUniqueId().toString() + "' but its account already exists.");
         } else {
-            //TODO Tell the database to create the account
+            instance.getDatabase().createAccount("PlayerAccount", offlinePlayer.getUniqueId().toString());
         }
     }
 
-    public void createNonPlayerAccount(final String name) throws AccountAlreadyExistsException, SQLException {
+    public void createNonPlayerAccount(final String name) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
         if (hasNonPlayerAccount(name)) {
             throw new AccountAlreadyExistsException("Tried to create NonPlayerAccount with name '" + name + "' but its account already exists.");
         } else {
-            //TODO Tell the database to create the account
+            instance.getDatabase().createAccount("NonPlayerAccount", name);
         }
     }
 
-    public void createBankAccount(final String name) throws AccountAlreadyExistsException, SQLException {
+    public void createBankAccount(final String name) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
         if (hasBankAccount(name)) {
             throw new AccountAlreadyExistsException("Tried to create BankAccount with name '" + name + "' but its account already exists.");
         } else {
-            //TODO Tell the database to create the account
+            instance.getDatabase().createAccount("BankAccount", name);
         }
     }
 }

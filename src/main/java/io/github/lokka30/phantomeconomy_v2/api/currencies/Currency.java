@@ -2,22 +2,17 @@ package io.github.lokka30.phantomeconomy_v2.api.currencies;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
-import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 
 import java.text.DecimalFormat;
 
 public class Currency {
 
     private PhantomEconomy instance;
-    private FileCache fileCache;
-    private EconomyManager economyManager;
     private String name;
 
     public Currency(EconomyManager economyManager, String name) {
-        this.economyManager = economyManager;
         this.name = name;
         this.instance = economyManager.getInstance();
-        this.fileCache = instance.fileCache;
     }
 
     @SuppressWarnings("unused")
@@ -68,5 +63,9 @@ public class Currency {
         return getFinalFormat()
                 .replaceAll("%balance%", formatNumberBalance(balance))
                 .replaceAll("%word%", getSingularOrPlural(balance));
+    }
+
+    public double getNewbieBalance() {
+        return instance.fileCache.SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.get(this);
     }
 }
