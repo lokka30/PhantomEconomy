@@ -133,17 +133,17 @@ public class Database {
             resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
-                //TODO PUT THE DEFAULT BALANCE INTO THE DATABASE.
-                //TODO RETURN DEFAULT BALANCE FOR THAT CURRENCY.
-                return 0.0;
+                double defaultBalance = instance.economyManager.getCurrency(currencyName).getDefaultBalance();
+                setBalance(accountType, accountId, currencyName, defaultBalance);
+                return defaultBalance;
             }
 
             if (resultSet.next()) {
                 return resultSet.getDouble("balance");
             }
-        } catch (SQLException exception) {
+        } catch (SQLException | InvalidCurrencyException exception) {
             exception.printStackTrace();
-            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to getBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -154,7 +154,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+                instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -258,7 +258,7 @@ public class Database {
                 resultSet.close();
             }
         } catch (SQLException exception) {
-            instance.utils.log(LogLevel.SEVERE, "&cSQLiteDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
+            instance.utils.log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
             exception.printStackTrace();
         }
     }
