@@ -1,7 +1,7 @@
 PhantomEconomy v2.0.0 is an in-development version which will completely transform the plugin into what I actually wanted it to become. It will contain a plethora of new features and will hopefully have less bugs and more smiles.
 
 Here's a list of planned features, improvements and fixes over v1-
-1. (Almost complete) MySQL and SQLite database storage
+1. MySQL and SQLite database storage
 2. Multiple user-configurable currencies
 3. Even better settings file
 4. Fully cached balances and configuration files for much better performance
@@ -11,7 +11,7 @@ Here's a list of planned features, improvements and fixes over v1-
 8. (Not started) PlaceholderAPI placeholders for scoreboards, etc
 9. No longer Vault-dependent
 10. General code improvements
-11. (Almost complete) New baltop system
+11. New baltop system
 12. (Not started) Import from Essentials Economy
 13. (Not started) Reliance on PhantomLib
 14. Several more minor things..
@@ -21,3 +21,4 @@ Here's a list of planned features, improvements and fixes over v1-
 - (Not started) Transaction log
 - (Not started) Baltop placeholders for PlaceholderAPI
 - (Not started) [balance] sign
+- (Not started) Configurable repeating task which clears caches of accounts

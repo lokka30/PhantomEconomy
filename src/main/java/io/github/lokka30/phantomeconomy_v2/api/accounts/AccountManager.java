@@ -8,15 +8,14 @@ import org.bukkit.OfflinePlayer;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class AccountManager {
 
-    //TODO SCHEDULE REPEATING TASK TO CLEAR NON PLAYER ACCOUNT AND BANK ACCOUNT BALANCES.
-
-    public HashMap<PlayerAccount, HashMap<Currency, Double>> cachedPlayerAccountBalances = new HashMap<>();
-    public HashMap<NonPlayerAccount, HashMap<Currency, Double>> cachedNonPlayerAccountBalances = new HashMap<>();
-    public HashMap<BankAccount, HashMap<Currency, Double>> cachedBankAccountBalances = new HashMap<>();
+    public HashMap<UUID, HashMap<Currency, Double>> cachedPlayerAccountBalances = new HashMap<>();
+    public HashMap<String, HashMap<Currency, Double>> cachedNonPlayerAccountBalances = new HashMap<>();
+    public HashMap<String, HashMap<Currency, Double>> cachedBankAccountBalances = new HashMap<>();
     private PhantomEconomy instance;
 
     public AccountManager(final PhantomEconomy instance) {

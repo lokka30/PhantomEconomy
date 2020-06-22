@@ -1,6 +1,5 @@
 package io.github.lokka30.phantomeconomy_v2.utils;
 
-import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -9,10 +8,7 @@ import java.util.List;
 
 public class Utils {
 
-    private PhantomEconomy instance;
-
-    public Utils(final PhantomEconomy instance) {
-        this.instance = instance;
+    public Utils() {
     }
 
     public String colorize(final String msg) {
@@ -83,9 +79,5 @@ public class Utils {
 
     public int getLatestMessagesFileVersion() {
         return 5;
-    }
-
-    public int getLatestDataFileVersion() {
-        return 1;
     }
 }

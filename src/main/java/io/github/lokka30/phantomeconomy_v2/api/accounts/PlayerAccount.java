@@ -3,8 +3,10 @@ package io.github.lokka30.phantomeconomy_v2.api.accounts;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -17,6 +19,11 @@ public class PlayerAccount {
     public PlayerAccount(AccountManager accountManager, OfflinePlayer offlinePlayer) {
         this.accountManager = accountManager;
         this.offlinePlayer = offlinePlayer;
+    }
+
+    public PlayerAccount(AccountManager accountManager, UUID uuid) {
+        this.accountManager = accountManager;
+        this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
     }
 
     public OfflinePlayer getPlayer() {
@@ -33,7 +40,13 @@ public class PlayerAccount {
 
     public double getBalance(Currency currency) {
         if (!accountManager.cachedPlayerAccountBalances.containsKey(getUUID())) {
-            //TODO get the balance from the database and put it into the cache
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+            accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
+        } else if (!accountManager.cachedPlayerAccountBalances.get(getUUID()).containsKey(currency)) {
+            HashMap<Currency, Double> balanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());
+            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+            accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
         }
 
         return accountManager.cachedPlayerAccountBalances.get(getUUID()).get(currency);
@@ -41,9 +54,12 @@ public class PlayerAccount {
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
-            throw new NegativeAmountException("Tried to set balance to PlayerAccount with uuid '" + getUUIDAsString() + "' and amount '" + amount + "' but the amount is lower than 0");
+            throw new NegativeAmountException("Tried to set balance to PlayerAccount with name '" + getUUID() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
-            //TODO set tbe balance in the cache and in the database.
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency, amount);
+            accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
+            accountManager.getInstance().getDatabase().setBalance("PlayerAccount", getUUIDAsString(), currency.getName(), amount);
         }
     }
 

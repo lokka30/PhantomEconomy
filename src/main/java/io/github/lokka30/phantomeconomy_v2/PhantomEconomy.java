@@ -30,14 +30,14 @@ import java.util.Objects;
 public class PhantomEconomy extends JavaPlugin {
 
     /*
-    TODO DATABASE LAYOUT
+    DATABASE LAYOUT
 
     AccountType, AccountId, CurrencyName, Balance
     ---------------------------------------------
     NonPlayerAccount, TownyNationBal, dollars, 25.23
     PlayerAccount, notch-uuid-eh51-35151, dollars, 23.13
     PlayerAccount, notch-uuid-eh51-35151, coins, 3.19
-    BankAccount, lokka30sbank, (vault currency), 2536156.67
+    BankAccount, lokka30sbank, dollars, 2536156.67
      */
 
     public Utils utils;
@@ -51,7 +51,7 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        utils = new Utils(this);
+        utils = new Utils();
         fileCache = new FileCache(this);
         accountManager = new AccountManager(this);
         economyManager = new EconomyManager(this);
@@ -60,31 +60,27 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        utils.log(LogLevel.INFO, "&8+---+ &f(Enable Started) &8+---+");
+        utils.log(LogLevel.WARNING, "&8+---+ &f(Enable Started) &8+---+");
         final long timeStart = System.currentTimeMillis();
 
-        utils.log(LogLevel.INFO, "&8--------------------------------");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, "&b&l&nWARNING!");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, "&8--------------------------------");
-        utils.log(LogLevel.INFO, "&bPhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers in which wouldn't want to risk harm from an economy plugin malfunction. " +
+        utils.log(LogLevel.WARNING, "&8--------------------------------");
+        utils.log(LogLevel.WARNING, "&b&l&nWARNING!");
+        utils.log(LogLevel.WARNING, "&8--------------------------------");
+        utils.log(LogLevel.WARNING, "&bPhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers in which wouldn't want to risk harm from an economy plugin malfunction. " +
                 "Please use carefully and report all issues to me, make sure to note that you are using 2.0 when reporting them. " +
                 "I will not be responsible if a malfunction occurs in the plugin and damages your server. " +
                 "Thank you, and be careful!");
-        utils.log(LogLevel.INFO, "&8--------------------------------");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, "&b&l&nWARNING!");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, " ");
-        utils.log(LogLevel.INFO, "&8--------------------------------");
+        utils.log(LogLevel.WARNING, "&8--------------------------------");
+        utils.log(LogLevel.WARNING, "&b&l&nWARNING!");
+        utils.log(LogLevel.WARNING, "&8--------------------------------");
 
         checkCompatibility();
         loadFiles();
-        loadDatabase();
+        try {
+            loadDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         registerEvents();
         hookAvailablePlugins();
         registerCommands();
@@ -98,7 +94,7 @@ public class PhantomEconomy extends JavaPlugin {
                 if (!accountManager.hasPlayerAccount(player)) {
                     try {
                         accountManager.createPlayerAccount(player);
-                    } catch (AccountAlreadyExistsException e) {
+                    } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
                         e.printStackTrace();
                     }
                 }
@@ -120,7 +116,7 @@ public class PhantomEconomy extends JavaPlugin {
                 balanceMap.put(currency, playerAccount.getBalance(currency));
             }
 
-            accountManager.cachedPlayerAccountBalances.put(playerAccount, balanceMap);
+            accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
         }
 
         checkForUpdates();
@@ -176,7 +172,7 @@ public class PhantomEconomy extends JavaPlugin {
         fileCache.loadFromFiles();
     }
 
-    private void loadDatabase() {
+    private void loadDatabase() throws SQLException {
         utils.log(LogLevel.INFO, "&8(&33/5&8) &7Connecting to the database...");
         database = new Database(this);
         database.load();

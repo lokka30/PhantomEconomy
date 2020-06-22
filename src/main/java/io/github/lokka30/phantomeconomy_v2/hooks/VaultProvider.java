@@ -13,8 +13,10 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import java.sql.SQLException;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class VaultProvider extends AbstractEconomy {
 
     private PhantomEconomy instance;
@@ -84,15 +86,31 @@ public class VaultProvider extends AbstractEconomy {
 
         // Check if it is a player or not first.
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            return accountManager.hasPlayerAccount(offlinePlayer);
+            try {
+                return accountManager.hasPlayerAccount(offlinePlayer);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         } else {
-            return accountManager.hasNonPlayerAccount(name);
+            try {
+                return accountManager.hasNonPlayerAccount(name);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
+        return false;
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        return accountManager.hasPlayerAccount(offlinePlayer);
+        try {
+            return accountManager.hasPlayerAccount(offlinePlayer);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     @Override
@@ -366,35 +384,47 @@ public class VaultProvider extends AbstractEconomy {
             createPlayerAccount(Bukkit.getOfflinePlayer(name));
             return true;
         } else {
-            if (accountManager.hasNonPlayerAccount(name)) {
-                return false;
-            } else {
-                try {
-                    accountManager.createNonPlayerAccount(name);
-                    return true;
-                } catch (AccountAlreadyExistsException e) {
-                    instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the town already has an account. The developer should check if this is the case before doing so.");
-                    e.printStackTrace();
+            try {
+                if (accountManager.hasNonPlayerAccount(name)) {
                     return false;
+                } else {
+                    try {
+                        accountManager.createNonPlayerAccount(name);
+                        return true;
+                    } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
+                        instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
+                        e.printStackTrace();
+                        return false;
+                    }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
+
+        return false;
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        if (accountManager.hasPlayerAccount(offlinePlayer)) {
-            return false;
-        } else {
-            try {
-                accountManager.createPlayerAccount(offlinePlayer);
-                return true;
-            } catch (AccountAlreadyExistsException e) {
-                instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
-                e.printStackTrace();
+        try {
+            if (accountManager.hasPlayerAccount(offlinePlayer)) {
                 return false;
+            } else {
+                try {
+                    accountManager.createPlayerAccount(offlinePlayer);
+                    return true;
+                } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
+                    instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
+                    e.printStackTrace();
+                    return false;
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+        return false;
     }
 
     @Override

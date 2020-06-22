@@ -4,6 +4,8 @@ import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;
 
+import java.util.HashMap;
+
 @SuppressWarnings("unused")
 public class NonPlayerAccount {
 
@@ -21,20 +23,27 @@ public class NonPlayerAccount {
     }
 
     public double getBalance(Currency currency) {
-        //TODO if the account doesn't have this currency set in the database, then set it with the default amount.
-
-        if (!accountManager.cachedNonPlayerAccountBalances.containsKey(name)) {
-            //TODO get the balance from the database and put it into the cache
+        if (!accountManager.cachedNonPlayerAccountBalances.containsKey(getName())) {
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("NonPlayerAccount", getName(), currency.getName()));
+            accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
+        } else if (!accountManager.cachedNonPlayerAccountBalances.get(getName()).containsKey(currency)) {
+            HashMap<Currency, Double> balanceMap = accountManager.cachedNonPlayerAccountBalances.get(getName());
+            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("NonPlayerAccount", getName(), currency.getName()));
+            accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
         }
 
-        return accountManager.cachedNonPlayerAccountBalances.get(name).get(currency);
+        return accountManager.cachedNonPlayerAccountBalances.get(getName()).get(currency);
     }
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
             throw new NegativeAmountException("Tried to set balance to NonPlayerAccount with name '" + getName() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
-            //TODO set tbe balance in the cache and in the database.
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency, amount);
+            accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
+            accountManager.getInstance().getDatabase().setBalance("NonPlayerAccount", getName(), currency.getName(), amount);
         }
     }
 
