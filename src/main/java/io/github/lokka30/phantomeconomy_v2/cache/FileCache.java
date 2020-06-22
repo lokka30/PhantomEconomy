@@ -40,7 +40,8 @@ public class FileCache {
 
     //Load or reload values from files
     public void loadFromFiles() {
-        FlatFile settings = instance.settingsYaml;
+        FlatFile settings = instance.getSettings();
+        FlatFile messages = instance.getMessages();
 
         SETTINGS_OTHER_USE_UPDATE_CHECKER = settings.get("other-options.use-update-checker", true);
         SETTINGS_DATABASE_TYPE = settings.get("database.database-type", "SQLite");
@@ -66,9 +67,9 @@ public class FileCache {
             Currency currency;
             final String path = "currencies.currency-settings." + currencyName + ".";
             try {
-                currency = instance.economyManager.getCurrency(currencyName);
+                currency = instance.getEconomyManager().getCurrency(currencyName);
             } catch (InvalidCurrencyException exception) {
-                instance.utils.log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
+                instance.getUtils().log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
                 continue;
             }
 

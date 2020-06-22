@@ -2,6 +2,8 @@ name: PhantomEconomy
 version: ${project.version}
 main: io.github.lokka30.phantomeconomy.PhantomEconomy
 author: lokka30
+api-version: '1.13'
+website: https://www.spigotmc.org/resources/phantomeconomy-your-simple-open-source-economy.75053/
 
 depend: [PhantomLib]
 softdepend: [Vault, PlaceholderAPI]

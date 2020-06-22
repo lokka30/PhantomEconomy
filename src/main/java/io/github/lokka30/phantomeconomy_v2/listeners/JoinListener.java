@@ -21,9 +21,9 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) throws InvalidCurrencyException, SQLException {
         final Player player = event.getPlayer();
-        if (!instance.accountManager.hasPlayerAccount(player)) {
+        if (!instance.getAccountManager().hasPlayerAccount(player)) {
             try {
-                instance.accountManager.createPlayerAccount(player);
+                instance.getAccountManager().createPlayerAccount(player);
             } catch (AccountAlreadyExistsException exception) {
                 exception.printStackTrace();
             }

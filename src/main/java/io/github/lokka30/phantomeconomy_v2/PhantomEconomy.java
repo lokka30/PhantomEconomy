@@ -11,15 +11,18 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyExcepti
 import io.github.lokka30.phantomeconomy_v2.cache.FileCache;
 import io.github.lokka30.phantomeconomy_v2.commands.*;
 import io.github.lokka30.phantomeconomy_v2.databases.Database;
+import io.github.lokka30.phantomeconomy_v2.hooks.VaultProvider;
 import io.github.lokka30.phantomeconomy_v2.listeners.JoinListener;
 import io.github.lokka30.phantomeconomy_v2.listeners.QuitListener;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 import io.github.lokka30.phantomeconomy_v2.utils.UpdateChecker;
 import io.github.lokka30.phantomeconomy_v2.utils.Utils;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -40,14 +43,15 @@ public class PhantomEconomy extends JavaPlugin {
     BankAccount, lokka30sbank, dollars, 2536156.67
      */
 
-    public Utils utils;
-    public FileCache fileCache;
-    public AccountManager accountManager;
-    public EconomyManager economyManager;
-    public FlatFile settingsYaml;
-    public FlatFile messagesYaml;
+    private Utils utils;
+    private FileCache fileCache;
+    private AccountManager accountManager;
+    private EconomyManager economyManager;
+    private FlatFile settings;
+    private FlatFile messages;
     private PluginManager pluginManager;
     private Database database;
+    private Economy vaultProvider;
 
     @Override
     public void onLoad() {
@@ -126,10 +130,9 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8(&31/5&8) &7Checking compatibility...");
 
         //Check server version
-        final String currentVersion = getServer().getClass().getPackage().getName().split("\\.")[3];
-        if (utils.getSupportedServerVersions().contains(currentVersion)) {
-            utils.log(LogLevel.INFO, "Detected server version as '&b" + currentVersion + "&7' (supported).");
-        } else {
+        final String packageName = getServer().getClass().getPackage().getName();
+        final String currentVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+        if (!utils.getSupportedServerVersions().contains(currentVersion)) {
             utils.log(LogLevel.WARNING, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not support. Use at your own risk, and do not contact support if you have issues.");
         }
     }
@@ -137,11 +140,11 @@ public class PhantomEconomy extends JavaPlugin {
     private void loadFiles() {
         utils.log(LogLevel.INFO, "&8(&32/5&8) &7Loading files...");
 
-        settingsYaml = LightningBuilder
+        settings = LightningBuilder
                 .fromFile(new File(getDataFolder() + "settings"))
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
-        messagesYaml = LightningBuilder
+        messages = LightningBuilder
                 .fromFile(new File(getDataFolder() + "messages"))
                 .addInputStreamFromResource("messages.yml")
                 .createYaml();
@@ -161,11 +164,11 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         //Check their versions
-        if (settingsYaml.get("file-version", 0) != utils.getLatestSettingsFileVersion()) {
+        if (settings.get("file-version", 0) != utils.getLatestSettingsFileVersion()) {
             utils.log(LogLevel.SEVERE, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (messagesYaml.get("file-version", 0) != utils.getLatestMessagesFileVersion()) {
+        if (messages.get("file-version", 0) != utils.getLatestMessagesFileVersion()) {
             utils.log(LogLevel.SEVERE, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
@@ -191,7 +194,8 @@ public class PhantomEconomy extends JavaPlugin {
 
         if (pluginManager.getPlugin("Vault") != null) {
             utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to hook ...");
-            //TODO HOOK
+            vaultProvider = new VaultProvider(this);
+            Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
             utils.log(LogLevel.INFO, "... plugin '&bVault&7' hooked.");
         }
     }
@@ -244,7 +248,8 @@ public class PhantomEconomy extends JavaPlugin {
 
         if (pluginManager.getPlugin("Vault") != null) {
             utils.log(LogLevel.INFO, "Plugin '&bVault&7' installed, attempting to unhook ...");
-            //TODO Unhook
+            Bukkit.getServicesManager().unregister(Economy.class, vaultProvider);
+
             utils.log(LogLevel.INFO, "... plugin '&bVault&7' unhooked.");
         }
     }
@@ -257,5 +262,29 @@ public class PhantomEconomy extends JavaPlugin {
 
     public Database getDatabase() {
         return database;
+    }
+
+    public FlatFile getSettings() {
+        return settings;
+    }
+
+    public FlatFile getMessages() {
+        return messages;
+    }
+
+    public Utils getUtils() {
+        return utils;
+    }
+
+    public FileCache getFileCache() {
+        return fileCache;
+    }
+
+    public AccountManager getAccountManager() {
+        return accountManager;
+    }
+
+    public EconomyManager getEconomyManager() {
+        return economyManager;
     }
 }

@@ -25,8 +25,8 @@ public class VaultProvider extends AbstractEconomy {
 
     public VaultProvider(final PhantomEconomy instance) {
         this.instance = instance;
-        this.economyManager = instance.economyManager;
-        this.accountManager = instance.accountManager;
+        this.economyManager = instance.getEconomyManager();
+        this.accountManager = instance.getAccountManager();
     }
 
     @Override
@@ -392,7 +392,7 @@ public class VaultProvider extends AbstractEconomy {
                         accountManager.createNonPlayerAccount(name);
                         return true;
                     } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                        instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
+                        instance.getUtils().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
                         e.printStackTrace();
                         return false;
                     }
@@ -415,7 +415,7 @@ public class VaultProvider extends AbstractEconomy {
                     accountManager.createPlayerAccount(offlinePlayer);
                     return true;
                 } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                    instance.utils.log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
+                    instance.getUtils().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
                     e.printStackTrace();
                     return false;
                 }

@@ -15,6 +15,6 @@ public class QuitListener implements Listener {
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
-        instance.accountManager.cachedPlayerAccountBalances.remove(event.getPlayer().getUniqueId());
+        instance.getAccountManager().cachedPlayerAccountBalances.remove(event.getPlayer().getUniqueId());
     }
 }
