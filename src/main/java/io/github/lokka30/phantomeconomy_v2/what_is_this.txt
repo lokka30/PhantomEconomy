@@ -16,7 +16,7 @@ Here's a list of planned features, improvements and fixes over v1-
 13. (Not started) Reliance on PhantomLib
 14. Several more minor things..
 - (Not started) Command to give money to all online and/or offline players
-- (Not started) Server total in baltop
+- Server total in baltop
 - (Not started) Customisable 'console added $x to your account' message
 - (Not started) Transaction log
 - (Not started) Baltop placeholders for PlaceholderAPI
