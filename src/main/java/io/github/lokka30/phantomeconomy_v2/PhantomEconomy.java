@@ -132,8 +132,15 @@ public class PhantomEconomy extends JavaPlugin {
         //Check server version
         final String packageName = getServer().getClass().getPackage().getName();
         final String currentVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-        if (!utils.getSupportedServerVersions().contains(currentVersion)) {
-            utils.log(LogLevel.WARNING, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not support. Use at your own risk, and do not contact support if you have issues.");
+        boolean isSupported = false;
+        for (String supportedBaseVersion : getUtils().getSupportedServerVersions()) {
+            if (currentVersion.contains(supportedBaseVersion)) {
+                isSupported = true;
+                break;
+            }
+        }
+        if (!isSupported) {
+            utils.log(LogLevel.WARNING, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not provide support for. Use at your own risk, and do not contact support if you have issues.");
         }
     }
 
