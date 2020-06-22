@@ -22,6 +22,18 @@ Here's a list of planned features, improvements and fixes over v1-
 - [balance] sign
 - Configurable repeating task which clears caches of accounts
 
+
+Can I test it early?
+- Yep, you can. You assume all responsibility for any errors or damages caused. v2 is strictly in development and is by no means ready for installation on a server that has too much to lose.
+- The database commands haven't been tested at all yet, so make sure you backup or make a new database for testing.
+- Instructions:
+  1. If you aren't compiling the plugin: open the jar file with WinRar, 7-Zip or another suitable program that can open up jar files and view and edit its contents.
+  2. delete all resource files that aren't in the v2 folder. If you are compiling the plugin then the v2 folder is inside the resources folder.
+  2. Move all of the contents of the v2 folder into the parent directory. Delete the v2 folder once complete.
+  3. In the plugin.yml file, in the 'main' setting, change it from 'io.github.lokka30.phantomeconomy.PhantomEconomy' to 'io.github.lokka30.phantomeconomy_v2.PhantomEconomy'.
+  4. Save the plugin.yml file and compile/save the jar file.
+
+
 To-do List, in order:
 - Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands
@@ -31,6 +43,12 @@ To-do List, in order:
 - Check if the plugin's databases operate properly
 - Check if the Vault hook operates properly
 - Add placeholderapi placeholders
+ - %phantomeconomy_baltop_pos1_balance%
+ - %phantomeconomy_baltop_pos1_name%
+ - add positions 1-5:
+ - %phantomeconomy_baltop_pos5_balance%, etc.
+ - %phantomeconomy_servertotal%
+ - %phantomeconomy_balance%
 - Complete the bank account implementation
 - Add an import command to import essentials economy data
 - Transaction log
