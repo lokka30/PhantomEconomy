@@ -31,7 +31,7 @@ public class Database {
     }
 
     public DatabaseType getDatabaseType() {
-        switch (instance.getFileCache().SETTINGS_DATABASE_TYPE) {
+        switch (instance.getFileCache().SETTINGS_DATABASE_TYPE.toLowerCase()) {
             case "sqlite":
                 return DatabaseType.SQLITE;
             case "mysql":
