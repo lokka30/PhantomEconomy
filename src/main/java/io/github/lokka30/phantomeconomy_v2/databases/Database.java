@@ -21,8 +21,8 @@ public class Database {
     private PhantomEconomy instance;
     private Connection connection;
 
-    HashMap<UUID, Double> baltopMap;
-    double serverTotal;
+    private HashMap<UUID, Double> baltopMap;
+    private double serverTotal;
 
     public Database(PhantomEconomy instance) {
         this.instance = instance;
@@ -251,6 +251,11 @@ public class Database {
 
     public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
         setBalance(accountType, accountId, instance.getEconomyManager().getDefaultCurrency().getName(), instance.getEconomyManager().getDefaultCurrency().getDefaultBalance());
+    }
+
+    public void clearBaltopCacheAndServerTotal() {
+        baltopMap.clear();
+        serverTotal = -1;
     }
 
     public void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {

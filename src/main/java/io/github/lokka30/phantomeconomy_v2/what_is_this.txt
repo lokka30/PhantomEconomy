@@ -21,4 +21,4 @@ Here's a list of planned features, improvements and fixes over v1-
 - (Not started) Transaction log
 - (Not started) Baltop placeholders for PlaceholderAPI
 - (Not started) [balance] sign
-- (Not started) Configurable repeating task which clears caches of accounts
+- Configurable repeating task which clears caches of accounts

@@ -104,6 +104,31 @@ currencies:
           singular: 'coin'
           plural: 'coins'
 
+# Here you can manage what tasks will start and repeat. Having these enabled will make the plugin use less memory but might increase the rate of which the plugin needs to use the database.
+# IMPORTANT: Changes in this section will only take effect on a server restart.
+startup-tasks:
+
+  # Clear the Baltop cache?
+  # This is highly recommended, else the baltop list will only update every restart.
+  # When the baltop cache is cleared, it will fetch new results from the database.
+  # Rate: 15 minutes
+  clear-baltop-cache: true
+
+  # Clear the PlayerAccount balance cache?
+  # This isn't really required as players are removed from the cache when they leave the server.
+  # Rate: 45 minutes
+  clear-player-account-cache: false
+
+  # Clear the NonPlayerAccount cache?
+  # This should be enabled as this cache is only reset when the server stops.
+  # Rate: 45 minutes
+  clear-non-player-account-cache: true
+
+  # Clear the BankAccount cache?
+  # This should be enabled as this cache is only reset when the server stops.
+  # Rate: 45 minutes
+  clear-bank-account-cache: true
+
 # Other options not related to the economy
 other-options:
 

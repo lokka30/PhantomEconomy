@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -123,6 +124,8 @@ public class PhantomEconomy extends JavaPlugin {
             accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
         }
 
+        startRepeatingTasks();
+
         checkForUpdates();
     }
 
@@ -221,6 +224,47 @@ public class PhantomEconomy extends JavaPlugin {
         utils.log(LogLevel.INFO, "&8(&36/6&8) &7Registering bStats...");
 
         new Metrics(this, 6463);
+    }
+
+    private void startRepeatingTasks() {
+        long fifteenMinutes = 20 * 60 * 15;
+        long fourtyFiveMinutes = 20 * 60 * 45;
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getDatabase().clearBaltopCacheAndServerTotal();
+                }
+            }.runTaskTimer(this, fifteenMinutes, fifteenMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedPlayerAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedNonPlayerAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedBankAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
+        }
     }
 
     private void checkForUpdates() {

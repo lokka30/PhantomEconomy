@@ -24,6 +24,10 @@ public class FileCache {
     public List<String> SETTINGS_CURRENCIES_ENABLED_CURRENCIES;
     public String SETTINGS_DEFAULT_CURRENCY;
     public String SETTINGS_VAULT_CURRENCY;
+    public boolean SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE;
+    public boolean SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE;
+    public boolean SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE;
+    public boolean SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE;
 
     public HashMap<Currency, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
     public HashMap<Currency, Integer> SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP;
@@ -55,6 +59,10 @@ public class FileCache {
         SETTINGS_CURRENCIES_ENABLED_CURRENCIES = settings.get("currencies.enabled-currencies", null);
         SETTINGS_DEFAULT_CURRENCY = settings.get("default-currency", null);
         SETTINGS_VAULT_CURRENCY = settings.get("vault-currency", null);
+        SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE = settings.get("startup-tasks.clear-baltop-cache", true);
+        SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-player-account-cache", false);
+        SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-non-player-account-cache", true);
+        SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE = settings.get("startup-tasks.clear-bank-account-cache", true);
 
 
         SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP = new HashMap<>();
