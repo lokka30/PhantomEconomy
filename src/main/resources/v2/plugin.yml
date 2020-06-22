@@ -4,22 +4,91 @@ main: io.github.lokka30.phantomeconomy.PhantomEconomy
 author: lokka30
 api-version: '1.13'
 website: https://www.spigotmc.org/resources/phantomeconomy-your-simple-open-source-economy.75053/
+description: ${project.description}
 
 depend: [PhantomLib]
-softdepend: [Vault, PlaceholderAPI]
-
-description: ${project.description}
+softdepend: [Vault, PlaceholderAPI, Essentials]
 
 commands:
   balance:
     description: Check an account's balance.
+    usage: /<command> [currency] [player]
+    aliases: [bal, purse, money, wallet]
+
   baltop:
     description: View the top balances on the server.
+    usage: /<command> [#position/player]
+    aliases: [balancetop, topbalance, topbalances, topbal]
+
   economy:
     description: Manage account balances for each currency.
+    usage: /<command> <action> <player/*> <amount> [currency]
+    aliases: [eco, econ]
+
   pay:
     description: Send money from your account to the target's account.
+    usage: /<command> <player/*> <amount> [currency]
+
   phantomeconomy:
     description: View information about the plugin or manage it.
+    usage: /<command> <info/reload/forceBaltopUpdate/clearCache>
+    aliases: [pe, peconomy, phantomeco, phantomecon]
 
-permissions: []
+permissions:
+  phantomeconomy.balance:
+    description: Allows the user/s to run the '/balance' command.
+    default: true
+
+  phantomeconomy.balance.others:
+    description: Allows the user/s to run the '/balance' command and specify another player to view the balance of.
+    default: true
+    children:
+      phantomeconomy.balance: true
+
+  phantomeconomy.baltop:
+    description: Allows the user/s to run the '/baltop' command.
+    default: true
+
+  phantomeconomy.baltop.specific:
+    description: Allows the user/s to run the '/baltop' command and specify a certain position or player to view their balance.
+    default: true
+    children:
+      phantomeconomy.baltop: true
+
+  phantomeconomy.economy.add:
+    description: Allows the user/s to run the '/eco add' command.
+    default: op
+
+  phantomeconomy.economy.subtract:
+    description: Allows the user/s to run the '/eco subtract' command.
+    default: op
+
+  phantomeconomy.economy.set:
+    description: Allows the user/s to run the '/eco set' command.
+    default: op
+
+  phantomeconomy.economy.reset:
+    description: Allows the user/s to run the '/eco reset' command.
+    default: op
+
+  phantomeconomy.pay:
+    description: Allows the user/s to run the '/pay' command.
+    default: true
+
+  phantomeconomy.pay.allPlayers:
+    description: Allows the user/s to run the '/pay' command and pay money to every user online.
+    default: op
+    children:
+      phantomeconomy.pay: true
+
+  phantomeconomy.mainCommand.reload:
+    description: Allows the user/s to run the '/phantomeconomy reload' command.
+    default: op
+
+  phantomeconomy.mainCommand.forceBaltopUpdate:
+    description: Allows the user/s to run the '/phantomeconomy forceBaltopUpdate' command.
+    default: op
+
+  phantomeconomy.mainCommand.clearCache:
+    description: Allows the user/s to run the '/phantomeconomy clearCache' command.
+    default: op
