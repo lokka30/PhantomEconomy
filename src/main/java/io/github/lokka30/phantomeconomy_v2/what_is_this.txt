@@ -6,19 +6,34 @@ Here's a list of planned features, improvements and fixes over v1-
 3. Even better settings file
 4. Fully cached balances and configuration files for much better performance
 5. Full non-player account support (Towny, etc)
-6. (Barely started) Full bank account support (mainly for Vault)
+6. Full bank account support (mainly for Vault)
 7. API for other developers
-8. (Not started) PlaceholderAPI placeholders for scoreboards, etc
+8. PlaceholderAPI placeholders for scoreboards, etc
 9. No longer Vault-dependent
 10. General code improvements
 11. New baltop system
-12. (Not started) Import from Essentials Economy
-13. (Not started) Reliance on PhantomLib
+12. Import from Essentials Economy
+13. Reliance on PhantomLib
 14. Several more minor things..
-- (Not started) Command to give money to all online and/or offline players
+- Command to give money to all online and/or offline players
 - Server total in baltop
-- (Not started) Customisable 'console added $x to your account' message
-- (Not started) Transaction log
-- (Not started) Baltop placeholders for PlaceholderAPI
-- (Not started) [balance] sign
+- Customisable 'console added $x to your account' message
+- Transaction log
+- [balance] sign
 - Configurable repeating task which clears caches of accounts
+
+To-do List, in order:
+- Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
+- Add functionality to the commands
+- Customisable 'console added $x to your account' message
+- Make 'Command to give money to all online and/or offline players'
+- Check if the plugin's commands and listeners operate properly
+- Check if the plugin's databases operate properly
+- Check if the Vault hook operates properly
+- Add placeholderapi placeholders
+- Complete the bank account implementation
+- Add an import command to import essentials economy data
+- Transaction log
+- [Balance] sign functionality
+- Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
+- Compile, push to github, release on Spigot, announce on Discord server
