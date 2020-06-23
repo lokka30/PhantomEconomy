@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>PhantomEconomy</artifactId>
-    <version>1.9.26-RELEASE</version>
+    <version>1.9.27-RELEASE</version>
 
     <name>PhantomEconomy</name>
     <description>A powerful and configurable economy plugin.</description>
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.github.JavaFactoryDev</groupId>
             <artifactId>LightningStorage</artifactId>
-            <version>3.0.9</version>
+            <version>3.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

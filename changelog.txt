@@ -199,5 +199,9 @@ changes:
 1.9.26-RELEASE:
 - Improvement | The plugin now notifies you if the updater doesn't work with your server version on startup, instead of throwing an exception to your logs.
 
+1.9.27-RELEASE:
+- Improvement | Updated libraries
+- Improvement (from previous unreleased version) | The plugin now notifies you if the updater doesn't work with your server version on startup, instead of throwing an exception to your logs.
+
 2.0.0-RELEASE:
 - ...
