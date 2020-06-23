@@ -35,6 +35,7 @@ Can I test it early?
 
 
 To-do List, in order:
+- Disconnect the database when the plugin disables
 - Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands
 - Customisable 'console added $x to your account' message
