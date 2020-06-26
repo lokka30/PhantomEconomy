@@ -207,5 +207,8 @@ changes:
 - Improvement | Added 1.16.x support. PE still supports 1.7.x - 1.15.x too.
 - Improvement | Compiled with 1.16.x.
 
+1.9.29-RELEASE:
+- Fix | Forgot to add '1.16' to the 'supported versions' list on startup, sorry!
+
 2.0.0-RELEASE:
 - ...
