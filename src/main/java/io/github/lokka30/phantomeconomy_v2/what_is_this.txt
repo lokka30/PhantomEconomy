@@ -57,3 +57,7 @@ To-do List, in order:
 - [Balance] sign functionality
 - Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
 - Compile, push to github, release on Spigot, announce on Discord server
+
+
+Special Thanks
+- Cheers to Hugo5551 for helping me out with the SQL commands!
