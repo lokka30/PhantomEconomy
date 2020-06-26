@@ -4,6 +4,7 @@ import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
 import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FileCache {
+
+    public DatabaseType databaseType;
 
     public boolean SETTINGS_OTHER_USE_UPDATE_CHECKER;
     public String SETTINGS_DATABASE_TYPE;
@@ -45,10 +48,24 @@ public class FileCache {
     //Load or reload values from files
     public void loadFromFiles() {
         FlatFile settings = instance.getSettings();
-        FlatFile messages = instance.getMessages();
+
+        @SuppressWarnings("unused")
+        FlatFile messages = instance.getMessages(); //TODO
 
         SETTINGS_OTHER_USE_UPDATE_CHECKER = settings.get("other-options.use-update-checker", true);
         SETTINGS_DATABASE_TYPE = settings.get("database.database-type", "SQLite");
+        switch (SETTINGS_DATABASE_TYPE.toLowerCase()) {
+            case "sqlite":
+                databaseType = DatabaseType.SQLITE;
+                break;
+            case "mysql":
+                databaseType = DatabaseType.MYSQL;
+                break;
+            default:
+                instance.getUtils().log(LogLevel.SEVERE, "Invalid database type set in the settings file! Temporarily using SQLite. Fix this as soon as possible!");
+                databaseType = DatabaseType.SQLITE;
+                break;
+        }
         SETTINGS_DATABASE_MYSQL_HOST = settings.get("database.mysql.host", "localhost");
         SETTINGS_DATABASE_MYSQL_DATABASE = settings.get("database.mysql.database", "minecraft");
         SETTINGS_DATABASE_MYSQL_USERNAME = settings.get("database.mysql.username", "root");

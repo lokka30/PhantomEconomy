@@ -31,16 +31,7 @@ public class Database {
     }
 
     public DatabaseType getDatabaseType() {
-        switch (instance.getFileCache().SETTINGS_DATABASE_TYPE.toLowerCase()) {
-            case "sqlite":
-                return DatabaseType.SQLITE;
-            case "mysql":
-                return DatabaseType.MYSQL;
-            default:
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7You haven't set a valid database type in your settings file. Temporarily using SQLite. Please update this value to 'sqlite' or 'mysql' as soon as possible!");
-                instance.getFileCache().SETTINGS_DATABASE_TYPE = "sqlite";
-                return DatabaseType.SQLITE;
-        }
+        return instance.getFileCache().databaseType;
     }
 
     public Connection getConnection() {
