@@ -172,7 +172,19 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accountType,accountId,currencyName,balance) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE balance=?"); //Thanks to Hugo5551 for providing this command.
+            switch (getDatabaseType()) {
+                case MYSQL:
+                    preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accountType,accountId,currencyName,balance) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;"); //Thanks to Hugo5551 for providing this command.
+                    break;
+                case SQLITE:
+                    preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accountType,accountId,currencyName,balance) VALUES (?,?,?,?) ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance=?;"); //Thanks to Hugo5551 for providing this command.
+                    break;
+                default:
+                    preparedStatement.close();
+                    connection.close();
+                    throw new IllegalStateException("Unknown database type " + getDatabaseType().toString());
+            }
+
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);

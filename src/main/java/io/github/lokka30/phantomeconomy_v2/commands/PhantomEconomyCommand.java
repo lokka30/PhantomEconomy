@@ -25,7 +25,7 @@ public class PhantomEconomyCommand implements CommandExecutor {
                     "&b&lPhantomEconomy &3v" + instance.getDescription().getVersion(),
                     "&fDeveloper &8&m->&3&o lokka30",
                     " ",
-                    "&7For more information, please view the SpigotMC resource page:",
+                    "&f&nSpigotMC Resource Page:",
                     "&8https://www.spigotmc.org/resources/%E2%99%A6-phantomeconomy-%E2%99%A6-for-1-7-1-15.75053/",
                     " "
             );
