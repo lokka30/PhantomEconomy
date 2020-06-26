@@ -203,5 +203,9 @@ changes:
 - Improvement | Updated libraries
 - Improvement (from previous unreleased version) | The plugin now notifies you if the updater doesn't work with your server version on startup, instead of throwing an exception to your logs.
 
+1.9.28-RELEASE:
+- Improvement | Added 1.16.x support. PE still supports 1.7.x - 1.15.x too.
+- Improvement | Compiled with 1.16.x.
+
 2.0.0-RELEASE:
 - ...

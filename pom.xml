@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>PhantomEconomy</artifactId>
-    <version>1.9.27-RELEASE</version>
+    <version>1.9.28-RELEASE</version>
 
     <name>PhantomEconomy</name>
     <description>A powerful and configurable economy plugin.</description>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
