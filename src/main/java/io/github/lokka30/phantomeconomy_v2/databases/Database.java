@@ -115,7 +115,7 @@ public class Database {
         connection = getConnection();
 
         Statement statement = connection.createStatement();
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accounttype` VARCHAR(32) NOT NULL, `accountid` VARCHAR(48) PRIMARY KEY NOT NULL, `currencyname` VARCHAR(48) NOT NULL, `balance` DECIMAL(48,2) NOT NULL);");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS phantomeconomy (`accountType` VARCHAR(32) NOT NULL, `accountId` VARCHAR(48) NOT NULL, `currencyName` VARCHAR(48) NOT NULL, `balance` DECIMAL(48,2) NOT NULL, PRIMARY KEY(`accountType`, `accountId`, `currencyName`));");
         statement.close();
 
         if (connection != null) {
@@ -130,7 +130,7 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accounttype = '?', accountid = '?', currencyname = '?';");
+            preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accountType = '?', accountId = '?', currencyName = '?';");
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);
@@ -147,7 +147,7 @@ public class Database {
             }
         } catch (SQLException | InvalidCurrencyException exception) {
             exception.printStackTrace();
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -158,7 +158,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "'. Stack trace:");
+                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -172,14 +172,14 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accounttype,accountid,currencyname,balance) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE balance=?"); //Thanks to Hugo5551 for providing this command.
+            preparedStatement = connection.prepareStatement("INSERT INTO phantomeconomy (accountType,accountId,currencyName,balance) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE balance=?"); //Thanks to Hugo5551 for providing this command.
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);
             preparedStatement.setDouble(4, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -190,7 +190,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accounttype '" + accountType + "', accountid '" + accountId + "', currency '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -199,12 +199,12 @@ public class Database {
     public HashMap<UUID, Double> getBaltopMap(Currency currency) throws SQLException {
         if (baltopMap.size() == 0) {
             Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accounttype = PlayerAccount, currency = ?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM phantomeconomy WHERE accountType = `PlayerAccount`, currencyName = `?`;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                UUID uuid = UUID.fromString(resultSet.getString("accountid"));
+                UUID uuid = UUID.fromString(resultSet.getString("accountId"));
                 double balance = resultSet.getDouble("balance");
                 baltopMap.put(uuid, balance);
             }
@@ -219,7 +219,7 @@ public class Database {
         if (serverTotal == -1) {
             serverTotal = 0.0; //This value is shown if nobody has a balance yet
             connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM phantomeconomy WHERE currency = ?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM phantomeconomy WHERE currencyName = ?;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -236,13 +236,13 @@ public class Database {
     public boolean hasAccount(String accountType, String accountId) throws SQLException {
         boolean hasAccount = false;
         Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM phantomeconomy WHERE accounttype = ?, accountid = ?;");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM phantomeconomy WHERE accountType = `?`, accountId = `?`;");
         preparedStatement.setString(1, accountType);
         preparedStatement.setString(2, accountId);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            hasAccount = resultSet.getString("accountid") != null;
+            hasAccount = resultSet.getString("accountId") != null;
             close(connection, preparedStatement, resultSet);
         }
 
