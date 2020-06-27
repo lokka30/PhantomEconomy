@@ -56,14 +56,8 @@ public class BalanceCommand implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
         if (args.length == 1 && sender.hasPermission("phantomeconomy.balance.others")) {
-            if (args[0] != null) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (onlinePlayer.getName().startsWith(args[0])) {
-                        suggestions.add(onlinePlayer.getName());
-                    }
-                }
-            } else {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getName().startsWith(args[0])) {
                     suggestions.add(onlinePlayer.getName());
                 }
             }

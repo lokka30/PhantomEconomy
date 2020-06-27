@@ -234,15 +234,9 @@ public class EconomyCommand implements TabExecutor {
                 suggestions.add("reset");
         }
         if (args.length == 2) {
-            if (args[1] == null) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getName().startsWith(args[1])) {
                     suggestions.add(onlinePlayer.getName());
-                }
-            } else {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (onlinePlayer.getName().startsWith(args[1])) {
-                        suggestions.add(onlinePlayer.getName());
-                    }
                 }
             }
         }
