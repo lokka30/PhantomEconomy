@@ -87,10 +87,16 @@ public class PayCommand implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
         if (args.length == 1) {
-            Player[] players = new Player[Bukkit.getOnlinePlayers().size()];
-            players = Bukkit.getOnlinePlayers().toArray(players);
-            for (Player player : players) {
-                suggestions.add(player.getName());
+            if (args[0] == null) {
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    suggestions.add(onlinePlayer.getName());
+                }
+            } else {
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    if (onlinePlayer.getName().startsWith(args[0])) {
+                        suggestions.add(onlinePlayer.getName());
+                    }
+                }
             }
         }
         return suggestions;

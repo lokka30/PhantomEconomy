@@ -210,5 +210,8 @@ changes:
 1.9.29-RELEASE:
 - Fix | Forgot to add '1.16' to the 'supported versions' list on startup, sorry!
 
+1.9.30-RELEASE:
+- Improvement | '/balance', '/economy' and '/pay' have had their tab completion improved - removed unnecessary code, and it also now recommends you names that start with what you've already typed. Thanks to Rebellion for suggesting this and thanks to Hugo5551 for being helpful (as usual) :)
+
 2.0.0-RELEASE:
 - ...
