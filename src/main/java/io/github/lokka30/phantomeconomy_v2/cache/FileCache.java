@@ -5,6 +5,7 @@ import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class FileCache {
                 databaseType = DatabaseType.MYSQL;
                 break;
             default:
-                instance.getUtils().log(LogLevel.SEVERE, "Invalid database type set in the settings file! Temporarily using SQLite. Fix this as soon as possible!");
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "Invalid database type set in the settings file! Temporarily using SQLite. Fix this as soon as possible!");
                 databaseType = DatabaseType.SQLITE;
                 break;
         }
@@ -96,7 +97,7 @@ public class FileCache {
             try {
                 currency = instance.getEconomyManager().getCurrency(currencyName);
             } catch (InvalidCurrencyException exception) {
-                instance.getUtils().log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
                 continue;
             }
 

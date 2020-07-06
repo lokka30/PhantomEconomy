@@ -3,6 +3,7 @@ package io.github.lokka30.phantomeconomy_v2.api;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 
 public class EconomyManager {
 
@@ -38,7 +39,7 @@ public class EconomyManager {
         if (isCurrency(defaultCurrencyName)) {
             return getCurrency(defaultCurrencyName);
         } else {
-            instance.getUtils().log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + defaultCurrencyName + "' as was specified as the default currency. Check the default currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as major issues could occur.");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + defaultCurrencyName + "' as was specified as the default currency. Check the default currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as major issues could occur.");
             return null;
         }
     }
@@ -49,7 +50,7 @@ public class EconomyManager {
         if (isCurrency(vaultCurrencyName)) {
             return getCurrency(vaultCurrencyName);
         } else {
-            instance.getUtils().log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + vaultCurrencyName + "' as was specified as the Vault currency. Check the vault currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as it is likely to cause major issues with the plugins trying to use the Vault API.");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cSETTINGS ERROR! &7Unable to get currency '" + vaultCurrencyName + "' as was specified as the Vault currency. Check the vault currency setting and make sure that the currency is enabled and defined. This should be fixed immediately as it is likely to cause major issues with the plugins trying to use the Vault API.");
             return null;
         }
     }

@@ -20,7 +20,7 @@ public class BalanceCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        sender.sendMessage(instance.getUtils().colorize("&b&lPhantomEconomy &8(v2&8)&b&l: &7This command has not been completed yet."));
+        sender.sendMessage(instance.getMessageMethods().colorize("&b&lPhantomEconomy &8(v2&8)&b&l: &7This command has not been completed yet."));
 
         if (sender.hasPermission("phantomeconomy.balance")) {
             if (args.length == 0) {

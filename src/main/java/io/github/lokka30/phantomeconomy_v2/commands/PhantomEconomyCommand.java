@@ -31,10 +31,10 @@ public class PhantomEconomyCommand implements CommandExecutor {
             );
 
             for (String message : messages) {
-                sender.sendMessage(instance.getUtils().colorize(message));
+                sender.sendMessage(instance.getMessageMethods().colorize(message));
             }
         } else {
-            sender.sendMessage(instance.getUtils().colorize("&b&lPhantomEconomy: &7Usage: &b/" + label));
+            sender.sendMessage(instance.getMessageMethods().prefix("&b&lPhantomEconomy: &7", "Usage: &b/" + label));
         }
         return true;
     }

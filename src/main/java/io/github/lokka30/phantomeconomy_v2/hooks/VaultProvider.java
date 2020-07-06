@@ -7,6 +7,7 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsEx
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -391,7 +392,7 @@ public class VaultProvider extends AbstractEconomy {
                         accountManager.createNonPlayerAccount(name);
                         return true;
                     } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                        instance.getUtils().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
+                        instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
                         e.printStackTrace();
                         return false;
                     }
@@ -414,7 +415,7 @@ public class VaultProvider extends AbstractEconomy {
                     accountManager.createPlayerAccount(offlinePlayer);
                     return true;
                 } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                    instance.getUtils().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
+                    instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
                     e.printStackTrace();
                     return false;
                 }

@@ -4,6 +4,7 @@ import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 
 import java.io.IOException;
 import java.sql.*;
@@ -40,11 +41,11 @@ public class Database {
                     if (!instance.getDataFolder().exists()) {
                         try {
                             if (!instance.getDataFolder().createNewFile()) {
-                                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
+                                instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
                                 return null;
                             }
                         } catch (IOException exception) {
-                            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
+                            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
                             exception.printStackTrace();
                             return null;
                         }
@@ -57,14 +58,14 @@ public class Database {
                         try {
                             Class.forName("org.sqlite.JDBC");
                         } catch (ClassNotFoundException e) {
-                            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed.");
+                            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to connect to the SQLite database - You do not have the SQLite JDBC library installed.");
                             e.printStackTrace();
                             return null;
                         }
 
                         connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder());
                     } catch (SQLException e) {
-                        instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
+                        instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
                         e.printStackTrace();
                     }
 
@@ -77,21 +78,21 @@ public class Database {
                             return connection;
                         }
                     } catch (SQLException exception) {
-                        instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to check if connection is already available in synch getsqlconn");
+                        instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to check if connection is already available in synch getsqlconn");
                         return null;
                     }
 
                     try {
                         Class.forName("com.mysql.jdbc.Driver");
                     } catch (ClassNotFoundException exception) {
-                        instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7 MySQL JDBC driver is not installed, you must have it installed to use this database.");
+                        instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7 MySQL JDBC driver is not installed, you must have it installed to use this database.");
                         return null;
                     }
 
                     try {
                         connection = DriverManager.getConnection("jdbc:mysql://" + instance.getFileCache().SETTINGS_DATABASE_MYSQL_HOST + ":" + instance.getFileCache().SETTINGS_DATABASE_MYSQL_PORT + "/" + instance.getFileCache().SETTINGS_DATABASE_MYSQL_DATABASE, instance.getFileCache().SETTINGS_DATABASE_MYSQL_USERNAME, instance.getFileCache().SETTINGS_DATABASE_MYSQL_PASSWORD);
                     } catch (SQLException exception) {
-                        instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to establish connection to MySQL database. Ensure that you have entered the correct details in the MySQL configuration section in the settings file.");
+                        instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to establish connection to MySQL database. Ensure that you have entered the correct details in the MySQL configuration section in the settings file.");
                     }
 
                     return connection;
@@ -130,7 +131,7 @@ public class Database {
             case "bankaccount":
                 return instance.getFileCache().SETTINGS_DATABASE_TABLE_BANKACCOUNT;
             default:
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7Illegal account type '" + accountType + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Illegal account type '" + accountType + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
                 return instance.getFileCache().SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT;
         }
     }
@@ -160,7 +161,7 @@ public class Database {
             }
         } catch (SQLException | InvalidCurrencyException exception) {
             exception.printStackTrace();
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -171,7 +172,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -206,7 +207,7 @@ public class Database {
             preparedStatement.setDouble(4, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -217,7 +218,7 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -294,7 +295,7 @@ public class Database {
                 connection.close();
             }
         } catch (SQLException exception) {
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close the SQL connection. Stack trace:");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close the SQL connection. Stack trace:");
             exception.printStackTrace();
         }
     }
@@ -308,7 +309,7 @@ public class Database {
                 resultSet.close();
             }
         } catch (SQLException exception) {
-            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
             exception.printStackTrace();
         }
     }

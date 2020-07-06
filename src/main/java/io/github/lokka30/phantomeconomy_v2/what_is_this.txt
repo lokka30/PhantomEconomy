@@ -37,7 +37,6 @@ Can I test it early?
 
 
 To-do List, in order:
-- (80%) Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands
 - Customisable 'console added $x to your account' message
 - Make 'Command to give money to all online and/or offline players'

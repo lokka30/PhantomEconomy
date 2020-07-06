@@ -117,35 +117,7 @@ public class PhantomEconomy extends JavaPlugin {
         final long timeTaken = System.currentTimeMillis() - timeStart;
         phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+-----+");
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            try {
-                if (!accountManager.hasPlayerAccount(player)) {
-                    try {
-                        accountManager.createPlayerAccount(player);
-                    } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
-            Currency currency = null;
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
-
-            for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
-                try {
-                    currency = economyManager.getCurrency(currencyName);
-                } catch (InvalidCurrencyException e) {
-                    e.printStackTrace();
-                }
-
-                balanceMap.put(currency, playerAccount.getBalance(currency));
-            }
-
-            accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
-        }
+        ensureOnlinePlayersHaveAccounts();
 
         startRepeatingTasks();
 
@@ -290,6 +262,38 @@ public class PhantomEconomy extends JavaPlugin {
         }
     }
 
+    private void ensureOnlinePlayersHaveAccounts() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            try {
+                if (!accountManager.hasPlayerAccount(player)) {
+                    try {
+                        accountManager.createPlayerAccount(player);
+                    } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
+            Currency currency = null;
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+
+            for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
+                try {
+                    currency = economyManager.getCurrency(currencyName);
+                } catch (InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
+
+                balanceMap.put(currency, playerAccount.getBalance(currency));
+            }
+
+            accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
+        }
+    }
+
     private void checkForUpdates() {
         if (fileCache.SETTINGS_OTHER_USE_UPDATE_CHECKER) {
             phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Update Checker&8) &7Checking for updates...");
@@ -307,18 +311,18 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+---+ &f(Disable Started) &8+---+");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Started) &8+-----+");
         final long startTime = System.currentTimeMillis();
 
         unhookAvailablePlugins();
         disconnectDatabase();
 
         final long totalTime = System.currentTimeMillis() - startTime;
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+---+ &f(Disable Complete, took &b" + totalTime + "ms&f) &8+---+");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Complete, took &b" + totalTime + "ms&f) &8+-----+");
     }
 
     private void unhookAvailablePlugins() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&31/2&8) &7Unhooking from available plugins...");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &31&8/&32&8) &7Unhooking from available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
             phantomLogger.log(LogLevel.INFO, prefix, "Plugin '&bVault&7' installed, attempting to unhook ...");
@@ -329,9 +333,9 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     private void disconnectDatabase() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&31/2&8) &7Disconnecting database ...");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &32&8/&32&8) &7 &7Disconnecting database ...");
         database.close();
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&31/2&8) &7... database disconnected.");
+        phantomLogger.log(LogLevel.INFO, prefix, "... database disconnected.");
     }
 
     public Database getDatabase() {
