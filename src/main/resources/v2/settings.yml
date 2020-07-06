@@ -6,12 +6,6 @@ database:
   # Expected: [String], Default: ['SQLite']
   database-type: 'SQLite'
 
-  #TODO REMOVE
-  # Table to use in the database
-  # Expected: [String], Default: ['phantomeconomy']
-  table: 'phantomeconomy'
-
-  #TODO IMPLEMENT
   # In this section, you can change the table names for each account.
   # Using MySQL and want to sync account balances over each server? Check this link:
   # https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
