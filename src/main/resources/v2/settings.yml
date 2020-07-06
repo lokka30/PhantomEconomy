@@ -6,9 +6,19 @@ database:
   # Expected: [String], Default: ['SQLite']
   database-type: 'SQLite'
 
+  #TODO REMOVE
   # Table to use in the database
   # Expected: [String], Default: ['phantomeconomy']
   table: 'phantomeconomy'
+
+  #TODO IMPLEMENT
+  # In this section, you can change the table names for each account.
+  # Using MySQL and want to sync account balances over each server? Check this link:
+  # https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
+  account-tables:
+    playerAccount: 'phantomeconomy_global'
+    nonPlayerAccount: 'phantomeconomy_global'
+    bankAccount: 'phantomeconomy_global'
 
   # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
   mysql-settings:
@@ -66,21 +76,18 @@ currencies:
 
       formatting:
 
-        # To how many decimal places should stored balances have in the database?
-        # e.g. round them to 2 or 3 decimal places (e.g. 2.2251345219 -> 2.23)
-        # Expected: [Integer], Default: [2]
-        storage-rounding: 2
-
-        # This is the format used for the %balance% plcaeholder in the final readable format.
+        # This is the format used to trim decimals off of various numbers, such as the player's balance or how much money a user was given.
         # e.g. trimming decimals - 2.22222 -> 2.22
         # Expected: [String], Default: ['0.00']
-        decimal-readable-format: '0.00'
+        decimal-format: '0.00'
 
         # The format when displaying as a human-readable balance.
         # You can include %word% and it will add the singular/plural word customised below.
         # e.g. '$%balance% %word%' = '$5 dollars' or '$1 dollar'
-        # Expected: [String], Default: ['$%balance %word%']
-        final-readable-format: '$%balance% %word%'
+        # e.g. '$%balance%' = '$5' or '$1'
+        # e.g. '%balance% %word' = '5 dollars' or '1 dollar'
+        # Expected: [String], Default: ['$%balance']
+        final-format: '$%balance%'
 
         # You can edit the words placeholder here if you are using it in the format above.
         words:

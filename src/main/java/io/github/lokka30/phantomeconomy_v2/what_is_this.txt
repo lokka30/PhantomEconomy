@@ -2,7 +2,9 @@ PhantomEconomy v2.0.0 is an in-development version which will completely transfo
 
 Here's a list of planned features, improvements and fixes over v1-
 1. MySQL and SQLite database storage
-2. Multiple user-configurable currencies
+   MySQL allows servers to sync all or specific account types' balances to each other
+   Example setup: Only Skywars and Bedwars share the same PlayerAccount and BankAccount balances, but the whole network share the same NonPlayerAccount balances.
+2. Unlimited user-configurable currencies
 3. Even better settings file
 4. Fully cached balances and configuration files for much better performance
 5. Full non-player account support (Towny, etc)
@@ -26,20 +28,20 @@ Here's a list of planned features, improvements and fixes over v1-
 Can I test it early?
 - Yep, you can. You assume all responsibility for any errors or damages caused. v2 is strictly in development and is by no means ready for installation on a server that has too much to lose.
 - The database commands haven't been tested at all yet, so make sure you backup or make a new database for testing.
-- Instructions:
-  1. If you aren't compiling the plugin: open the jar file with WinRar, 7-Zip or another suitable program that can open up jar files and view and edit its contents.
-  2. delete all resource files that aren't in the v2 folder. If you are compiling the plugin then the v2 folder is inside the resources folder.
-  2. Move all of the contents of the v2 folder into the parent directory. Delete the v2 folder once complete.
+- Instructions -- if you don't want to follow them, ask lokka30 to make you a jar :)
+  1. If you aren't compiling the plugin: open the latest jar file from Spigot with WinRar, 7-Zip or another suitable program that can open up jar files and view and edit its contents.
+  2. delete all resource files (plugin.yml, settings.yml, messages.yml, data.json) that aren't in the v2 folder. If you are compiling the plugin then this is located in the /src/resources/ folder.
+  2. Move all of the contents of the v2 folder into the parent directory. Delete the v2 folder once complete. You should have v2's plugin.yml, settings.yml and messages.yml now.
   3. In the plugin.yml file, in the 'main' setting, change it from 'io.github.lokka30.phantomeconomy.PhantomEconomy' to 'io.github.lokka30.phantomeconomy_v2.PhantomEconomy'.
   4. Save the plugin.yml file and compile/save the jar file.
 
 
 To-do List, in order:
-- Custom table prefixes for each account type, so they can make PlayerAccounts synchronise across bungee servers but have NonPlayerAccounts not synchronise to other servers
 - Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands
 - Customisable 'console added $x to your account' message
 - Make 'Command to give money to all online and/or offline players'
+  - simply go into the 'eco add' command and allow '*' as a player argument, for example
 - Check if the plugin's commands and listeners operate properly
 - Check if the plugin's databases operate properly
 - Check if the Vault hook operates properly

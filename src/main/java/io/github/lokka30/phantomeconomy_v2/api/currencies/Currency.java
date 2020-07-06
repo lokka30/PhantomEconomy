@@ -22,12 +22,12 @@ public class Currency {
 
     // The *decimal* readable format, this is the string that the DecimalFormat uses
     public String getDecimalReadableFormat() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.get(this);
     }
 
     // The *final* readable format, the human-readable form which adds dollar signs and whatever the user has configured for the currency
     public String getFinalFormat() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.get(this);
     }
 
     // Returns 'plural' word from settings

@@ -23,7 +23,10 @@ public class FileCache {
     public String SETTINGS_DATABASE_MYSQL_PASSWORD;
     public String SETTINGS_DATABASE_MYSQL_SSL;
     public int SETTINGS_DATABASE_MYSQL_PORT;
-    public String SETTINGS_DATABASE_TABLE;
+    public String SETTINGS_DATABASE_TABLE; //TODO REMOVE
+    public String SETTINGS_DATABASE_TABLE_PLAYERACCOUNT;
+    public String SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT;
+    public String SETTINGS_DATABASE_TABLE_BANKACCOUNT;
     public List<String> SETTINGS_CURRENCIES_ENABLED_CURRENCIES;
     public String SETTINGS_DEFAULT_CURRENCY;
     public String SETTINGS_VAULT_CURRENCY;
@@ -33,9 +36,8 @@ public class FileCache {
     public boolean SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE;
 
     public HashMap<Currency, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
-    public HashMap<Currency, Integer> SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP;
+    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP;
     public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP;
     public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP;
 
@@ -73,19 +75,20 @@ public class FileCache {
         SETTINGS_DATABASE_MYSQL_SSL = settings.get("database.mysql.ssl", "true");
         SETTINGS_DATABASE_MYSQL_PORT = settings.get("database.mysql.port", 3306);
         SETTINGS_DATABASE_TABLE = settings.get("database.table", "phantomeconomy");
+        SETTINGS_DATABASE_TABLE_PLAYERACCOUNT = settings.get("database.account-tables.playerAccount", "phantomeconomy_global");
+        SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT = settings.get("database.account-tables.nonPlayerAccount", "phantomeconomy_global");
+        SETTINGS_DATABASE_TABLE_BANKACCOUNT = settings.get("database.account-tables.bankAccount", "phantomeconomy_global");
         SETTINGS_CURRENCIES_ENABLED_CURRENCIES = settings.get("currencies.enabled-currencies", null);
-        SETTINGS_DEFAULT_CURRENCY = settings.get("default-currency", null);
-        SETTINGS_VAULT_CURRENCY = settings.get("vault-currency", null);
+        SETTINGS_DEFAULT_CURRENCY = settings.get("default-currency", "invalidSetting");
+        SETTINGS_VAULT_CURRENCY = settings.get("vault-currency", "invalidSetting");
         SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE = settings.get("startup-tasks.clear-baltop-cache", true);
         SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-player-account-cache", false);
         SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-non-player-account-cache", true);
         SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE = settings.get("startup-tasks.clear-bank-account-cache", true);
 
-
         SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP = new HashMap<>();
-        SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP = new HashMap<>();
-        SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP = new HashMap<>();
-        SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP = new HashMap<>();
+        SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP = new HashMap<>();
         SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP = new HashMap<>();
         SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP = new HashMap<>();
         for (String currencyName : settings.get("currencies.enabled-currencies", new ArrayList<String>())) {
@@ -99,9 +102,8 @@ public class FileCache {
             }
 
             SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currency, settings.get(path + "default-balance", 50.00));
-            SETTINGS_CURRENCY_FORMATTING_STORAGE_ROUNDING_MAP.put(currency, settings.get(path + "formatting.storage-rounding", 2));
-            SETTINGS_CURRENCY_FORMATTING_DECIMAL_READABLE_FORMAT_MAP.put(currency, settings.get(path + "formatting.decimal-readable-format", "0.00"));
-            SETTINGS_CURRENCY_FORMATTING_FINAL_READABLE_FORMAT_MAP.put(currency, settings.get(path + "formatting.final-readable-format", "$%balance% %word%"));
+            SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.decimal-format", "0.00"));
+            SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.final-format", "$%balance%"));
             SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currency, settings.get(path + "formatting.words.singular", "dollar"));
             SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.put(currency, settings.get(path + "formatting.words.plural", "dollars"));
         }
