@@ -1,6 +1,7 @@
 package io.github.lokka30.phantomeconomy_v2.commands;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
+import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -26,14 +27,22 @@ public class BalanceCommand implements TabExecutor {
             if (args.length == 0) {
                 if (sender instanceof Player) {
                     // Get the sender's balance.
+                    final Player player = (Player) sender;
+                    try {
+                        final double balance = instance.getAccountManager().getPlayerAccount(player).getBalance(instance.getEconomyManager().getDefaultCurrency());
+                        // Message: "Your balance is %balance"
+                    } catch (InvalidCurrencyException e) {
+                        e.printStackTrace();
+                        // Message: "Unable to retrieve your balance, please inform an administrator that the plugin is incorrectly configured.
+                    }
                 } else {
-                    // Send console usage.
+                    // Message: "Usage (console): /balance <currency> <player>"
                 }
             } else if (args.length == 1) {
                 if (sender instanceof Player) {
                     // Get the sender's balance for the specific currency.
                 } else {
-                    // Send console usage.
+                    // Message: "Usage (console): /balance <currency> <player>"
                 }
             } else if (args.length == 2) {
                 if (sender.hasPermission("phantomeconomy.balance.others")) {

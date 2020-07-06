@@ -52,7 +52,7 @@ To-do List, in order:
  - %phantomeconomy_servertotal%
  - %phantomeconomy_balance%
 - Complete the bank account implementation
-- Add an import command to import essentials economy data
+- Add an import command to import Essentials economy data and TheNewEconomy economy data
 - Transaction log
 - [Balance] sign functionality
 - Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
