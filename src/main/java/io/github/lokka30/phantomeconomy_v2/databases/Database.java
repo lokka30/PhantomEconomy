@@ -261,6 +261,17 @@ public class Database {
         serverTotal = -1;
     }
 
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException exception) {
+            instance.getUtils().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to close the SQL connection. Stack trace:");
+            exception.printStackTrace();
+        }
+    }
+
     public void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
         try {
             if (preparedStatement != null) {

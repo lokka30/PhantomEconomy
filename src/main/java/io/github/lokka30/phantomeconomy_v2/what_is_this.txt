@@ -35,7 +35,6 @@ Can I test it early?
 
 
 To-do List, in order:
-- Disconnect the database when the plugin disables
 - Custom table prefixes for each account type, so they can make PlayerAccounts synchronise across bungee servers but have NonPlayerAccounts not synchronise to other servers
 - Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands

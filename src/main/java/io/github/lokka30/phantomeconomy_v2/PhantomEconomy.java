@@ -307,7 +307,7 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void disconnectDatabase() {
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7Disconnecting database ...");
-        //TODO close dtabase.
+        database.close();
         utils.log(LogLevel.INFO, "&8(&31/2&8) &7... database disconnected.");
     }
 
