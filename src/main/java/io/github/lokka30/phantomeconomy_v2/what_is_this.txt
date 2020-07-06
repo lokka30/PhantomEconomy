@@ -37,7 +37,7 @@ Can I test it early?
 
 
 To-do List, in order:
-- Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
+- (80%) Make the plugin reliant on PhantomLib, remove inbuilt logger and etc
 - Add functionality to the commands
 - Customisable 'console added $x to your account' message
 - Make 'Command to give money to all online and/or offline players'
@@ -57,6 +57,7 @@ To-do List, in order:
 - Transaction log
 - [Balance] sign functionality
 - Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
+- Remove Towny from the pom.xml
 - Compile, push to github, release on Spigot, announce on Discord server
 
 

@@ -123,5 +123,12 @@
             <artifactId>commons-math3</artifactId>
             <version>3.5</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.lokka30</groupId>
+            <artifactId>PhantomLib</artifactId>
+            <version>1.0.4-RELEASE</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/PhantomLib-1.0.4-RELEASE.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

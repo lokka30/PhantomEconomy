@@ -4,7 +4,6 @@ import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
-import io.github.lokka30.phantomeconomy_v2.utils.LogLevel;
 
 import java.io.IOException;
 import java.sql.*;
