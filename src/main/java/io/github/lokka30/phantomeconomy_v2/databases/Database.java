@@ -6,6 +6,8 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyExcepti
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
@@ -36,6 +38,8 @@ public class Database {
     public Connection getConnection() {
         switch (getDatabaseType()) {
             case SQLITE:
+                File databaseFile = new File(instance.getDataFolder() + File.separator + "database.db");
+
                 synchronized (this) {
                     if (!instance.getDataFolder().exists()) {
                         if (!instance.getDataFolder().mkdir()) {
@@ -43,6 +47,16 @@ public class Database {
                             return null;
                         }
                     }
+
+                    if (!databaseFile.exists()) {
+                        try {
+                            databaseFile.createNewFile();
+                        } catch (IOException exception) {
+                            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create database file");
+                            exception.printStackTrace();
+                        }
+                    }
+
                     try {
                         if (connection != null && !connection.isClosed()) {
                             return connection;
@@ -56,7 +70,7 @@ public class Database {
                             return null;
                         }
 
-                        connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder());
+                        connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder() + File.separator + databaseFile);
                     } catch (SQLException e) {
                         instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
                         e.printStackTrace();
