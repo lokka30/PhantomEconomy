@@ -95,8 +95,8 @@ public class PhantomEconomy extends JavaPlugin {
         final long timeStart = System.currentTimeMillis();
 
         phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");
-        phantomLogger.log(LogLevel.INFO, prefix, "&bPhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers which wouldn't want to risk harm from an economy plugin malfunction. " +
-                "Please use it carefully, and report all issues to me. Make sure to note that you are using 2.0 when reporting them. " +
+        phantomLogger.log(LogLevel.INFO, prefix, "&7PhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers which wouldn't want to risk harm from an economy plugin malfunction. " +
+                "Please use it carefully, and report all issues to me. Make sure to note that you are using v2 when reporting them. " +
                 "I will not be responsible if a malfunction occurs in the plugin and damages your server. " +
                 "Thank you, and be careful!");
         phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");

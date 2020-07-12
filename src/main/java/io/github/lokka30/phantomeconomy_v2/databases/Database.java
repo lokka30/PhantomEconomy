@@ -16,7 +16,7 @@ import java.util.UUID;
 public class Database {
 
     /*
-    Thanks to Hugo5551 for their contributions in this class.
+    Thanks to Hugo5551 for their contributions in this class!
      */
 
     private PhantomEconomy instance;
@@ -50,7 +50,9 @@ public class Database {
 
                     if (!databaseFile.exists()) {
                         try {
-                            databaseFile.createNewFile();
+                            if (databaseFile.createNewFile()) {
+                                instance.getPhantomLogger().log(LogLevel.INFO, "&b&lPhantomEconomy: &7", "File &bdatabase.db&7 didn't exist, it has now been created.");
+                            }
                         } catch (IOException exception) {
                             instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create database file");
                             exception.printStackTrace();
@@ -113,15 +115,15 @@ public class Database {
         connection = getConnection();
 
         Statement statement1 = connection.createStatement();
-        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS '" + instance.getFileCache().SETTINGS_DATABASE_TABLE_PLAYERACCOUNT + "' ('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));"); //Thanks to Hugo5551 for assisting me with this command.
+        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLE_PLAYERACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
         statement1.close();
 
         Statement statement2 = connection.createStatement();
-        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS '" + instance.getFileCache().SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT + "' ('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));"); //Thanks to Hugo5551 for assisting me with this command.
+        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
         statement2.close();
 
         Statement statement3 = connection.createStatement();
-        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS '" + instance.getFileCache().SETTINGS_DATABASE_TABLE_BANKACCOUNT + "' ('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));"); //Thanks to Hugo5551 for assisting me with this command.
+        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLE_BANKACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
         statement3.close();
 
         if (connection != null) {
@@ -151,7 +153,7 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType = '?', accountId = '?', currencyName = '?';");
+            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType=?,accountId=?,currencyName=?;");
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);
@@ -197,10 +199,10 @@ public class Database {
             connection = getConnection();
             switch (getDatabaseType()) {
                 case MYSQL:
-                    preparedStatement = connection.prepareStatement("INSERT INTO '" + table + "' (accountType,accountId,currencyName,balance) VALUES('?','?','?','?') ON DUPLICATE KEY UPDATE balance='?';"); //Thanks to Hugo5551 for providing this command.
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountType,accountId,currencyName,balance) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;"); //Thanks to Hugo5551 for providing this command.
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO '" + table + "' (accountType,accountId,currencyName,balance) VALUES ('?','?','?','?') ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance='?';"); //Thanks to Hugo5551 for providing this command.
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountType,accountId,currencyName,balance) VALUES (?,?,?,?) ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance=?;"); //Thanks to Hugo5551 for providing this command.
                     break;
                 default:
                     preparedStatement.close();
@@ -212,6 +214,7 @@ public class Database {
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);
             preparedStatement.setDouble(4, newBalance);
+            preparedStatement.setDouble(5, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
@@ -235,7 +238,7 @@ public class Database {
         if (baltopMap.size() == 0) {
             Connection connection = getConnection();
             String table = getTableNameFromAccountTypeStr("PlayerAccount");
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM '" + table + "' WHERE accountType = 'PlayerAccount', currencyName = '?';");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType='PlayerAccount',currencyName=?;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -256,7 +259,7 @@ public class Database {
             serverTotal = 0.0; //This value is shown if nobody has a balance yet
             connection = getConnection();
             String table = getTableNameFromAccountTypeStr("PlayerAccount");
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM '" + table + "' WHERE currencyName = '?';");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM " + table + " WHERE currencyName=?;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -270,18 +273,24 @@ public class Database {
         return serverTotal;
     }
 
-    public boolean hasAccount(String accountType, String accountId) throws SQLException {
+    public boolean hasAccount(String accountType, String accountId) {
         boolean hasAccount = false;
         Connection connection = getConnection();
         String table = getTableNameFromAccountTypeStr(accountType);
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM '" + table + "' WHERE accountType = '?', accountId = '?';");
-        preparedStatement.setString(1, accountType);
-        preparedStatement.setString(2, accountId);
-        ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            hasAccount = resultSet.getString("accountId") != null;
-            close(connection, preparedStatement, resultSet);
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM " + table + " WHERE accountType=?,accountId=?;");
+            preparedStatement.setString(1, accountType);
+            preparedStatement.setString(2, accountId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                hasAccount = resultSet.getString("accountId") != null;
+                close(connection, preparedStatement, resultSet);
+            }
+        } catch (SQLException exception) {
+            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7A database error has occured whilst running hasAccount. Details: accountType = '" + accountType + "', accountId = '" + accountId + "', table = '" + table + "'. Stack trace:");
+            exception.printStackTrace();
         }
 
         return hasAccount;
