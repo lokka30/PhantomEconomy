@@ -160,7 +160,7 @@ public class Database {
             resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
-                double defaultBalance = instance.getEconomyManager().getCurrency(currencyName).getDefaultBalance();
+                double defaultBalance = instance.getCurrencyManager().getCurrency(currencyName).getDefaultBalance();
                 setBalance(accountType, accountId, currencyName, defaultBalance);
                 return defaultBalance;
             }
@@ -297,7 +297,7 @@ public class Database {
     }
 
     public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
-        for (Currency currency : instance.getEconomyManager().getEnabledCurrencies()) {
+        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
             setBalance(accountType, accountId, currency.getName(), currency.getDefaultBalance());
         }
     }

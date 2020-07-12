@@ -9,7 +9,6 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsEx
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import org.bukkit.OfflinePlayer;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -41,19 +40,19 @@ public class AccountManager {
         return new BankAccount(this, name);
     }
 
-    public boolean hasPlayerAccount(final OfflinePlayer offlinePlayer) throws SQLException {
+    public boolean hasPlayerAccount(final OfflinePlayer offlinePlayer) {
         return (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) && instance.getDatabase().hasAccount("PlayerAccount", offlinePlayer.getUniqueId().toString());
     }
 
-    public boolean hasNonPlayerAccount(final String name) throws SQLException {
+    public boolean hasNonPlayerAccount(final String name) {
         return instance.getDatabase().hasAccount("NonPlayerAccount", name);
     }
 
-    public boolean hasBankAccount(final String name) throws SQLException {
+    public boolean hasBankAccount(final String name) {
         return instance.getDatabase().hasAccount("BankAccount", name);
     }
 
-    public void createPlayerAccount(final OfflinePlayer offlinePlayer) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
+    public void createPlayerAccount(final OfflinePlayer offlinePlayer) throws AccountAlreadyExistsException, InvalidCurrencyException {
         if (hasPlayerAccount(offlinePlayer)) {
             throw new AccountAlreadyExistsException("Tried to create PlayerAccount with uuid '" + offlinePlayer.getUniqueId().toString() + "' but its account already exists.");
         } else {
@@ -61,7 +60,7 @@ public class AccountManager {
         }
     }
 
-    public void createNonPlayerAccount(final String name) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
+    public void createNonPlayerAccount(final String name) throws AccountAlreadyExistsException, InvalidCurrencyException {
         if (hasNonPlayerAccount(name)) {
             throw new AccountAlreadyExistsException("Tried to create NonPlayerAccount with name '" + name + "' but its account already exists.");
         } else {
@@ -69,7 +68,7 @@ public class AccountManager {
         }
     }
 
-    public void createBankAccount(final String name) throws AccountAlreadyExistsException, SQLException, InvalidCurrencyException {
+    public void createBankAccount(final String name) throws AccountAlreadyExistsException, InvalidCurrencyException {
         if (hasBankAccount(name)) {
             throw new AccountAlreadyExistsException("Tried to create BankAccount with name '" + name + "' but its account already exists.");
         } else {

@@ -95,13 +95,13 @@ public class FileCache {
             Currency currency;
             final String path = "currencies.currency-settings." + currencyName + ".";
             try {
-                currency = instance.getEconomyManager().getCurrency(currencyName);
+                currency = instance.getCurrencyManager().getCurrency(currencyName);
             } catch (InvalidCurrencyException exception) {
                 instance.getPhantomLogger().log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
                 continue;
             }
 
-            SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currency, settings.get(path + "default-balance", 50.00));
+            SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currency, settings.get(path + "default-balance", 0.00));
             SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.decimal-format", "0.00"));
             SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.final-format", "$%balance%"));
             SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currency, settings.get(path + "formatting.words.singular", "dollar"));

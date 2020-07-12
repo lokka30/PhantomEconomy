@@ -36,7 +36,7 @@ public class BalanceCommand implements TabExecutor {
                     final Player player = (Player) sender;
                     sender.sendMessage("Your balance: ");
                     try {
-                        for (Currency currency : instance.getEconomyManager().getEnabledCurrencies()) {
+                        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
                             final double balance = instance.getAccountManager().getPlayerAccount(player).getBalance(currency);
                             final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
                             sender.sendMessage(" -> (%currencyName%): %balance%"
@@ -57,7 +57,7 @@ public class BalanceCommand implements TabExecutor {
                     if (instance.getAccountManager().hasPlayerAccount(target)) {
                         sender.sendMessage("Balance for %player%:"
                                 .replace("%player%", Objects.requireNonNull(target.getName())));
-                        for (Currency currency : instance.getEconomyManager().getEnabledCurrencies()) {
+                        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
                             final double balance = instance.getAccountManager().getPlayerAccount(target).getBalance(currency);
                             final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
                             sender.sendMessage(" -> (%currencyName%): %balance%"

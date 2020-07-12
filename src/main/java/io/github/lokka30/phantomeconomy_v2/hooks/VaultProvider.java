@@ -2,7 +2,7 @@ package io.github.lokka30.phantomeconomy_v2.hooks;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
 import io.github.lokka30.phantomeconomy_v2.api.AccountManager;
-import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.api.CurrencyManager;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
@@ -13,19 +13,18 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @SuppressWarnings("unused")
 public class VaultProvider extends AbstractEconomy {
 
     private PhantomEconomy instance;
-    private EconomyManager economyManager;
+    private CurrencyManager currencyManager;
     private AccountManager accountManager;
 
     public VaultProvider(final PhantomEconomy instance) {
         this.instance = instance;
-        this.economyManager = instance.getEconomyManager();
+        this.currencyManager = instance.getCurrencyManager();
         this.accountManager = instance.getAccountManager();
     }
 
@@ -52,7 +51,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public String format(double balance) {
         try {
-            return economyManager.getVaultCurrency().formatFinalBalance(balance);
+            return currencyManager.getVaultCurrency().formatFinalBalance(balance);
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -62,7 +61,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public String currencyNamePlural() {
         try {
-            return economyManager.getVaultCurrency().getPlural();
+            return currencyManager.getVaultCurrency().getPlural();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -72,7 +71,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public String currencyNameSingular() {
         try {
-            return economyManager.getVaultCurrency().getSingular();
+            return currencyManager.getVaultCurrency().getSingular();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -86,31 +85,15 @@ public class VaultProvider extends AbstractEconomy {
 
         // Check if it is a player or not first.
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            try {
-                return accountManager.hasPlayerAccount(offlinePlayer);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            return accountManager.hasPlayerAccount(offlinePlayer);
         } else {
-            try {
-                return accountManager.hasNonPlayerAccount(name);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            return accountManager.hasNonPlayerAccount(name);
         }
-
-        return false;
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        try {
-            return accountManager.hasPlayerAccount(offlinePlayer);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        return accountManager.hasPlayerAccount(offlinePlayer);
     }
 
     @Override
@@ -131,13 +114,13 @@ public class VaultProvider extends AbstractEconomy {
         //Check if it is a player account first
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                return accountManager.getPlayerAccount(offlinePlayer).getBalance(economyManager.getVaultCurrency());
+                return accountManager.getPlayerAccount(offlinePlayer).getBalance(currencyManager.getVaultCurrency());
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                return accountManager.getNonPlayerAccount(name).getBalance(economyManager.getVaultCurrency());
+                return accountManager.getNonPlayerAccount(name).getBalance(currencyManager.getVaultCurrency());
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
@@ -150,7 +133,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
         try {
-            return accountManager.getPlayerAccount(offlinePlayer).getBalance(economyManager.getVaultCurrency());
+            return accountManager.getPlayerAccount(offlinePlayer).getBalance(currencyManager.getVaultCurrency());
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -176,13 +159,13 @@ public class VaultProvider extends AbstractEconomy {
 
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                return accountManager.getPlayerAccount(offlinePlayer).has(economyManager.getVaultCurrency(), amount);
+                return accountManager.getPlayerAccount(offlinePlayer).has(currencyManager.getVaultCurrency(), amount);
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                return accountManager.getNonPlayerAccount(name).has(economyManager.getVaultCurrency(), amount);
+                return accountManager.getNonPlayerAccount(name).has(currencyManager.getVaultCurrency(), amount);
             } catch (InvalidCurrencyException e) {
                 e.printStackTrace();
             }
@@ -195,7 +178,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double amount) {
         try {
-            return accountManager.getPlayerAccount(offlinePlayer).has(economyManager.getVaultCurrency(), amount);
+            return accountManager.getPlayerAccount(offlinePlayer).has(currencyManager.getVaultCurrency(), amount);
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -226,13 +209,13 @@ public class VaultProvider extends AbstractEconomy {
 
             if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
                 try {
-                    accountManager.getPlayerAccount(offlinePlayer).withdraw(economyManager.getVaultCurrency(), amount);
+                    accountManager.getPlayerAccount(offlinePlayer).withdraw(currencyManager.getVaultCurrency(), amount);
                 } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
                     e.printStackTrace();
                 }
             } else {
                 try {
-                    accountManager.getNonPlayerAccount(name).withdraw(economyManager.getVaultCurrency(), amount);
+                    accountManager.getNonPlayerAccount(name).withdraw(currencyManager.getVaultCurrency(), amount);
                 } catch (InvalidCurrencyException | NegativeAmountException | OversizedWithdrawAmountException e) {
                     e.printStackTrace();
                 }
@@ -250,7 +233,7 @@ public class VaultProvider extends AbstractEconomy {
         }
 
         try {
-            accountManager.getPlayerAccount(offlinePlayer).withdraw(economyManager.getVaultCurrency(), amount);
+            accountManager.getPlayerAccount(offlinePlayer).withdraw(currencyManager.getVaultCurrency(), amount);
         } catch (NegativeAmountException | InvalidCurrencyException | OversizedWithdrawAmountException e) {
             e.printStackTrace();
         }
@@ -277,13 +260,13 @@ public class VaultProvider extends AbstractEconomy {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(economyManager.getVaultCurrency(), amount);
+                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(currencyManager.getVaultCurrency(), amount);
             } catch (NegativeAmountException | InvalidCurrencyException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                accountManager.getNonPlayerAccount(name).deposit(economyManager.getVaultCurrency(), amount);
+                accountManager.getNonPlayerAccount(name).deposit(currencyManager.getVaultCurrency(), amount);
             } catch (InvalidCurrencyException | NegativeAmountException e) {
                 e.printStackTrace();
             }
@@ -298,7 +281,7 @@ public class VaultProvider extends AbstractEconomy {
         }
 
         try {
-            accountManager.getPlayerAccount(offlinePlayer).deposit(economyManager.getVaultCurrency(), amount);
+            accountManager.getPlayerAccount(offlinePlayer).deposit(currencyManager.getVaultCurrency(), amount);
         } catch (NegativeAmountException | InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -384,47 +367,36 @@ public class VaultProvider extends AbstractEconomy {
             createPlayerAccount(Bukkit.getOfflinePlayer(name));
             return true;
         } else {
-            try {
-                if (accountManager.hasNonPlayerAccount(name)) {
-                    return false;
-                } else {
-                    try {
-                        accountManager.createNonPlayerAccount(name);
-                        return true;
-                    } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                        instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        try {
-            if (accountManager.hasPlayerAccount(offlinePlayer)) {
+            if (accountManager.hasNonPlayerAccount(name)) {
                 return false;
             } else {
                 try {
-                    accountManager.createPlayerAccount(offlinePlayer);
+                    accountManager.createNonPlayerAccount(name);
                     return true;
-                } catch (AccountAlreadyExistsException | SQLException | InvalidCurrencyException e) {
-                    instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
+                } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                    instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
                     e.printStackTrace();
                     return false;
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return false;
+    }
+
+    @Override
+    public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
+        if (accountManager.hasPlayerAccount(offlinePlayer)) {
+            return false;
+        } else {
+            try {
+                accountManager.createPlayerAccount(offlinePlayer);
+                return true;
+            } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
+                e.printStackTrace();
+                return false;
+            }
+        }
     }
 
     @Override

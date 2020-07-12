@@ -3,7 +3,7 @@ package io.github.lokka30.phantomeconomy_v2;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy_v2.api.AccountManager;
-import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.api.CurrencyManager;
 import io.github.lokka30.phantomeconomy_v2.api.accounts.PlayerAccount;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
@@ -50,7 +50,7 @@ public class PhantomEconomy extends JavaPlugin {
     private Utils utils;
     private FileCache fileCache;
     private AccountManager accountManager;
-    private EconomyManager economyManager;
+    private CurrencyManager currencyManager;
     private FlatFile settings;
     private FlatFile messages;
     private PluginManager pluginManager;
@@ -85,7 +85,7 @@ public class PhantomEconomy extends JavaPlugin {
             utils = new Utils();
             fileCache = new FileCache(this);
             accountManager = new AccountManager(this);
-            economyManager = new EconomyManager(this);
+            currencyManager = new CurrencyManager(this);
         }
     }
 
@@ -172,11 +172,11 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         //Check their versions
-        if (settings.get("file-version", 0) != utils.getLatestSettingsFileVersion()) {
+        if (settings.get("other-options.file-version", 0) != utils.getLatestSettingsFileVersion()) {
             phantomLogger.log(LogLevel.SEVERE, prefix, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (messages.get("file-version", 0) != utils.getLatestMessagesFileVersion()) {
+        if (messages.get("other-options.file-version", 0) != utils.getLatestMessagesFileVersion()) {
             phantomLogger.log(LogLevel.SEVERE, prefix, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
@@ -267,16 +267,12 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void ensureOnlinePlayersHaveAccounts() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            try {
-                if (!accountManager.hasPlayerAccount(player)) {
-                    try {
-                        accountManager.createPlayerAccount(player);
-                    } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
-                        e.printStackTrace();
-                    }
+            if (!accountManager.hasPlayerAccount(player)) {
+                try {
+                    accountManager.createPlayerAccount(player);
+                } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
             PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
@@ -285,7 +281,7 @@ public class PhantomEconomy extends JavaPlugin {
 
             for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
                 try {
-                    currency = economyManager.getCurrency(currencyName);
+                    currency = currencyManager.getCurrency(currencyName);
                 } catch (InvalidCurrencyException e) {
                     e.printStackTrace();
                 }
@@ -365,8 +361,8 @@ public class PhantomEconomy extends JavaPlugin {
         return accountManager;
     }
 
-    public EconomyManager getEconomyManager() {
-        return economyManager;
+    public CurrencyManager getCurrencyManager() {
+        return currencyManager;
     }
 
     public PhantomLogger getPhantomLogger() {

@@ -8,11 +8,11 @@ import io.github.lokka30.phantomlib.enums.LogLevel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EconomyManager {
+public class CurrencyManager {
 
     private PhantomEconomy instance;
 
-    public EconomyManager(final PhantomEconomy instance) {
+    public CurrencyManager(final PhantomEconomy instance) {
         this.instance = instance;
     }
 

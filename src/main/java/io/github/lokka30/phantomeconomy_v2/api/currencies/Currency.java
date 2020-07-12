@@ -1,7 +1,7 @@
 package io.github.lokka30.phantomeconomy_v2.api.currencies;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
-import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
+import io.github.lokka30.phantomeconomy_v2.api.CurrencyManager;
 
 import java.text.DecimalFormat;
 
@@ -10,9 +10,9 @@ public class Currency {
     private PhantomEconomy instance;
     private String name;
 
-    public Currency(EconomyManager economyManager, String name) {
+    public Currency(CurrencyManager currencyManager, String name) {
         this.name = name;
-        this.instance = economyManager.getInstance();
+        this.instance = currencyManager.getInstance();
     }
 
     @SuppressWarnings("unused")

@@ -1,6 +1,9 @@
 # This file is currently empty.
 # (TODO)
 
-# Only change this if you know what you are doing!
-# It is recommended to back up your old 'messages.yml' file, generate a new one, and then edit the newly generated one, instead of trying to update an old file.
-file-version: 5
+# Other options that you probably don't need to change
+other-options:
+
+  # Only change this if you know what you are doing!
+  # It is recommended to back up your old 'messages.yml' file, generate a new one, and then edit the newly generated one, instead of trying to update an old file.
+  file-version: 5
