@@ -79,7 +79,7 @@ public class BalanceCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        List<String> suggestions = new ArrayList<String>();
+        List<String> suggestions = new ArrayList<>();
         if (args.length == 1) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (commandSender instanceof Player) {
@@ -92,6 +92,6 @@ public class BalanceCommand implements TabExecutor {
                 }
             }
         }
-        return null;
+        return suggestions;
     }
 }
