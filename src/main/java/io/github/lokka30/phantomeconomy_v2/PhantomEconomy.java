@@ -144,6 +144,10 @@ public class PhantomEconomy extends JavaPlugin {
     private void loadFiles() {
         phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &32&8/&37&8) &7Loading files...");
 
+        if (getDataFolder().mkdir()) {
+            phantomLogger.log(LogLevel.INFO, prefix, "&7File &bdataFolder &7didn't exist, it has been created.");
+        }
+
         settings = LightningBuilder
                 .fromFile(new File(getDataFolder() + "settings"))
                 .addInputStreamFromResource("settings.yml")
