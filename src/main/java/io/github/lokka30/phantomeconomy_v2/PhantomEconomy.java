@@ -158,8 +158,8 @@ public class PhantomEconomy extends JavaPlugin {
                 .createYaml();
 
         //Check if they exist
-        final File settingsFile = new File(getDataFolder() + "settings.yml");
-        final File messagesFile = new File(getDataFolder() + "messages.yml");
+        final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
+        final File messagesFile = new File(getDataFolder() + File.separator + "messages.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             phantomLogger.log(LogLevel.INFO, prefix, "File '&bsettings.yml&7' doesn't exist. Creating it now.");

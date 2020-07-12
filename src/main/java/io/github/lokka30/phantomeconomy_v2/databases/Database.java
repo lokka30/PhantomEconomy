@@ -6,7 +6,6 @@ import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyExcepti
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
@@ -39,14 +38,8 @@ public class Database {
             case SQLITE:
                 synchronized (this) {
                     if (!instance.getDataFolder().exists()) {
-                        try {
-                            if (!instance.getDataFolder().createNewFile()) {
-                                instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
-                                return null;
-                            }
-                        } catch (IOException exception) {
-                            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder for the SQLite database. Exception:");
-                            exception.printStackTrace();
+                        if (!instance.getDataFolder().mkdir()) {
+                            instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7Unable to create data folder");
                             return null;
                         }
                     }
