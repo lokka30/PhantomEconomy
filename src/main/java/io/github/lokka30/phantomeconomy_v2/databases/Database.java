@@ -70,7 +70,7 @@ public class Database {
                             return null;
                         }
 
-                        connection = DriverManager.getConnection("jdbc:sqlite:" + instance.getDataFolder() + File.separator + databaseFile);
+                        connection = DriverManager.getConnection("jdbc:sqlite:" + databaseFile);
                     } catch (SQLException e) {
                         instance.getPhantomLogger().log(LogLevel.SEVERE, "&cDatabase Error: &7An SQLException occured whilst trying to connect to the SQLite database. Stack trace:");
                         e.printStackTrace();
