@@ -2,9 +2,9 @@
 database:
 
   # What database should be used?
-  # Valid types: 'SQLite', 'MySQL'
-  # Expected: [String], Default: ['SQLite']
-  database-type: 'SQLite'
+  # Valid types: SQLite, MySQL
+  # Expected: [DatabaseType], Default: [SQLite]
+  database-type: SQLite
 
   # In this section, you can change the table names for each account.
   # Using MySQL and want to sync account balances over each server? Check this link:
@@ -118,16 +118,19 @@ startup-tasks:
   # Clear the PlayerAccount balance cache?
   # This isn't really required as players are removed from the cache when they leave the server.
   # Rate: 45 minutes
+  # Expected: [Boolean], Default: [false]
   clear-player-account-cache: false
 
   # Clear the NonPlayerAccount cache?
   # This should be enabled as this cache is only reset when the server stops.
   # Rate: 45 minutes
+  # Expected: [Boolean], Default: [true]
   clear-non-player-account-cache: true
 
   # Clear the BankAccount cache?
   # This should be enabled as this cache is only reset when the server stops.
   # Rate: 45 minutes
+  # Expected: [Boolean], Default: [true]
   clear-bank-account-cache: true
 
 # Other options not related to the economy
@@ -138,7 +141,8 @@ other-options:
   # Expected: [Boolean], Default: [true]
   use-update-checker: true
 
-  # Only change this if you know what you are doing!
-  # It is recommended to backup your old settings.yml file and edit a newly generated one instead.
+  # Version of this file.
+  # !!!Only change this if you know what you are doing!!!
+  # It is recommended to backup your old settings.yml file and edit a newly generated one instead when possible.
   # Expected: [Integer]
   file-version: 6

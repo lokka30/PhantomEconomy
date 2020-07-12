@@ -1,6 +1,7 @@
-PhantomEconomy v2.0.0 is an in-development version which will completely transform the plugin into what I actually wanted it to become. It will contain a plethora of new features and will hopefully have less bugs and more smiles.
+PhantomEconomy v2.0.0 is an in-development version which will completely transform the plugin into what I actually wanted it to become to begin with. It will contain a plethora of new features and will hopefully have less bugs and more smiles.
 
-Here's a list of planned features, improvements and fixes over v1-
+Here's a list of planned features, improvements and fixes over v1:
+========================================================================
 1. MySQL and SQLite database storage
    MySQL allows servers to sync all or specific account types' balances to each other
    Example setup: Only Skywars and Bedwars share the same PlayerAccount and BankAccount balances, but the whole network share the same NonPlayerAccount balances.
@@ -23,9 +24,11 @@ Here's a list of planned features, improvements and fixes over v1-
 - Transaction log
 - [balance] sign
 - Configurable repeating task which clears caches of accounts
+========================================================================
 
 
 Can I test it early?
+========================================================================
 - Yep, you can. You assume all responsibility for any errors or damages caused. v2 is strictly in development and is by no means ready for installation on a server that has too much to lose.
 - The database commands haven't been tested at all yet, so make sure you backup or make a new database for testing.
 - Instructions -- if you don't want to follow them, ask lokka30 to make you a jar :)
@@ -34,30 +37,72 @@ Can I test it early?
   2. Move all of the contents of the v2 folder into the parent directory. Delete the v2 folder once complete. You should have v2's plugin.yml, settings.yml and messages.yml now.
   3. In the plugin.yml file, in the 'main' setting, change it from 'io.github.lokka30.phantomeconomy.PhantomEconomy' to 'io.github.lokka30.phantomeconomy_v2.PhantomEconomy'.
   4. Save the plugin.yml file and compile/save the jar file.
+========================================================================
 
 
 To-do List, in order:
-- Add functionality to the commands
+========================================================================
+- Separate accounts into 3 different tables. Allow table prefix to be customised.
+ - 'accountType' column can be removed.
+ - BankAccount table has two more columns than normal:
+  - 'ownerAccountType', nonPlayerAccount or playerAccount
+  - 'ownerId', the 'name' or player that owns the bank account
+
+- Balance Command
+  - Add configurable messages.
+
+- Baltop Command
+  - Start working on it
+  - Add configurable messages.
+
+- Economy Command
+  - Start working on it
+  - Add configurable messages.
+
+- Pay Command
+  - Start working on it
+  - Add configurable messages.
+
 - Customisable 'console added $x to your account' message
+
 - Make 'Command to give money to all online and/or offline players'
   - simply go into the 'eco add' command and allow '*' as a player argument, for example
+
 - Check if the plugin's commands and listeners operate properly
+
 - Check if the plugin's databases operate properly
+
 - Check if the Vault hook operates properly
+
 - Add placeholderapi placeholders
- - %phantomeconomy_baltop_pos1_balance%
- - %phantomeconomy_baltop_pos1_name%
- - add positions 1-5:
- - %phantomeconomy_baltop_pos5_balance%, etc.
- - %phantomeconomy_servertotal%
- - %phantomeconomy_balance%
+  - %phantomeconomy_baltop_pos1_balance%
+  - %phantomeconomy_baltop_pos1_name%
+  - add positions 1-5:
+  - %phantomeconomy_baltop_pos5_balance%, etc.
+  - %phantomeconomy_servertotal%
+  - %phantomeconomy_balance%
+
 - Complete the bank account implementation
-- Add an import command to import Essentials economy data and TheNewEconomy economy data
+
+- PhantomEconomy Command
+  - Finish backup and compatibility subcommands
+  - Add an import command to import Essentials economy data and TheNewEconomy economy data
+  - Add configurable messages.
+
 - Transaction log
-- [Balance] sign functionality
+
 - Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
+
 - Remove Towny from the pom.xml
+
 - Compile, push to github, release on Spigot, announce on Discord server
+========================================================================
+
+Removed items from the to-do list:
+========================================================================
+- [Balance] sign functionality
+ - Reason: Unnecessary.
+========================================================================
 
 
 Special Thanks

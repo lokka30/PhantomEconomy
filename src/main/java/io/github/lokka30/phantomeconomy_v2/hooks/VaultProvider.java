@@ -1,8 +1,8 @@
 package io.github.lokka30.phantomeconomy_v2.hooks;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
+import io.github.lokka30.phantomeconomy_v2.api.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
-import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;

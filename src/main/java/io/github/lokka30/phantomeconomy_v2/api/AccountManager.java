@@ -1,6 +1,9 @@
-package io.github.lokka30.phantomeconomy_v2.api.accounts;
+package io.github.lokka30.phantomeconomy_v2.api;
 
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.BankAccount;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.NonPlayerAccount;
+import io.github.lokka30.phantomeconomy_v2.api.accounts.PlayerAccount;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
@@ -39,7 +42,7 @@ public class AccountManager {
     }
 
     public boolean hasPlayerAccount(final OfflinePlayer offlinePlayer) throws SQLException {
-        return instance.getDatabase().hasAccount("PlayerAccount", offlinePlayer.getUniqueId().toString());
+        return (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) && instance.getDatabase().hasAccount("PlayerAccount", offlinePlayer.getUniqueId().toString());
     }
 
     public boolean hasNonPlayerAccount(final String name) throws SQLException {

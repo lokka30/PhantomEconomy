@@ -5,6 +5,9 @@ import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EconomyManager {
 
     private PhantomEconomy instance;
@@ -25,6 +28,14 @@ public class EconomyManager {
         } else {
             throw new InvalidCurrencyException(name + " is not a valid currency.");
         }
+    }
+
+    public List<Currency> getEnabledCurrencies() throws InvalidCurrencyException {
+        List<Currency> enabledCurrencies = new ArrayList<>();
+        for (String enabledCurrency : instance.getFileCache().SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
+            enabledCurrencies.add(getCurrency(enabledCurrency));
+        }
+        return enabledCurrencies;
     }
 
     // Check if the currency 'name' is enabled

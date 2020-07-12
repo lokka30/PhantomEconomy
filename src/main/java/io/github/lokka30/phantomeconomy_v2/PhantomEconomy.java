@@ -2,8 +2,8 @@ package io.github.lokka30.phantomeconomy_v2;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
+import io.github.lokka30.phantomeconomy_v2.api.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.EconomyManager;
-import io.github.lokka30.phantomeconomy_v2.api.accounts.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.accounts.PlayerAccount;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.AccountAlreadyExistsException;
@@ -57,7 +57,6 @@ public class PhantomEconomy extends JavaPlugin {
     private Database database;
     private Economy vaultProvider;
     public String prefix = "&b&lPhantomEconomy: &7";
-    private PhantomLib phantomLib;
     private PhantomLogger phantomLogger;
     private MessageMethods messageMethods;
     private CommandRegister commandRegister;
@@ -79,7 +78,7 @@ public class PhantomEconomy extends JavaPlugin {
             getLogger().severe("--------------------------------");
             pluginManager.disablePlugin(this);
         } else {
-            phantomLib = PhantomLib.getInstance();
+            PhantomLib phantomLib = PhantomLib.getInstance();
             phantomLogger = phantomLib.getPhantomLogger();
             messageMethods = phantomLib.getMessageMethods();
             commandRegister = phantomLib.getCommandRegister();
@@ -208,11 +207,11 @@ public class PhantomEconomy extends JavaPlugin {
     private void registerCommands() {
         phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &36&8/&37&8) &7Registering commands...");
 
-        commandRegister.registerCommand(this, "balance", new BalanceCommand(this));
-        commandRegister.registerCommand(this, "baltop", new BaltopCommand(this));
-        commandRegister.registerCommand(this, "economy", new EconomyCommand(this));
-        commandRegister.registerCommand(this, "pay", new PayCommand(this));
-        commandRegister.registerCommand(this, "phantomeconomy", new PhantomEconomyCommand(this));
+        getCommandRegister().registerCommand(this, "balance", new BalanceCommand(this));
+        getCommandRegister().registerCommand(this, "baltop", new BaltopCommand(this));
+        getCommandRegister().registerCommand(this, "economy", new EconomyCommand(this));
+        getCommandRegister().registerCommand(this, "pay", new PayCommand(this));
+        getCommandRegister().registerCommand(this, "phantomeconomy", new PhantomEconomyCommand(this));
     }
 
     private void registerMetrics() {
@@ -364,10 +363,6 @@ public class PhantomEconomy extends JavaPlugin {
 
     public EconomyManager getEconomyManager() {
         return economyManager;
-    }
-
-    public PhantomLib getPhantomLib() {
-        return phantomLib;
     }
 
     public PhantomLogger getPhantomLogger() {

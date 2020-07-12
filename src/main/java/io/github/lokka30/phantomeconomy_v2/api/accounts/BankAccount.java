@@ -1,5 +1,6 @@
 package io.github.lokka30.phantomeconomy_v2.api.accounts;
 
+import io.github.lokka30.phantomeconomy_v2.api.AccountManager;
 import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.OversizedWithdrawAmountException;

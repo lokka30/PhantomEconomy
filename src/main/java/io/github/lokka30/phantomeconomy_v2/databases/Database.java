@@ -281,7 +281,9 @@ public class Database {
     }
 
     public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
-        setBalance(accountType, accountId, instance.getEconomyManager().getDefaultCurrency().getName(), instance.getEconomyManager().getDefaultCurrency().getDefaultBalance());
+        for (Currency currency : instance.getEconomyManager().getEnabledCurrencies()) {
+            setBalance(accountType, accountId, currency.getName(), currency.getDefaultBalance());
+        }
     }
 
     public void clearBaltopCacheAndServerTotal() {

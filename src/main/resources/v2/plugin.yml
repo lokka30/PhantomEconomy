@@ -17,7 +17,7 @@ commands:
 
   baltop:
     description: View the top balances on the server.
-    usage: /<command> [#position/player]
+    usage: /<command> [page]
     aliases: [balancetop, topbalance, topbalances, topbal]
 
   economy:
