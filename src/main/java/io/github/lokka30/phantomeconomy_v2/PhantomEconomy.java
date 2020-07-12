@@ -149,11 +149,11 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         settings = LightningBuilder
-                .fromFile(new File(getDataFolder() + "settings"))
+                .fromFile(new File(getDataFolder() + File.separator + "settings"))
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
         messages = LightningBuilder
-                .fromFile(new File(getDataFolder() + "messages"))
+                .fromFile(new File(getDataFolder() + File.separator + "messages"))
                 .addInputStreamFromResource("messages.yml")
                 .createYaml();
 
