@@ -8,8 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.sql.SQLException;
-
 public class JoinListener implements Listener {
 
     private PhantomEconomy instance;
@@ -19,7 +17,7 @@ public class JoinListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(final PlayerJoinEvent event) throws InvalidCurrencyException, SQLException {
+    public void onJoin(final PlayerJoinEvent event) throws InvalidCurrencyException {
         final Player player = event.getPlayer();
         if (!instance.getAccountManager().hasPlayerAccount(player)) {
             try {
