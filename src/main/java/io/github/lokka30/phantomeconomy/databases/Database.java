@@ -159,6 +159,16 @@ public class Database {
             preparedStatement.setString(3, currencyName);
             resultSet = preparedStatement.executeQuery();
 
+            //TODO
+            //TODO
+            //TODO
+            //TODO
+            //TODO When I relog, my balance isn't saved.
+            //TODO
+            //TODO
+            //TODO
+            //TODO
+
             if (!resultSet.next()) {
                 double defaultBalance = instance.getCurrencyManager().getCurrency(currencyName).getDefaultBalance();
                 setBalance(accountType, accountId, currencyName, defaultBalance);
@@ -279,7 +289,7 @@ public class Database {
         String table = getTableNameFromAccountTypeStr(accountType);
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM " + table + " WHERE accountType=? AND accountId=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT accountId FROM " + table + " WHERE accountType=? AND accountId=?;");
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             ResultSet resultSet = preparedStatement.executeQuery();
