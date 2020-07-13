@@ -75,8 +75,8 @@ public class FileCache {
         SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT = settings.get("database.account-tables.nonPlayerAccount", "phantomeconomy_global");
         SETTINGS_DATABASE_TABLE_BANKACCOUNT = settings.get("database.account-tables.bankAccount", "phantomeconomy_global");
         SETTINGS_CURRENCIES_ENABLED_CURRENCIES = settings.get("currencies.enabled-currencies", null);
-        SETTINGS_DEFAULT_CURRENCY = settings.get("default-currency", "invalidSetting");
-        SETTINGS_VAULT_CURRENCY = settings.get("vault-currency", "invalidSetting");
+        SETTINGS_DEFAULT_CURRENCY = settings.get("currencies.default-currency", "invalidSetting");
+        SETTINGS_VAULT_CURRENCY = settings.get("currencies.vault-currency", "invalidSetting");
         SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE = settings.get("startup-tasks.clear-baltop-cache", true);
         SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-player-account-cache", false);
         SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE = settings.get("startup-tasks.clear-non-player-account-cache", true);

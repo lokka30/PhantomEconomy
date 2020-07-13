@@ -127,8 +127,7 @@ public class PhantomEconomy extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &31&8/&37&8) &7Checking compatibility...");
 
         //Check server version
-        final String packageName = getServer().getClass().getPackage().getName();
-        final String currentVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+        final String currentVersion = getServer().getVersion();
         boolean isSupported = false;
         for (String supportedBaseVersion : getUtils().getSupportedServerVersions()) {
             if (currentVersion.contains(supportedBaseVersion)) {
