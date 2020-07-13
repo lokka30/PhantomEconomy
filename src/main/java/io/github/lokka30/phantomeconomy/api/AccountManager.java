@@ -4,7 +4,6 @@ import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import io.github.lokka30.phantomeconomy.api.accounts.BankAccount;
 import io.github.lokka30.phantomeconomy.api.accounts.NonPlayerAccount;
 import io.github.lokka30.phantomeconomy.api.accounts.PlayerAccount;
-import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import org.bukkit.OfflinePlayer;
@@ -15,9 +14,9 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class AccountManager {
 
-    public HashMap<UUID, HashMap<Currency, Double>> cachedPlayerAccountBalances = new HashMap<>();
-    public HashMap<String, HashMap<Currency, Double>> cachedNonPlayerAccountBalances = new HashMap<>();
-    public HashMap<String, HashMap<Currency, Double>> cachedBankAccountBalances = new HashMap<>();
+    public HashMap<UUID, HashMap<String, Double>> cachedPlayerAccountBalances = new HashMap<>();
+    public HashMap<String, HashMap<String, Double>> cachedNonPlayerAccountBalances = new HashMap<>();
+    public HashMap<String, HashMap<String, Double>> cachedBankAccountBalances = new HashMap<>();
     private PhantomEconomy instance;
 
     public AccountManager(final PhantomEconomy instance) {

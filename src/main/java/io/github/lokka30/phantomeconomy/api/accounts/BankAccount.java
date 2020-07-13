@@ -25,24 +25,24 @@ public class BankAccount {
 
     public double getBalance(Currency currency) {
         if (!accountManager.cachedBankAccountBalances.containsKey(getName())) {
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
+            HashMap<String, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
-        } else if (!accountManager.cachedBankAccountBalances.get(getName()).containsKey(currency)) {
-            HashMap<Currency, Double> balanceMap = accountManager.cachedBankAccountBalances.get(getName());
-            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
+        } else if (!accountManager.cachedBankAccountBalances.get(getName()).containsKey(currency.getName())) {
+            HashMap<String, Double> balanceMap = accountManager.cachedBankAccountBalances.get(getName());
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
         }
 
-        return accountManager.cachedBankAccountBalances.get(getName()).get(currency);
+        return accountManager.cachedBankAccountBalances.get(getName()).get(currency.getName());
     }
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
             throw new NegativeAmountException("Tried to set balance to BankAccount with name '" + getName() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency, amount);
+            HashMap<String, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency.getName(), amount);
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
             accountManager.getInstance().getDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
         }

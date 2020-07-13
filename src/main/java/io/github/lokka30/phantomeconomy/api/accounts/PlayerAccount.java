@@ -41,24 +41,24 @@ public class PlayerAccount {
 
     public double getBalance(Currency currency) {
         if (!accountManager.cachedPlayerAccountBalances.containsKey(getUUID())) {
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+            HashMap<String, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
             accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
-        } else if (!accountManager.cachedPlayerAccountBalances.get(getUUID()).containsKey(currency)) {
-            HashMap<Currency, Double> balanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());
-            balanceMap.put(currency, accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+        } else if (!accountManager.cachedPlayerAccountBalances.get(getUUID()).containsKey(currency.getName())) {
+            HashMap<String, Double> balanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
             accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
         }
 
-        return accountManager.cachedPlayerAccountBalances.get(getUUID()).get(currency);
+        return accountManager.cachedPlayerAccountBalances.get(getUUID()).get(currency.getName());
     }
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
             throw new NegativeAmountException("Tried to set balance to PlayerAccount with name '" + getUUID() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency, amount);
+            HashMap<String, Double> balanceMap = new HashMap<>();
+            balanceMap.put(currency.getName(), amount);
             accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
             accountManager.getInstance().getDatabase().setBalance("PlayerAccount", getUUIDAsString(), currency.getName(), amount);
         }
