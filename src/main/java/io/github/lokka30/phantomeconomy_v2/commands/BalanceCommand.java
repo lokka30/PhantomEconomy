@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,7 +64,7 @@ public class BalanceCommand implements TabExecutor {
                                     .replace("%balance%", currency.formatFinalBalance(balance)));
                         }
                     }
-                } catch (SQLException | InvalidCurrencyException e) {
+                } catch (InvalidCurrencyException e) {
                     e.printStackTrace();
                 }
             } else {
