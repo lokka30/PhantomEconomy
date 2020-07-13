@@ -279,7 +279,7 @@ public class Database {
         String table = getTableNameFromAccountTypeStr(accountType);
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM " + table + " WHERE accountType=?,accountId=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM " + table + " WHERE accountType=? AND accountId=?;");
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             ResultSet resultSet = preparedStatement.executeQuery();
