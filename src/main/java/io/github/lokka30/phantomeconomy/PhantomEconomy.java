@@ -2,19 +2,28 @@ package io.github.lokka30.phantomeconomy;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
+import io.github.lokka30.phantomeconomy.api.AccountManager;
+import io.github.lokka30.phantomeconomy.api.CurrencyManager;
+import io.github.lokka30.phantomeconomy.api.accounts.PlayerAccount;
+import io.github.lokka30.phantomeconomy.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsException;
+import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy.cache.FileCache;
 import io.github.lokka30.phantomeconomy.commands.*;
+import io.github.lokka30.phantomeconomy.databases.Database;
+import io.github.lokka30.phantomeconomy.hooks.VaultProvider;
 import io.github.lokka30.phantomeconomy.listeners.JoinListener;
 import io.github.lokka30.phantomeconomy.listeners.QuitListener;
-import io.github.lokka30.phantomeconomy.listeners.SignPlaceListener;
-import io.github.lokka30.phantomeconomy.listeners.SignUseListener;
-import io.github.lokka30.phantomeconomy.utils.LogLevel;
 import io.github.lokka30.phantomeconomy.utils.UpdateChecker;
 import io.github.lokka30.phantomeconomy.utils.Utils;
+import io.github.lokka30.phantomlib.PhantomLib;
+import io.github.lokka30.phantomlib.classes.CommandRegister;
+import io.github.lokka30.phantomlib.classes.MessageMethods;
+import io.github.lokka30.phantomlib.classes.PhantomLogger;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -22,295 +31,349 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 public class PhantomEconomy extends JavaPlugin {
 
-    public BaltopUpdater baltopUpdater;
+    /*
+    DATABASE LAYOUT
 
-    public FlatFile settings;
-    public FlatFile messages;
-    public FlatFile data;
+    AccountType, AccountId, CurrencyName, Balance
+    ---------------------------------------------
+    NonPlayerAccount, TownyNationBal, dollars, 25.23
+    PlayerAccount, notch-uuid-eh51-35151, dollars, 23.13
+    PlayerAccount, notch-uuid-eh51-35151, coins, 3.19
+    BankAccount, lokka30sbank, dollars, 2536156.67
+     */
 
-    public Economy provider;
-    public PluginManager pluginManager;
-
-    public HashMap<OfflinePlayer, Double> balanceCache;
-
-    public boolean hasTownyCompatibility = false;
+    public String prefix = "&b&lPhantomEconomy: &7";
+    private Utils utils;
+    private FileCache fileCache;
+    private AccountManager accountManager;
+    private CurrencyManager currencyManager;
+    private FlatFile settings;
+    private FlatFile messages;
+    private PluginManager pluginManager;
+    private Database database;
+    private Economy vaultProvider;
+    private PhantomLogger phantomLogger;
+    private MessageMethods messageMethods;
+    private CommandRegister commandRegister;
 
     @Override
     public void onLoad() {
-        baltopUpdater = new BaltopUpdater(this);
         pluginManager = getServer().getPluginManager();
-        balanceCache = new HashMap<>();
+        if (pluginManager.getPlugin("PhantomLib") == null) {
+            getLogger().severe("--------------------------------");
+            getLogger().severe("(!) MISSING DEPENDENCY WARNING (!)");
+            getLogger().severe("--------------------------------");
+            getLogger().severe(" ");
+            getLogger().severe("PhantomEconomy v2 requires PhantomLib to be installed in your plugins folder.");
+            getLogger().severe(" ");
+            getLogger().severe("You can download PhantomLib here: https://www.spigotmc.org/resources/%E2%99%A6-phantomlib-%E2%99%A6-1-7-10-1-15-2.78556/");
+            getLogger().severe(" ");
+            getLogger().severe("The plugin will now disable itself as PhantomLib is required for it to function.");
+            getLogger().severe(" ");
+            getLogger().severe("--------------------------------");
+            pluginManager.disablePlugin(this);
+        } else {
+            PhantomLib phantomLib = PhantomLib.getInstance();
+            phantomLogger = phantomLib.getPhantomLogger();
+            messageMethods = phantomLib.getMessageMethods();
+            commandRegister = phantomLib.getCommandRegister();
+            utils = new Utils();
+            fileCache = new FileCache(this);
+            accountManager = new AccountManager(this);
+            currencyManager = new CurrencyManager(this);
+        }
     }
 
     @Override
     public void onEnable() {
-        log(LogLevel.INFO, "--+-- Enabling Began --+--");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Started) &8+-----+");
+        final long timeStart = System.currentTimeMillis();
 
-        log(LogLevel.INFO, "Checking for incompatibilities...");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");
+        phantomLogger.log(LogLevel.INFO, prefix, "&7PhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers which wouldn't want to risk harm from an economy plugin malfunction. " +
+                "Please use it carefully, and report all issues to me. Make sure to note that you are using v2 when reporting them. " +
+                "I will not be responsible if a malfunction occurs in the plugin and damages your server. " +
+                "Thank you, and be careful!");
+        phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");
 
-        if (checkCompatibility()) {
-            log(LogLevel.INFO, "Loading files...");
-            loadFiles();
-
-            log(LogLevel.INFO, "Registering events...");
-            registerEvents();
-
-            log(LogLevel.INFO, "Registering commands...");
-            registerCommands();
-
-            log(LogLevel.INFO, "Hooking to Vault...");
-            hookVault();
-
-            log(LogLevel.INFO, "Starting bStats metrics...");
-            new Metrics(this, 6463);
-
-            if (settings.get("use-baltop-update-task", true)) {
-                log(LogLevel.INFO, "Starting baltop update task...");
-
-                new BukkitRunnable() {
-                    public void run() {
-                        baltopUpdater.update();
-                    }
-                }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
-            }
-
-            if (settings.get("use-balance-update-task", false)) {
-                log(LogLevel.INFO, "Starting balance update task...");
-
-                new BukkitRunnable() {
-                    public void run() {
-                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                            balanceCache.put(onlinePlayer, Utils.round(provider.getBalance(onlinePlayer)));
-                        }
-                    }
-                }.runTaskTimer(this, 0L, 20 * 60 * 10L); //20 ticks per second. 60 seconds per minute. 10 of these. = 10 minutes per baltop update.
-            }
-
-            log(LogLevel.INFO, "--+-- Enabling Complete --+--");
-        } else {
-            pluginManager.disablePlugin(this);
+        checkCompatibility();
+        loadFiles();
+        try {
+            loadDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        registerEvents();
+        hookAvailablePlugins();
+        registerCommands();
+        registerMetrics();
 
-        checkUpdates();
+        final long timeTaken = System.currentTimeMillis() - timeStart;
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+-----+");
 
-        startBalanceUpdateTask();
+        ensureOnlinePlayersHaveAccounts();
+
+        startRepeatingTasks();
+
+        checkForUpdates();
     }
 
-    @Override
-    public void onDisable() {
-        log(LogLevel.INFO, "--+-- Disabling Began --+--");
+    private void checkCompatibility() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &31&8/&37&8) &7Checking compatibility...");
 
-        log(LogLevel.INFO, "Unhooking from Vault...");
-        unhookVault();
-
-        log(LogLevel.INFO, "--+-- Disabling Began --+--");
-    }
-
-    private boolean checkCompatibility() {
-        // --- Check if the server version is compatible. ---
-        // Note: This doesn't stop the loading of the plugin. It just informs the server owners that they won't get support.
-        final String currentVersion = getServer().getVersion();
-        boolean isSupportedVersion = false;
-        for (String supportedVersion : Utils.getSupportedServerVersions()) {
-            if (currentVersion.contains(supportedVersion)) {
-                isSupportedVersion = true;
+        //Check server version
+        final String packageName = getServer().getClass().getPackage().getName();
+        final String currentVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+        boolean isSupported = false;
+        for (String supportedBaseVersion : getUtils().getSupportedServerVersions()) {
+            if (currentVersion.contains(supportedBaseVersion)) {
+                isSupported = true;
                 break;
             }
         }
-        if (!isSupportedVersion) {
-            log(LogLevel.WARNING, "Possible incompatibility found: &cServer is not running a supported version!");
-            log(LogLevel.WARNING, "Your server version doesn't match with the recommended version above.");
-            log(LogLevel.WARNING, "Support will not be provided from the author if encounter issues if you don't run the recommended server version.");
+        if (!isSupported) {
+            phantomLogger.log(LogLevel.WARNING, prefix, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not provide support for. Use at your own risk, and do not contact support if you have issues.");
         }
-
-        // --- Check if the server has Vault loaded. ---
-        // Note: If Vault isn't found, the plugin will stop loading.
-        if (pluginManager.getPlugin("Vault") == null) {
-            log(LogLevel.SEVERE, "Incompatibility found: &cVault is not installed!");
-            log(LogLevel.SEVERE, "This plugin depends on Vault to interact with other plugins.");
-            log(LogLevel.SEVERE, "Link to dependency: https://www.spigotmc.org/resources/vault.34315/");
-            log(LogLevel.SEVERE, "The plugin will now disable itself.");
-            return false;
-        }
-
-        // --- Check if the server has Towny loaded. ---
-        // Note: If Towny isn't found, then the plugin will keep loading, but disable Towny compatibility.
-        if (pluginManager.getPlugin("Towny") == null) {
-            hasTownyCompatibility = false;
-        } else {
-            hasTownyCompatibility = true;
-            log(LogLevel.INFO, "Towny found -- towny compatibility enabled.");
-        }
-
-        // --- No incompatibilities found, continue loading. ---
-        return true;
     }
 
     private void loadFiles() {
-        //Tell LightningStorage to start its business.
-        final String path = "plugins/PhantomEconomy/";
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &32&8/&37&8) &7Loading files...");
+
+        if (getDataFolder().mkdir()) {
+            phantomLogger.log(LogLevel.INFO, prefix, "&7File &bdataFolder &7didn't exist, it has been created.");
+        }
+
         settings = LightningBuilder
-                .fromFile(new File(path + "settings"))
+                .fromFile(new File(getDataFolder() + File.separator + "settings"))
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
         messages = LightningBuilder
-                .fromFile(new File(path + "messages"))
+                .fromFile(new File(getDataFolder() + File.separator + "messages"))
                 .addInputStreamFromResource("messages.yml")
                 .createYaml();
-        data = LightningBuilder
-                .fromFile(new File(path + "data"))
-                .addInputStreamFromResource("data.json")
-                .createJson();
 
         //Check if they exist
-        final File settingsFile = new File(path + "settings.yml");
-        final File messagesFile = new File(path + "messages.yml");
-        final File dataFile = new File(path + "data.json");
+        final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
+        final File messagesFile = new File(getDataFolder() + File.separator + "messages.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
-            log(LogLevel.INFO, "File &asettings.yml&7 doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, prefix, "File '&bsettings.yml&7' doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
         }
 
         if (!(messagesFile.exists() && !messagesFile.isDirectory())) {
-            log(LogLevel.INFO, "File &amessages.yml&7 doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, prefix, "File '&bmessages.yml&7' doesn't exist. Creating it now.");
             saveResource("messages.yml", false);
         }
 
-        if (!(dataFile.exists() && !dataFile.isDirectory())) {
-            log(LogLevel.INFO, "File &adata.json&7 doesn't exist. Creating it now.");
-            saveResource("data.json", false);
-        }
-
         //Check their versions
-        if (settings.get("file-version", 0) != Utils.getRecommendedSettingsVersion()) {
-            log(LogLevel.SEVERE, "File &asettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+        if (settings.get("other-options.file-version", 0) != utils.getLatestSettingsFileVersion()) {
+            phantomLogger.log(LogLevel.SEVERE, prefix, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (messages.get("file-version", 0) != Utils.getRecommendedMessagesVersion()) {
-            log(LogLevel.SEVERE, "File &amessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+        if (messages.get("other-options.file-version", 0) != utils.getLatestMessagesFileVersion()) {
+            phantomLogger.log(LogLevel.SEVERE, prefix, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
-        if (data.get("file-version", 0) != Utils.getRecommendedDataVersion()) {
-            log(LogLevel.SEVERE, "File &adata.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
-        }
+        fileCache.loadFromFiles();
+    }
+
+    private void loadDatabase() throws SQLException {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
+        database = new Database(this);
+        database.load();
+        phantomLogger.log(LogLevel.INFO, prefix, "... connection completed.");
     }
 
     private void registerEvents() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &34&8/&37&8) &7Registering events...");
+
         pluginManager.registerEvents(new JoinListener(this), this);
-        pluginManager.registerEvents(new SignPlaceListener(this), this);
-        pluginManager.registerEvents(new SignUseListener(this), this);
         pluginManager.registerEvents(new QuitListener(this), this);
     }
 
+    private void hookAvailablePlugins() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &35&8/&37&8) &7Hooking to available plugins...");
+
+        if (pluginManager.getPlugin("Vault") != null) {
+            phantomLogger.log(LogLevel.INFO, prefix, "Plugin '&bVault&7' installed, attempting to hook ...");
+            vaultProvider = new VaultProvider(this);
+            Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
+            phantomLogger.log(LogLevel.INFO, prefix, "... plugin '&bVault&7' hooked.");
+        }
+    }
+
     private void registerCommands() {
-        Objects.requireNonNull(getCommand("balance")).setExecutor(new BalanceCommand(this));
-        Objects.requireNonNull(getCommand("baltop")).setExecutor(new BaltopCommand(this));
-        Objects.requireNonNull(getCommand("economy")).setExecutor(new EconomyCommand(this));
-        Objects.requireNonNull(getCommand("pay")).setExecutor(new PayCommand(this));
-        Objects.requireNonNull(getCommand("phantomeconomy")).setExecutor(new PhantomEconomyCommand(this));
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &36&8/&37&8) &7Registering commands...");
+
+        getCommandRegister().registerCommand(this, "balance", new BalanceCommand(this));
+        getCommandRegister().registerCommand(this, "baltop", new BaltopCommand(this));
+        getCommandRegister().registerCommand(this, "economy", new EconomyCommand(this));
+        getCommandRegister().registerCommand(this, "pay", new PayCommand(this));
+        getCommandRegister().registerCommand(this, "phantomeconomy", new PhantomEconomyCommand(this));
     }
 
-    public void hookVault() {
-        if (pluginManager.getPlugin("Vault") == null) {
-            log(LogLevel.INFO, "Vault isn't installed - this somehow got past the compatibility check - hook task aborted.");
-        } else {
-            provider = new VaultImplementer(this);
-            Bukkit.getServicesManager().register(Economy.class, provider, this, ServicePriority.Highest);
-            log(LogLevel.INFO, "Hooked to Vault successfuly.");
-        }
+    private void registerMetrics() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &37&8/&37&8) &7Starting bStats...");
+
+        new Metrics(this, 6463);
     }
 
-    public void unhookVault() {
-        if (pluginManager.getPlugin("Vault") == null) {
-            log(LogLevel.INFO, "Vault isn't installed - unhook task aborted.");
-        } else {
-            Bukkit.getServicesManager().unregister(Economy.class, provider);
-            log(LogLevel.INFO, "Unhooked from Vault successfully.");
-        }
-    }
+    private void startRepeatingTasks() {
+        long fifteenMinutes = 20 * 60 * 15;
+        long fourtyFiveMinutes = 20 * 60 * 45;
 
-    private void checkUpdates() {
-        if (settings.get("updater", true)) {
-            log(LogLevel.INFO, "&8[&7Update Checker&8] &7Starting version comparison...");
-            try {
-                new UpdateChecker(this, 75053).getVersion(version -> {
-                    if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                        log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");
-                    } else {
-                        log(LogLevel.WARNING, "&8[&7Update Checker&8] &7There's a new update available: &a" + version + "&7. You're running &a" + getDescription().getVersion() + "&7.");
-                    }
-                });
-            } catch (BootstrapMethodError exception) {
-                log(LogLevel.WARNING, "&8[&7Update Checker&8] &7The update checker does not work with your server version, please disable the update checker in the settings file or upgrade to the latest server version.");
-            }
-        }
-    }
-
-    private void startBalanceUpdateTask() {
-        if (settings.get("use-balance-update-task", false)) {
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE) {
             new BukkitRunnable() {
-
                 @Override
                 public void run() {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        double balance = provider.getBalance(player);
-                        balanceCache.put(player, balance);
-                        data.set("players." + player.getUniqueId().toString() + ".balance", balance);
-                    }
+                    getDatabase().clearBaltopCacheAndServerTotal();
                 }
-            }.runTaskTimer(this, 0L, 20L * 60 * 10);
-            /*
-            20 as there are 20 ticks per second
-            60 as there are 60 seconds per minute
-            10 as it should run every 10 minutes
-             */
+            }.runTaskTimer(this, fifteenMinutes, fifteenMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_PLAYER_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedPlayerAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedNonPlayerAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
+        }
+
+        if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    getAccountManager().cachedBankAccountBalances.clear();
+                }
+            }.runTaskTimer(this, fourtyFiveMinutes, fourtyFiveMinutes);
         }
     }
 
-    public String colorize(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg
-                .replaceAll("%arrow%", "►"));
-    }
-
-    public void log(final LogLevel level, String msg) {
-        final Logger logger = getLogger();
-        msg = "&7" + msg;
-        switch (level) {
-            case INFO:
-                logger.info(colorize(msg));
-                break;
-            case WARNING:
-                logger.warning(colorize(msg));
-                break;
-            case SEVERE:
-                logger.severe(colorize(msg));
-                break;
-            default:
-                logger.severe(colorize("Unexpected LogLevel specified. message: " + msg));
-        }
-    }
-
-    public double getDefaultBalance() {
-        double defaultBalance;
-
-        if (settings.get("default-balance.enabled", true)) {
-            try {
-                defaultBalance = settings.get("default-balance.amount", 50.00);
-            } catch (NumberFormatException e) {
-                log(LogLevel.SEVERE, "Invalid default balance! Please set it to a valid number. Using default $50.00.");
-                defaultBalance = 50.00;
+    private void ensureOnlinePlayersHaveAccounts() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!accountManager.hasPlayerAccount(player)) {
+                try {
+                    accountManager.createPlayerAccount(player);
+                } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
             }
-        } else {
-            defaultBalance = 0.00;
-        }
 
-        return defaultBalance;
+            PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
+            Currency currency = null;
+            HashMap<Currency, Double> balanceMap = new HashMap<>();
+
+            for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
+                try {
+                    currency = currencyManager.getCurrency(currencyName);
+                } catch (InvalidCurrencyException e) {
+                    e.printStackTrace();
+                }
+
+                balanceMap.put(currency, playerAccount.getBalance(currency));
+            }
+
+            accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
+        }
+    }
+
+    private void checkForUpdates() {
+        if (fileCache.SETTINGS_OTHER_USE_UPDATE_CHECKER) {
+            phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Update Checker&8) &7Checking for updates...");
+            new UpdateChecker(this, 75053).getVersion(version -> {
+                final String currentVersion = getDescription().getVersion();
+
+                if (currentVersion.equals(version)) {
+                    phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Update Checker&8) &7You're running the latest version '&b" + currentVersion + "&7'.");
+                } else {
+                    phantomLogger.log(LogLevel.WARNING, prefix, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + currentVersion + "&7'.");
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Started) &8+-----+");
+        final long startTime = System.currentTimeMillis();
+
+        unhookAvailablePlugins();
+        disconnectDatabase();
+
+        final long totalTime = System.currentTimeMillis() - startTime;
+        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Complete, took &b" + totalTime + "ms&f) &8+-----+");
+    }
+
+    private void unhookAvailablePlugins() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &31&8/&32&8) &7Unhooking from available plugins...");
+
+        if (pluginManager.getPlugin("Vault") != null) {
+            phantomLogger.log(LogLevel.INFO, prefix, "Plugin '&bVault&7' installed, attempting to unhook ...");
+            Bukkit.getServicesManager().unregister(Economy.class, vaultProvider);
+
+            phantomLogger.log(LogLevel.INFO, prefix, "... plugin '&bVault&7' unhooked.");
+        }
+    }
+
+    private void disconnectDatabase() {
+        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &32&8/&32&8) &7 &7Disconnecting database ...");
+        database.close();
+        phantomLogger.log(LogLevel.INFO, prefix, "... database disconnected.");
+    }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public FlatFile getSettings() {
+        return settings;
+    }
+
+    public FlatFile getMessages() {
+        return messages;
+    }
+
+    public Utils getUtils() {
+        return utils;
+    }
+
+    public FileCache getFileCache() {
+        return fileCache;
+    }
+
+    public AccountManager getAccountManager() {
+        return accountManager;
+    }
+
+    public CurrencyManager getCurrencyManager() {
+        return currencyManager;
+    }
+
+    public PhantomLogger getPhantomLogger() {
+        return phantomLogger;
+    }
+
+    public CommandRegister getCommandRegister() {
+        return commandRegister;
+    }
+
+    public MessageMethods getMessageMethods() {
+        return messageMethods;
     }
 }

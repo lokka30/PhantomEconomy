@@ -1,64 +1,148 @@
-# Welcome to the PhantomEconomy settings file.
-# To assist you in its configuration, everything has been accompanied by comments.
+# Configure how data is stored here.
+database:
 
-# Settings for the default balance system.
-default-balance:
+  # What database should be used?
+  # Valid types: SQLite, MySQL
+  # Expected: [DatabaseType], Default: [SQLite]
+  database-type: SQLite
 
-  # Should players be given a starting balance for when they first join?
-  enabled: true
+  # In this section, you can change the table names for each account.
+  # Using MySQL and want to sync account balances over each server? Check this link:
+  # https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
+  account-tables:
+    playerAccount: 'phantomeconomy_global'
+    nonPlayerAccount: 'phantomeconomy_global'
+    bankAccount: 'phantomeconomy_global'
 
-  # If enabled, this amount will be given to new players.
-  amount: 50.00
+  # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
+  mysql-settings:
 
-# Here, you can manage certain aspects of the currency.
-currency:
+    # Expected: [String], Default: ['localhost']
+    host: 'localhost'
 
-  # There are three currency modes - SYMBOL, WORD and BOTH.
-  # SYMBOL: Prefixes the amount with a symbol, such as '$'. e.g. $99.95
-  # WORD: Suffixes the amount with a word, such as 'dollars'. e.g. 95.95 dollars
-  # BOTH: Uses a combination of the modes above.
-  mode: SYMBOL
+    # Expected: [Integer], Default: [3306]
+    port: 3306
 
-  # Setting for the SYMBOL mode, only applied if it is enabled above.
-  symbol: '$'
+    # Expected: [String], Default: ['root']
+    username: 'root'
 
-  # Settings for the WORD mode, only applied if it is enabled above.
-  word:
+    # Expected: [String], Default: ['password123']
+    password: 'password123'
 
-    # Should a space be inserted between the word and the amount?
-    # true: 99.95 dollars
-    # false: 99.95dollars
-    prefix-space: true
+    # Expected: [String], Default: ['minecraft']
+    database: 'minecraft'
 
-    # When the amount is exactly $1.00.
-    singular: 'dollar'
+    # Expected: [String], Default: ['true']
+    # Warning: Remember to keep this as a String, not a Boolean!
+    ssl: 'true'
 
-    # When the amount isn't exactly $1.00.
-    plural: 'dollars'
 
-# The 'Baltop Update Task Error Repair' is a thing which tries to repair issues when the baltop searches through all of the balances.
-# If you are having issues with it, you can turn it off here.
-# Expected: [bpolean], Default: [true]
-baltop-update-task-error-repair: true
+# You can customise each currency here.
+currencies:
 
-# You can toggle if the baltop update task should run every 10 minutes or not here.
-# Disable it if it is causing you issues. If you disable this, then baltop functionality will not be available.
-# If you change this setting you must restart your server.
-# Expected: [bpolean], Default: [true]
-use-baltop-update-task: true
+  # This is the list of currencies which can be used on the server.
+  # Warning: Make sure you include a currency here!
+  # Expected: [List<String>], Default: ['dollars']
+  enabled-currencies:
+    - 'dollars'
 
-# User-requested addition which allows you to make a task run on startup which updates online player's balances every 10 minutes.
-# If you change this setting you must restart your server.
-# Expected: [bpolean], Default: [false]
-use-balance-update-task: false
+  # When users are using /pay, /baltop, etc, and don't specify a specific currency to use, what will be used by default?
+  # Expected: [String], Default: ['dollars']
+  default-currency: 'dollars'
 
-# If true, on startup, PE will ask Spigot and tell you if there are any new updates available for the plugin.
-updater: true
+  # If you are using Vault, you must specify a currency to use.
+  # Warning: If plugins are using Vault and you haven't set a valid currency, serious issues could occur with other plugins!
+  # Expected: [String], Default: ['dollars']
+  vault-currency: 'dollars'
 
-# This might be useful if I asked you to enable it if you're having issues.
-debug: false
+  # Here you can edit all of the enabled currencies.
+  # Warning: Make sure you put your currency in 'enabled-currencies' once you have made it!
+  # Warning: You shouldn't rename currencies! People's balances will not transfer, their balances will stick with the currency name previous to when it was changed.
+  currency-settings:
 
-# This is the file version.
-# It should be unchanged unless updating to the respective version of the settings.yml file.
-# Do not increase the number to 'always stay updated', you must use the file version that corresponds to your plugin version.
-file-version: 5
+    # The default currency.
+    dollars:
+
+      # Users will be given this amount of money when they use the currency for the first time
+      # e.g. give $50 to players so they can get started
+      # Expected: [Double], Default: [50.00]
+      default-balance: 50.00
+
+      formatting:
+
+        # This is the format used to trim decimals off of various numbers, such as the player's balance or how much money a user was given.
+        # e.g. trimming decimals - 2.22222 -> 2.22
+        # Expected: [String], Default: ['0.00']
+        decimal-format: '0.00'
+
+        # The format when displaying as a human-readable balance.
+        # You can include %word% and it will add the singular/plural word customised below.
+        # e.g. '$%balance% %word%' = '$5 dollars' or '$1 dollar'
+        # e.g. '$%balance%' = '$5' or '$1'
+        # e.g. '%balance% %word' = '5 dollars' or '1 dollar'
+        # Expected: [String], Default: ['$%balance']
+        final-format: '$%balance%'
+
+        # You can edit the words placeholder here if you are using it in the format above.
+        words:
+
+          # When the balance is $1, e.g. 1 dollar
+          # Expected: [String], Default: ['dollar']
+          singular: 'dollar'
+
+          # When the balance is not $1, e.g. 5 dollars
+          # Expected: [String], Default: ['dollars']
+          plural: 'dollars'
+
+    # An example 'coins' currency. You can delete it if you want. It is disabled by default as it is not added to the 'enabled-currencies' list.
+    coins:
+      default-balance: 10.50
+      formatting:
+        storage-rounding: 2
+        decimal-readable-format: '0.00'
+        final-readable-format: '%balance% %word%'
+        words:
+          singular: 'coin'
+          plural: 'coins'
+
+# Here you can manage what tasks will start and repeat. Having these enabled will make the plugin use less memory but might increase the rate of which the plugin needs to use the database.
+# IMPORTANT: Changes in this section will only take effect on a server restart.
+startup-tasks:
+
+  # Clear the Baltop cache?
+  # This is highly recommended, else the baltop list will only update every restart.
+  # When the baltop cache is cleared, it will fetch new results from the database.
+  # Rate: 15 minutes
+  clear-baltop-cache: true
+
+  # Clear the PlayerAccount balance cache?
+  # This isn't really required as players are removed from the cache when they leave the server.
+  # Rate: 45 minutes
+  # Expected: [Boolean], Default: [false]
+  clear-player-account-cache: false
+
+  # Clear the NonPlayerAccount cache?
+  # This should be enabled as this cache is only reset when the server stops.
+  # Rate: 45 minutes
+  # Expected: [Boolean], Default: [true]
+  clear-non-player-account-cache: true
+
+  # Clear the BankAccount cache?
+  # This should be enabled as this cache is only reset when the server stops.
+  # Rate: 45 minutes
+  # Expected: [Boolean], Default: [true]
+  clear-bank-account-cache: true
+
+# Other options not related to the economy
+other-options:
+
+  # Should PE check for updates on startup?
+  # Disable if you check your Spigot alerts regularly.
+  # Expected: [Boolean], Default: [true]
+  use-update-checker: true
+
+  # Version of this file.
+  # !!!Only change this if you know what you are doing!!!
+  # It is recommended to backup your old settings.yml file and edit a newly generated one instead when possible.
+  # Expected: [Integer]
+  file-version: 6
