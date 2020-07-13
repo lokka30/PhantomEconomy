@@ -276,7 +276,7 @@ public class PhantomEconomy extends JavaPlugin {
 
             PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
             Currency currency = null;
-            HashMap<Currency, Double> balanceMap = new HashMap<>();
+            HashMap<String, Double> balanceMap = new HashMap<>();
 
             for (String currencyName : fileCache.SETTINGS_CURRENCIES_ENABLED_CURRENCIES) {
                 try {
@@ -285,7 +285,8 @@ public class PhantomEconomy extends JavaPlugin {
                     e.printStackTrace();
                 }
 
-                balanceMap.put(currency, playerAccount.getBalance(currency));
+                assert currency != null;
+                balanceMap.put(currency.getName(), playerAccount.getBalance(currency));
             }
 
             accountManager.cachedPlayerAccountBalances.put(player.getUniqueId(), balanceMap);
