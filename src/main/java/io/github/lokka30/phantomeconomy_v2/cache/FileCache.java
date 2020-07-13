@@ -2,7 +2,6 @@ package io.github.lokka30.phantomeconomy_v2.cache;
 
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.phantomeconomy_v2.PhantomEconomy;
-import io.github.lokka30.phantomeconomy_v2.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy_v2.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy_v2.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
@@ -35,11 +34,8 @@ public class FileCache {
     public boolean SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE;
     public boolean SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE;
 
-    public HashMap<Currency, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP;
-    public HashMap<Currency, String> SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP;
+    public HashMap<String, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
+    public HashMap<String, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP, SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP, SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP, SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP;
 
     private PhantomEconomy instance;
 
@@ -92,20 +88,19 @@ public class FileCache {
         SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP = new HashMap<>();
         SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP = new HashMap<>();
         for (String currencyName : settings.get("currencies.enabled-currencies", new ArrayList<String>())) {
-            Currency currency;
             final String path = "currencies.currency-settings." + currencyName + ".";
             try {
-                currency = instance.getCurrencyManager().getCurrency(currencyName);
+                instance.getCurrencyManager().getCurrency(currencyName);
             } catch (InvalidCurrencyException exception) {
                 instance.getPhantomLogger().log(LogLevel.SEVERE, "Currency '" + currencyName + "' was listed in 'enabled currencies' in the settings file, but the currency doesn't exist.");
                 continue;
             }
 
-            SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currency, settings.get(path + "default-balance", 0.00));
-            SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.decimal-format", "0.00"));
-            SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.put(currency, settings.get(path + "formatting.final-format", "$%balance%"));
-            SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currency, settings.get(path + "formatting.words.singular", "dollar"));
-            SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.put(currency, settings.get(path + "formatting.words.plural", "dollars"));
+            SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.put(currencyName, settings.get(path + "default-balance", 0.00));
+            SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.put(currencyName, settings.get(path + "formatting.decimal-format", "0.00"));
+            SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.put(currencyName, settings.get(path + "formatting.final-format", "$%balance%"));
+            SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currencyName, settings.get(path + "formatting.words.singular", "dollar"));
+            SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.put(currencyName, settings.get(path + "formatting.words.plural", "dollars"));
         }
     }
 }

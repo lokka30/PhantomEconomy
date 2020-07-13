@@ -1,6 +1,6 @@
 name: PhantomEconomy
 version: 2.0.0-PRE-RELEASE #TODO make ${project.version}
-main: io.github.lokka30.phantomeconomy.PhantomEconomy
+main: io.github.lokka30.phantomeconomy_v2.PhantomEconomy
 author: lokka30
 api-version: '1.13'
 website: https://www.spigotmc.org/resources/phantomeconomy-your-simple-open-source-economy.75053/

@@ -153,7 +153,7 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType=?,accountId=?,currencyName=?;");
+            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType=? AND accountId=? AND currencyName=?;");
             preparedStatement.setString(1, accountType);
             preparedStatement.setString(2, accountId);
             preparedStatement.setString(3, currencyName);

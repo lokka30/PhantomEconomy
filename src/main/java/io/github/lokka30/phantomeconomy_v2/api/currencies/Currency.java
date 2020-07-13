@@ -22,22 +22,22 @@ public class Currency {
 
     // The *decimal* readable format, this is the string that the DecimalFormat uses
     public String getDecimalReadableFormat() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP.get(getName());
     }
 
     // The *final* readable format, the human-readable form which adds dollar signs and whatever the user has configured for the currency
     public String getFinalFormat() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.get(getName());
     }
 
     // Returns 'plural' word from settings
     public String getPlural() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.get(getName());
     }
 
     // Returns 'singular' word from settings
     public String getSingular() {
-        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.get(getName());
     }
 
     // Gets the 'singular' or 'plural' word for the balance.
@@ -69,6 +69,6 @@ public class Currency {
      * @return the default balance set in the 'settings.yml' file by the user. Given to all players when they first use the currency.
      */
     public double getDefaultBalance() {
-        return instance.getFileCache().SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.get(this);
+        return instance.getFileCache().SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP.get(getName());
     }
 }
