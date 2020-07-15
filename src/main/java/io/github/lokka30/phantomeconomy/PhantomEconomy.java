@@ -94,12 +94,9 @@ public class PhantomEconomy extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Started) &8+-----+");
         final long timeStart = System.currentTimeMillis();
 
-        phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");
-        phantomLogger.log(LogLevel.INFO, prefix, "&7PhantomEconomy v2 is deep in development, and is not supposed to be loaded onto servers which wouldn't want to risk harm from an economy plugin malfunction. " +
-                "Please use it carefully, and report all issues to me. Make sure to note that you are using v2 when reporting them. " +
-                "I will not be responsible if a malfunction occurs in the plugin and damages your server. " +
-                "Thank you, and be careful!");
-        phantomLogger.log(LogLevel.INFO, prefix, "&8--------------------------------");
+        phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
+        phantomLogger.log(LogLevel.SEVERE, prefix, "&c&lWARNING! &7PhantomEconomy v2.0.0 is &chighly unstable&7 and is likely to completely not function on your server. Unintentional effects of running this pre-release may cause damage to your server. &cYou are running this at your own risk. &7Please wait until the actual release on SpigotMC if you wish to use PhantomEconomy v2. If you are testing this resource, please do so on a server where there is nothing too good to lose. Thank you, and please be careful!");
+        phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
 
         checkCompatibility();
         loadFiles();
