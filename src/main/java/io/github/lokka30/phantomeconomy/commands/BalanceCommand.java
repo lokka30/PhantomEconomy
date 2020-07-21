@@ -2,6 +2,7 @@ package io.github.lokka30.phantomeconomy.commands;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
+import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -51,18 +52,19 @@ public class BalanceCommand implements TabExecutor {
                 @SuppressWarnings("deprecation") final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
 
                 try {
-                    if (instance.getAccountManager().hasPlayerAccount(target)) {
-                        sender.sendMessage("Balance for %player%:"
-                                .replace("%player%", Objects.requireNonNull(target.getName())));
-                        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
-                            final double balance = instance.getAccountManager().getPlayerAccount(target).getBalance(currency);
-                            final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
-                            sender.sendMessage(" -> (%currencyName%): %balance%"
-                                    .replace("%currencyName%", currencyName)
-                                    .replace("%balance%", currency.formatFinalBalance(balance)));
+                    sender.sendMessage("Balance for %player%:"
+                            .replace("%player%", Objects.requireNonNull(target.getName())));
+                    for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
+                        if (!instance.getAccountManager().hasPlayerAccount(target, currency)) {
+                            instance.getAccountManager().createPlayerAccount(target, currency);
                         }
+                        final double balance = instance.getAccountManager().getPlayerAccount(target).getBalance(currency);
+                        final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
+                        sender.sendMessage(" -> (%currencyName%): %balance%"
+                                .replace("%currencyName%", currencyName)
+                                .replace("%balance%", currency.formatFinalBalance(balance)));
                     }
-                } catch (InvalidCurrencyException e) {
+                } catch (InvalidCurrencyException | AccountAlreadyExistsException e) {
                     e.printStackTrace();
                 }
             } else {

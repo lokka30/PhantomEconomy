@@ -22,10 +22,9 @@ public class FileCache {
     public String SETTINGS_DATABASE_MYSQL_PASSWORD;
     public String SETTINGS_DATABASE_MYSQL_SSL;
     public int SETTINGS_DATABASE_MYSQL_PORT;
-    public String SETTINGS_DATABASE_TABLE; //TODO REMOVE
-    public String SETTINGS_DATABASE_TABLE_PLAYERACCOUNT;
-    public String SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT;
-    public String SETTINGS_DATABASE_TABLE_BANKACCOUNT;
+    public String SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT;
+    public String SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
+    public String SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT;
     public List<String> SETTINGS_CURRENCIES_ENABLED_CURRENCIES;
     public String SETTINGS_DEFAULT_CURRENCY;
     public String SETTINGS_VAULT_CURRENCY;
@@ -34,6 +33,7 @@ public class FileCache {
     public boolean SETTINGS_STARTUP_TASKS_CLEAR_NON_PLAYER_ACCOUNT_CACHE;
     public boolean SETTINGS_STARTUP_TASKS_CLEAR_BANK_ACCOUNT_CACHE;
 
+    public HashMap<String, String> SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP;
     public HashMap<String, Double> SETTINGS_CURRENCY_DEFAULT_BALANCE_MAP;
     public HashMap<String, String> SETTINGS_CURRENCY_FORMATTING_DECIMAL_FORMAT_MAP, SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP, SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP, SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP;
 
@@ -70,10 +70,9 @@ public class FileCache {
         SETTINGS_DATABASE_MYSQL_PASSWORD = settings.get("database.mysql.password", "password");
         SETTINGS_DATABASE_MYSQL_SSL = settings.get("database.mysql.ssl", "true");
         SETTINGS_DATABASE_MYSQL_PORT = settings.get("database.mysql.port", 3306);
-        SETTINGS_DATABASE_TABLE = settings.get("database.table", "phantomeconomy");
-        SETTINGS_DATABASE_TABLE_PLAYERACCOUNT = settings.get("database.account-tables.playerAccount", "phantomeconomy_global");
-        SETTINGS_DATABASE_TABLE_NONPLAYERACCOUNT = settings.get("database.account-tables.nonPlayerAccount", "phantomeconomy_global");
-        SETTINGS_DATABASE_TABLE_BANKACCOUNT = settings.get("database.account-tables.bankAccount", "phantomeconomy_global");
+        SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT = settings.get("database.tables.account-type-suffixes.PlayerAccount", "");
+        SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT = settings.get("database.tables.account-type-suffixes.NonPlayerAccount", "");
+        SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT = settings.get("database.tables.account-type-suffixes.BankAccount", "");
         SETTINGS_CURRENCIES_ENABLED_CURRENCIES = settings.get("currencies.enabled-currencies", null);
         SETTINGS_DEFAULT_CURRENCY = settings.get("currencies.default-currency", "invalidSetting");
         SETTINGS_VAULT_CURRENCY = settings.get("currencies.vault-currency", "invalidSetting");
@@ -87,6 +86,7 @@ public class FileCache {
         SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP = new HashMap<>();
         SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP = new HashMap<>();
         SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP = new HashMap<>();
+        SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP = new HashMap<>();
         for (String currencyName : settings.get("currencies.enabled-currencies", new ArrayList<String>())) {
             final String path = "currencies.currency-settings." + currencyName + ".";
             try {
@@ -101,6 +101,7 @@ public class FileCache {
             SETTINGS_CURRENCY_FORMATTING_FINAL_FORMAT_MAP.put(currencyName, settings.get(path + "formatting.final-format", "$%balance%"));
             SETTINGS_CURRENCY_FORMATTING_WORDS_SINGULAR_MAP.put(currencyName, settings.get(path + "formatting.words.singular", "dollar"));
             SETTINGS_CURRENCY_FORMATTING_WORDS_PLURAL_MAP.put(currencyName, settings.get(path + "formatting.words.plural", "dollars"));
+            SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.put(currencyName, settings.get(currencyName, currencyName));
         }
     }
 }

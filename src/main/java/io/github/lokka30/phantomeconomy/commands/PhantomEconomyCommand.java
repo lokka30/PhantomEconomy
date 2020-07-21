@@ -24,18 +24,12 @@ public class PhantomEconomyCommand implements TabExecutor {
         if (args.length == 0) {
             List<String> messages = Arrays.asList(
                     " ",
-                    "&b&lPhantomEconomy &3v" + instance.getDescription().getVersion(),
-                    "&8 &m->&7 Developed by &3lokka30&7 with assistance from &3Hugo5551&7.",
-                    " ",
-                    "&f&nSpigotMC Resource Page:",
-                    "&8https://www.spigotmc.org/resources/%E2%99%A6-phantomeconomy-%E2%99%A6-for-1-7-1-15.75053/",
-                    " ",
-                    "&f&nAvailable commands:",
+                    "&b&lPhantomEconomy: &7Available commands:",
                     "&8 &m->&b /balance [player]",
                     "&8 &m->&b /pay <player> <amount>",
-                    "&8 &m->&b /eco [(add/give/deposit)/(remove/take/withdraw)/set/reset <player> <amount>",
+                    "&8 &m->&b /eco <(add/give/deposit)/(remove/take/withdraw)/set/reset> <player> <amount>",
                     "&8 &m->&b /baltop [page]",
-                    "&8 &m->&b /%label% [reload/backup/compatibility]".replace("%label%", label),
+                    "&8 &m->&b /%label% [info/reload/backup/compatibility/forceBaltopUpdate/clearCache]".replace("%label%", label),
                     " "
             );
 
@@ -44,11 +38,24 @@ public class PhantomEconomyCommand implements TabExecutor {
             }
         } else if (args.length == 1) {
             switch (args[0].toLowerCase()) {
+                case "info":
+                    List<String> messages = Arrays.asList(
+                            " ",
+                            "&b&lPhantomEconomy &3v" + instance.getDescription().getVersion(),
+                            "&8 &m->&7 Developed by &3lokka30&7 and &3Hugo5551&7.",
+                            " ",
+                            "&f&nSpigotMC Resource Page:",
+                            "&8https://www.spigotmc.org/resources/%E2%99%A6-phantomeconomy-%E2%99%A6-for-1-7-1-15.75053/",
+                            " "
+                    );
+                    for (String message : messages) {
+                        sender.sendMessage(instance.getMessageMethods().colorize(message));
+                    }
                 case "reload":
                     if (sender.hasPermission("phantomeconomy.reload")) {
                         sender.sendMessage("Reloading configuration...");
                         instance.getFileCache().loadFromFiles();
-                        sender.sendMessage("...configuration reloaded successfuly.");
+                        sender.sendMessage("...configuration reloaded successfully.");
                     } else {
                         sender.sendMessage("You don't have access to that.");
                     }
@@ -61,12 +68,20 @@ public class PhantomEconomyCommand implements TabExecutor {
                     sender.sendMessage("(Compatibility) This command is currently unavailable.");
                     //TODO
                     break;
+                case "forcebaltopupdate":
+                    sender.sendMessage("(Force Baltop Update) This command is currently unavailable.");
+                    //TODO
+                    break;
+                case "clearcache":
+                    sender.sendMessage("(Clear Cache) This command is currently unavailable.");
+                    //TODO
+                    break;
                 default:
-                    sender.sendMessage("Usage: /%label% [reload/backup/compatibility]".replace("%label%", label));
+                    sender.sendMessage("Usage: /%label% [info/reload/backup/compatibility/forceBaltopUpdate/clearCache]".replace("%label%", label));
                     break;
             }
         } else {
-            sender.sendMessage("Usage: /%label% [reload/backup/compatibility]".replace("%label%", label));
+            sender.sendMessage("Usage: /%label% [info/reload/backup/compatibility/forceBaltopUpdate/clearCache]".replace("%label%", label));
         }
         return true;
     }
@@ -75,9 +90,12 @@ public class PhantomEconomyCommand implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
         if (args.length == 1) {
+            suggestions.add("info");
             suggestions.add("reload");
             suggestions.add("backup");
             suggestions.add("compatibility");
+            suggestions.add("forceBaltopUpdate");
+            suggestions.add("clearCache");
         }
         return suggestions;
     }

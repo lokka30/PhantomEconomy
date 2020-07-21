@@ -31,7 +31,7 @@ commands:
 
   phantomeconomy:
     description: View information about the plugin or manage it.
-    usage: /<command> <info/reload/forceBaltopUpdate/clearCache>
+    usage: /<command> <info/reload/backup/compatibility/forceBaltopUpdate/clearCache>
     aliases: [pe, peconomy, phantomeco, phantomecon]
 
 permissions:

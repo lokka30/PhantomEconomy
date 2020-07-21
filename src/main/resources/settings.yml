@@ -9,10 +9,19 @@ database:
   # In this section, you can change the table names for each account.
   # Using MySQL and want to sync account balances over each server? Check this link:
   # https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
-  account-tables:
-    playerAccount: 'phantomeconomy_global'
-    nonPlayerAccount: 'phantomeconomy_global'
-    bankAccount: 'phantomeconomy_global'
+  # TODO: THE PAGE ABOVE HAS NOT BEEN UPDATED YET!
+  # ONLY CHANGE THE TABLES SETTINGS IF YOU KNOW WHAT YOU ARE DOING. :)
+  tables:
+    account-type-suffixes: # Unless you want specific account types to not synchronise with the same currency suffix to another server, leave these empty.
+      PlayerAccount: '' #e.g. PlayerAccount (default, if '' was used), or PlayerAccountSkyblock (if 'Skyblock' was used)
+      NonPlayerAccount: ''
+      BankAccount: ''
+    currency-suffixes: # Currencies not listed here will simply use their currency name as the suffix. (e.g. dollars = 'dollars')
+      dollars: 'dollars' # This is only listed as an example, this line can be removed.
+      coins: 'coins_global' # Other servers with the same currency suffix for 'coins' will synchronise balances for that currency.
+      tokens: 'skyblock_tokens'
+      points: 'skyblock_points'
+
 
   # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
   mysql-settings:

@@ -42,15 +42,14 @@ Can I test it early?
 
 To-do List, in order:
 ========================================================================
-- Separate accounts into 3 different tables. Allow table prefix to be customised.
- - see top message in dev logs chat on the discord for Method 2
- - 'accountType' column can be removed.
- - BankAccount table has two more columns than normal:
+- Remove 'accountType' column
+- BankAccount table needs to have two more columns than normal:
   - 'ownerAccountType', nonPlayerAccount or playerAccount
-  - 'ownerId', the 'name' or player that owns the bank account
+  - 'ownerId', the 'name' or UUID that owns the bank account
 
 - Balance Command
   - Add configurable messages.
+  - Test
 
 - Baltop Command
   - Start working on it
