@@ -19,6 +19,15 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) throws InvalidCurrencyException {
         final Player player = event.getPlayer();
+        if (player.isOp()) {
+            player.sendMessage(" ");
+            player.sendMessage("§4§l--- PHANTOMECONOMY WARNING ---");
+            player.sendMessage("§cYou are using a §nhighly unstable§c build of PhantomEconomy, v2.0.0 PRE-RELEASE.");
+            player.sendMessage("§cTHE PLUGIN WILL MOST LIKELY HAVE MINOR AND MAJOR ISSUES.");
+            player.sendMessage("§7YOU RUN THIS VERSION AT YOUR OWN RISK.");
+            player.sendMessage("§7Thanks.  §b§o~ lokka30");
+            player.sendMessage(" ");
+        }
         if (!instance.getAccountManager().hasPlayerAccount(player)) {
             try {
                 instance.getAccountManager().createPlayerAccount(player);

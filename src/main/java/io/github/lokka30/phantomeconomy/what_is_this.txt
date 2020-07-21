@@ -43,6 +43,7 @@ Can I test it early?
 To-do List, in order:
 ========================================================================
 - Separate accounts into 3 different tables. Allow table prefix to be customised.
+ - see top message in dev logs chat on the discord for Method 2
  - 'accountType' column can be removed.
  - BankAccount table has two more columns than normal:
   - 'ownerAccountType', nonPlayerAccount or playerAccount
@@ -54,25 +55,32 @@ To-do List, in order:
 - Baltop Command
   - Start working on it
   - Add configurable messages.
+  - Test
 
 - Economy Command
   - Start working on it
   - Add configurable messages.
+  - Test
 
 - Pay Command
   - Start working on it
   - Add configurable messages.
+  - Test
 
 - Customisable 'console added $x to your account' message
 
+
+- Test
+
 - Make 'Command to give money to all online and/or offline players'
   - simply go into the 'eco add' command and allow '*' as a player argument, for example
+  - Test
 
-- Check if the plugin's commands and listeners operate properly
+- Test if the plugin's commands and listeners operate properly
 
-- Check if the plugin's databases operate properly
+- Test if the plugin's databases operate properly
 
-- Check if the Vault hook operates properly
+- Test if the Vault hook operates properly
 
 - Add placeholderapi placeholders
   - %phantomeconomy_baltop_pos1_balance%
@@ -82,18 +90,22 @@ To-do List, in order:
   - %phantomeconomy_servertotal%
   - %phantomeconomy_balance%
 
+- Test
+
 - Complete the bank account implementation
+
+- Test
 
 - PhantomEconomy Command
   - Finish backup and compatibility subcommands
   - Add an import command to import Essentials economy data and TheNewEconomy economy data
   - Add configurable messages.
 
+- Test
+
 - Transaction log
 
-- Remove the v1 classes and resource files from the project, replace the v2 package name with the normal package name
-
-- Remove Towny from the pom.xml
+- Test
 
 - Compile, push to github, release on Spigot, announce on Discord server
 ========================================================================

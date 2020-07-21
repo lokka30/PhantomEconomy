@@ -95,7 +95,11 @@ public class PhantomEconomy extends JavaPlugin {
         final long timeStart = System.currentTimeMillis();
 
         phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
-        phantomLogger.log(LogLevel.SEVERE, prefix, "&c&lWARNING! &7PhantomEconomy v2.0.0 is &chighly unstable&7 and is likely to completely not function on your server. Unintentional effects of running this pre-release may cause damage to your server. &cYou are running this at your own risk. &7Please wait until the actual release on SpigotMC if you wish to use PhantomEconomy v2. If you are testing this resource, please do so on a server where there is nothing too good to lose. Thank you, and please be careful!");
+        phantomLogger.log(LogLevel.SEVERE, prefix, "&4&lWARNING! &7PhantomEconomy v2.0.0 is &chighly unstable&7 and is likely " +
+                "to completely not function on your server. Unintentional effects of running this pre-release may cause damage to your server. " +
+                "&cYou are running this at your own risk. &7Please wait until the actual release on SpigotMC if you wish to use PhantomEconomy v2. " +
+                "If you are testing this resource, please do so on a server where there is nothing too good to lose. " +
+                "Thank you, and please be careful!");
         phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
 
         checkCompatibility();

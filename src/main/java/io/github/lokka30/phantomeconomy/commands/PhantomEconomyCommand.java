@@ -35,7 +35,7 @@ public class PhantomEconomyCommand implements TabExecutor {
                     "&8 &m->&b /pay <player> <amount>",
                     "&8 &m->&b /eco [(add/give/deposit)/(remove/take/withdraw)/set/reset <player> <amount>",
                     "&8 &m->&b /baltop [page]",
-                    "&8 &m->&b /%label% [reload/backup/compatibility]",
+                    "&8 &m->&b /%label% [reload/backup/compatibility]".replace("%label%", label),
                     " "
             );
 
