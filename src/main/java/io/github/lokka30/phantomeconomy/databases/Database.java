@@ -1,6 +1,7 @@
 package io.github.lokka30.phantomeconomy.databases;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
+import io.github.lokka30.phantomeconomy.api.accounts.BankAccount;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.enums.AccountType;
@@ -10,7 +11,9 @@ import io.github.lokka30.phantomlib.enums.LogLevel;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -195,7 +198,6 @@ public class Database {
     public void setBalance(AccountType accountType, String accountId, String currencyName, double newBalance) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
-
         String table = getTableName(accountType, currencyName);
 
         try {
@@ -356,7 +358,6 @@ public class Database {
     }
 
     public boolean hasAccount(AccountType accountType, String accountId, Currency currency) {
-        boolean hasAccount = false;
         Connection connection = getConnection();
         String table = getTableName(accountType, currency.getName());
 
@@ -366,18 +367,17 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                hasAccount = resultSet.getString("accountId") != null;
                 close(connection, preparedStatement, resultSet);
+                return resultSet.getString("accountId") != null;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return hasAccount;
+        return false;
     }
 
     public boolean hasBankAccount(String accountId, Currency currency, AccountType ownerAccountType, String ownerId) {
-        boolean hasAccount = false;
         Connection connection = getConnection();
         String table = getTableName(AccountType.BankAccount, currency.getName());
 
@@ -414,9 +414,112 @@ public class Database {
         }
     }
 
+    /**
+     * Self-explanatory. Resets the baltop map and server total so they will be calculated again.
+     */
     public void clearBaltopCacheAndServerTotal() {
         baltopMap.clear();
         serverTotal = -1;
+    }
+
+    /**
+     * Deletes all entries in the database with the specified account id.
+     *
+     * @param accountId the bank account to remove
+     * @throws InvalidCurrencyException if the vault currency is unavailable
+     * @throws SQLException             if a database error occurred
+     */
+    public void deleteBankAccount(final String accountId) throws InvalidCurrencyException, SQLException {
+        Connection connection = getConnection();
+
+        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
+            String table = getTableName(AccountType.BankAccount, currency.getName());
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + table + " WHERE accountId=?;");
+            preparedStatement.setString(1, accountId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+
+        connection.close();
+    }
+
+    /**
+     * STRICTLY FOR VAULT USE ONLY
+     *
+     * @param accountId the bank account id to lookup
+     * @return bank account
+     * @throws SQLException             if a database error occurred
+     * @throws InvalidCurrencyException if the vault currency is unavailable
+     */
+    public BankAccount getBankAccountFromId(final String accountId) throws SQLException, InvalidCurrencyException {
+        Connection connection = getConnection();
+        BankAccount bankAccount = null;
+        String table = getTableName(AccountType.BankAccount, instance.getCurrencyManager().getVaultCurrency().getName());
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountId=?;");
+        preparedStatement.setString(1, accountId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            AccountType ownerAccountType = AccountType.valueOf(resultSet.getString(4));
+            String ownerId = resultSet.getString(5);
+            bankAccount = instance.getAccountManager().getBankAccount(accountId, ownerAccountType, ownerId);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+        return bankAccount;
+    }
+
+    /**
+     * STRICTLY FOR VAULT USE ONLY
+     *
+     * @param bankAccountId  the id of the bank account (e.g. Jeffs Bank)
+     * @param ownerAccountId the id of the owner (e.g. uuid or string)
+     * @return if the player/nonplayer owns the bank account
+     */
+    public boolean isBankOwner(final String bankAccountId, final AccountType ownerAccountType, final String ownerAccountId) throws InvalidCurrencyException, SQLException {
+        Connection connection = getConnection();
+        String table = getTableName(AccountType.BankAccount, instance.getCurrencyManager().getVaultCurrency().getName());
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM " + table + " WHERE accountId=? AND ownerAccountType=? AND ownerId=?;");
+        preparedStatement.setString(1, bankAccountId);
+        preparedStatement.setString(2, ownerAccountType.toString());
+        preparedStatement.setString(3, ownerAccountId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        boolean isOwner = false;
+
+        if (resultSet.next()) {
+            isOwner = true;
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+        return isOwner;
+    }
+
+    /**
+     * STRICTLY FOR VAULT USE ONLY
+     *
+     * @return a list of bank ids in the database
+     */
+    public List<String> getBankAccounts() throws SQLException, InvalidCurrencyException {
+        List<String> bankAccounts = new ArrayList<>();
+        Connection connection = getConnection();
+        String table = getTableName(AccountType.BankAccount, instance.getCurrencyManager().getVaultCurrency().getName());
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + ";");
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            bankAccounts.add(resultSet.getString(1));
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+        return bankAccounts;
     }
 
     public void close() {

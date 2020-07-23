@@ -47,6 +47,7 @@ public class BankAccount {
             throw new NegativeAmountException("Tried to set balance to BankAccount with name '" + getName() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
             HashMap<String, Double> balanceMap = new HashMap<>();
+            amount = accountManager.getInstance().getUtils().trimDecimals(amount);
             balanceMap.put(currency.getName(), amount);
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
             accountManager.getInstance().getDatabase().setBankBalance(getName(), currency.getName(), amount, ownerAccountType, ownerId);

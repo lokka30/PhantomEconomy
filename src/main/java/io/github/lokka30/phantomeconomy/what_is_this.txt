@@ -42,7 +42,8 @@ Can I test it early?
 
 To-do List, in order:
 ========================================================================
-- Complete the bank account implementation
+
+- Test bank accounts
 
 - Baltop Command
   - Start working on it
@@ -54,6 +55,7 @@ To-do List, in order:
 
 - Pay Command
   - Start
+  - Add /paytoggle
 
 - Configurable Messages
   - For all commands
@@ -71,8 +73,6 @@ To-do List, in order:
   - Finish backup and compatibility subcommands
   - Add an import command to import Essentials economy data and TheNewEconomy economy data
   - Add configurable messages.
-
-- Transaction log
 
 - Update https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
 

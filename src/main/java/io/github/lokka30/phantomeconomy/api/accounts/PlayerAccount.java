@@ -4,6 +4,7 @@ import io.github.lokka30.phantomeconomy.api.AccountManager;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
+import io.github.lokka30.phantomeconomy.enums.AccountType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -50,8 +51,9 @@ public class PlayerAccount {
         } else {
             cacheCurrencyBalanceIfUnset(currency);
             HashMap<String, Double> currencyBalanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());
+            amount = accountManager.getInstance().getUtils().trimDecimals(amount);
             currencyBalanceMap.put(currency.getName(), amount);
-            accountManager.getInstance().getDatabase().setBalance("PlayerAccount", getUUIDAsString(), currency.getName(), amount);
+            accountManager.getInstance().getDatabase().setBalance(AccountType.PlayerAccount, getUUIDAsString(), currency.getName(), amount);
         }
     }
 
@@ -82,11 +84,11 @@ public class PlayerAccount {
     public void cacheCurrencyBalanceIfUnset(final Currency currency) {
         if (!accountManager.cachedPlayerAccountBalances.containsKey(getUUID())) {
             HashMap<String, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance(AccountType.PlayerAccount, getUUIDAsString(), currency.getName()));
             accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
         } else if (!accountManager.cachedPlayerAccountBalances.get(getUUID()).containsKey(currency.getName())) {
             HashMap<String, Double> balanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("PlayerAccount", getUUIDAsString(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance(AccountType.PlayerAccount, getUUIDAsString(), currency.getName()));
             accountManager.cachedPlayerAccountBalances.put(getUUID(), balanceMap);
         }
     }

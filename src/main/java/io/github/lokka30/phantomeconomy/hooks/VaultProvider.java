@@ -13,6 +13,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -343,9 +344,13 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public EconomyResponse deleteBank(String ownerId) {
-        //TODO
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
+    public EconomyResponse deleteBank(String accountId) {
+        try {
+            instance.getDatabase().deleteBankAccount(accountId);
+        } catch (InvalidCurrencyException | SQLException e) {
+            e.printStackTrace();
+        }
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "");
     }
 
     @Override
@@ -371,41 +376,83 @@ public class VaultProvider extends AbstractEconomy {
             e.printStackTrace();
         }
 
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "An internal error occured.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "An internal error occurred.");
     }
 
     @Override
     public EconomyResponse bankWithdraw(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, ""); //todo
+        try {
+            instance.getAccountManager().getBankAccountFromId(s).withdraw(instance.getCurrencyManager().getVaultCurrency(), v);
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
+        } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
+            e.printStackTrace();
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
+        }
     }
 
     @Override
     public EconomyResponse bankDeposit(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
+        try {
+            instance.getAccountManager().getBankAccountFromId(s).deposit(instance.getCurrencyManager().getVaultCurrency(), v);
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
+        } catch (NegativeAmountException | InvalidCurrencyException e) {
+            e.printStackTrace();
+            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
+        }
     }
 
     @Override
-    public EconomyResponse isBankOwner(String s, String s1) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
+    public EconomyResponse isBankOwner(String bankId, String ownerId) {
+        @SuppressWarnings("deprecation")
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerId);
+        if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
+            return isBankOwner(bankId, offlinePlayer);
+        } else {
+            try {
+                if (instance.getDatabase().isBankOwner(bankId, AccountType.NonPlayerAccount, ownerId)) {
+                    return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "is owner");
+                } else {
+                    return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "not owner");
+                }
+            } catch (InvalidCurrencyException | SQLException e) {
+                e.printStackTrace();
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "an internal error occurred");
+            }
+        }
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
+        try {
+            if (instance.getDatabase().isBankOwner(name, AccountType.PlayerAccount, player.getUniqueId().toString())) {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "is owner");
+            } else {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "not owner");
+            }
+        } catch (InvalidCurrencyException | SQLException e) {
+            e.printStackTrace();
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "an internal error occurred");
+        }
     }
 
     @Override
-    public EconomyResponse isBankMember(String name, String worldName) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
+    public EconomyResponse isBankMember(String bankId, String ownerId) {
+        return isBankOwner(bankId, ownerId);
     }
 
     @Override
-    public EconomyResponse isBankMember(String name, OfflinePlayer offlinePlayer) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+    public EconomyResponse isBankMember(String bankId, OfflinePlayer offlinePlayer) {
+        return isBankOwner(bankId, offlinePlayer);
     }
 
     @Override
     public List<String> getBanks() {
+        try {
+            return instance.getDatabase().getBankAccounts();
+        } catch (SQLException | InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

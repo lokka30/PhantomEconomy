@@ -1,5 +1,7 @@
 package io.github.lokka30.phantomeconomy.utils;
 
+import org.apache.commons.math3.util.Precision;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,5 +31,9 @@ public class Utils {
 
     public int getLatestMessagesFileVersion() {
         return 5;
+    }
+
+    public double trimDecimals(final double balance) {
+        return Precision.round(balance, 2);
     }
 }
