@@ -65,17 +65,17 @@ public class PhantomEconomy extends JavaPlugin {
     public void onLoad() {
         pluginManager = getServer().getPluginManager();
         if (pluginManager.getPlugin("PhantomLib") == null) {
-            getLogger().severe("--------------------------------");
+            getLogger().severe("=--------------------------------=");
             getLogger().severe("(!) MISSING DEPENDENCY WARNING (!)");
-            getLogger().severe("--------------------------------");
+            getLogger().severe("=--------------------------------=");
             getLogger().severe(" ");
-            getLogger().severe("PhantomEconomy v2 requires PhantomLib to be installed in your plugins folder.");
+            getLogger().severe("> PhantomEconomy v2 requires PhantomLib to be installed in your plugins folder.");
             getLogger().severe(" ");
-            getLogger().severe("You can download PhantomLib here: https://www.spigotmc.org/resources/%E2%99%A6-phantomlib-%E2%99%A6-1-7-10-1-15-2.78556/");
+            getLogger().severe("> You can download PhantomLib here: https://www.spigotmc.org/resources/%E2%99%A6-phantomlib-%E2%99%A6-1-7-10-1-15-2.78556/");
             getLogger().severe(" ");
-            getLogger().severe("The plugin will now disable itself as PhantomLib is required for it to function.");
+            getLogger().severe("> The plugin will now disable itself as PhantomLib is required for it to function.");
             getLogger().severe(" ");
-            getLogger().severe("--------------------------------");
+            getLogger().severe("=--------------------------------=");
             pluginManager.disablePlugin(this);
         } else {
             PhantomLib phantomLib = PhantomLib.getInstance();
@@ -117,7 +117,11 @@ public class PhantomEconomy extends JavaPlugin {
         final long timeTaken = System.currentTimeMillis() - timeStart;
         phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+-----+");
 
-        ensureOnlinePlayersHaveAccounts();
+        try {
+            ensureOnlinePlayersHaveAccounts();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
 
         startRepeatingTasks();
 
@@ -265,11 +269,11 @@ public class PhantomEconomy extends JavaPlugin {
         }
     }
 
-    private void ensureOnlinePlayersHaveAccounts() {
+    private void ensureOnlinePlayersHaveAccounts() throws InvalidCurrencyException {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!accountManager.hasPlayerAccount(player)) {
+            if (!accountManager.hasPlayerAccount(player, getCurrencyManager().getDefaultCurrency())) {
                 try {
-                    accountManager.createPlayerAccount(player);
+                    accountManager.createPlayerAccount(player, getCurrencyManager().getDefaultCurrency());
                 } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
                     e.printStackTrace();
                 }

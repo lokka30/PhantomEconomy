@@ -4,6 +4,7 @@ import io.github.lokka30.phantomeconomy.api.AccountManager;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
+import io.github.lokka30.phantomeconomy.enums.AccountType;
 
 import java.util.HashMap;
 
@@ -13,10 +14,14 @@ public class BankAccount {
     private AccountManager accountManager;
 
     private String name;
+    private AccountType ownerAccountType;
+    private String ownerId;
 
-    public BankAccount(AccountManager accountManager, String name) {
+    public BankAccount(AccountManager accountManager, String name, AccountType ownerAccountType, String ownerId) {
         this.accountManager = accountManager;
         this.name = name;
+        this.ownerAccountType = ownerAccountType;
+        this.ownerId = ownerId;
     }
 
     public String getName() {
@@ -26,11 +31,11 @@ public class BankAccount {
     public double getBalance(Currency currency) {
         if (!accountManager.cachedBankAccountBalances.containsKey(getName())) {
             HashMap<String, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBankBalance(getName(), currency.getName(), ownerAccountType, ownerId));
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
         } else if (!accountManager.cachedBankAccountBalances.get(getName()).containsKey(currency.getName())) {
             HashMap<String, Double> balanceMap = accountManager.cachedBankAccountBalances.get(getName());
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("BankAccount", getName(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBankBalance(getName(), currency.getName(), ownerAccountType, ownerId));
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
         }
 
@@ -44,7 +49,7 @@ public class BankAccount {
             HashMap<String, Double> balanceMap = new HashMap<>();
             balanceMap.put(currency.getName(), amount);
             accountManager.cachedBankAccountBalances.put(getName(), balanceMap);
-            accountManager.getInstance().getDatabase().setBalance("BankAccount", getName(), currency.getName(), amount);
+            accountManager.getInstance().getDatabase().setBankBalance(getName(), currency.getName(), amount, ownerAccountType, ownerId);
         }
     }
 

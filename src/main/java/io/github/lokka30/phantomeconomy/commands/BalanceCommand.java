@@ -32,12 +32,12 @@ public class BalanceCommand implements TabExecutor {
             if (args.length == 0) {
                 if (sender instanceof Player) {
                     final Player player = (Player) sender;
-                    sender.sendMessage("Your balance: ");
+                    sender.sendMessage("§7Your balance:");
                     try {
                         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
                             final double balance = instance.getAccountManager().getPlayerAccount(player).getBalance(currency);
                             final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
-                            sender.sendMessage(" -> (%currencyName%): %balance%"
+                            sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)87: §b%balance%"
                                     .replace("%currencyName%", currencyName)
                                     .replace("%balance%", currency.formatFinalBalance(balance)));
                         }
@@ -46,13 +46,13 @@ public class BalanceCommand implements TabExecutor {
                         e.printStackTrace();
                     }
                 } else {
-                    sender.sendMessage("Usage (console): /balance <currency> <player>");
+                    sender.sendMessage("§7Usage (console):§b /balance <currency> <player>");
                 }
             } else if (args.length == 1) {
                 @SuppressWarnings("deprecation") final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
 
                 try {
-                    sender.sendMessage("Balance for %player%:"
+                    sender.sendMessage("§7Balance for §r%player%§7:"
                             .replace("%player%", Objects.requireNonNull(target.getName())));
                     for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
                         if (!instance.getAccountManager().hasPlayerAccount(target, currency)) {
@@ -60,7 +60,7 @@ public class BalanceCommand implements TabExecutor {
                         }
                         final double balance = instance.getAccountManager().getPlayerAccount(target).getBalance(currency);
                         final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
-                        sender.sendMessage(" -> (%currencyName%): %balance%"
+                        sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)§7: §b%balance%"
                                 .replace("%currencyName%", currencyName)
                                 .replace("%balance%", currency.formatFinalBalance(balance)));
                     }
@@ -68,10 +68,10 @@ public class BalanceCommand implements TabExecutor {
                     e.printStackTrace();
                 }
             } else {
-                sender.sendMessage("Usage: /%label% [player]".replace("%label%", label));
+                sender.sendMessage("§7Usage: §b/%label% [player]".replace("%label%", label));
             }
         } else {
-            sender.sendMessage("You don't have access to that.");
+            sender.sendMessage("§7You don't have access to that.");
         }
         return true;
     }

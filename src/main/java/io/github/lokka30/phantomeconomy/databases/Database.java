@@ -3,6 +3,7 @@ package io.github.lokka30.phantomeconomy.databases;
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
+import io.github.lokka30.phantomeconomy.enums.AccountType;
 import io.github.lokka30.phantomeconomy.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 
@@ -115,15 +116,15 @@ public class Database {
         connection = getConnection();
 
         Statement statement1 = connection.createStatement();
-        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
+        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
         statement1.close();
 
         Statement statement2 = connection.createStatement();
-        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
+        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
         statement2.close();
 
         Statement statement3 = connection.createStatement();
-        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "('accountType' VARCHAR(32) NOT NULL, 'accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountType', 'accountId', 'currencyName'));");
+        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
         statement3.close();
 
         if (connection != null) {
@@ -131,29 +132,29 @@ public class Database {
         }
     }
 
-    public String getTableName(String accountType, String currencyName) {
+    public String getTableName(AccountType accountType, String currencyName) {
         String accountTypeTablePrefix;
 
-        switch (accountType.toLowerCase()) {
-            case "playeraccount":
-                accountTypeTablePrefix = "PlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT;
+        switch (accountType) {
+            case PlayerAccount:
+                accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT;
                 break;
-            case "nonplayeraccount":
-                accountTypeTablePrefix = "NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
+            case NonPlayerAccount:
+                accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
                 break;
-            case "bankaccount":
-                accountTypeTablePrefix = "BankAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT;
+            case BankAccount:
+                accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT;
                 break;
             default:
-                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7Unexpected account type '" + accountType + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
-                accountTypeTablePrefix = "NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7Unexpected account type '" + accountType.toString() + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
+                accountTypeTablePrefix = AccountType.NonPlayerAccount.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
                 break;
         }
 
         return accountTypeTablePrefix + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currencyName);
     }
 
-    public double getBalance(String accountType, String accountId, String currencyName) {
+    public double getBalance(AccountType accountType, String accountId, String currencyName) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet;
@@ -161,10 +162,9 @@ public class Database {
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType=? AND accountId=? AND currencyName=?;");
-            preparedStatement.setString(1, accountType);
-            preparedStatement.setString(2, accountId);
-            preparedStatement.setString(3, currencyName);
+            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountId=? AND currencyName=?;");
+            preparedStatement.setString(1, accountId);
+            preparedStatement.setString(2, currencyName);
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -176,8 +176,6 @@ public class Database {
             }
         } catch (SQLException | InvalidCurrencyException exception) {
             exception.printStackTrace();
-            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to getBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
-            exception.printStackTrace();
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -187,7 +185,6 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for getBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "'. Stack trace:");
                 exception.printStackTrace();
             }
         }
@@ -195,7 +192,7 @@ public class Database {
         return 0;
     }
 
-    public void setBalance(String accountType, String accountId, String currencyName, double newBalance) {
+    public void setBalance(AccountType accountType, String accountId, String currencyName, double newBalance) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
@@ -205,10 +202,10 @@ public class Database {
             connection = getConnection();
             switch (getDatabaseType()) {
                 case MYSQL:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountType,accountId,currencyName,balance) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;"); //Thanks to Hugo5551 for providing this command.
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance) VALUES (?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountType,accountId,currencyName,balance) VALUES (?,?,?,?) ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance=?;"); //Thanks to Hugo5551 for providing this command.
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance) VALUES (?,?,?) ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance=?;");
                     break;
                 default:
                     preparedStatement.close();
@@ -216,14 +213,12 @@ public class Database {
                     throw new IllegalStateException("Unknown database type " + getDatabaseType().toString());
             }
 
-            preparedStatement.setString(1, accountType);
-            preparedStatement.setString(2, accountId);
-            preparedStatement.setString(3, currencyName);
+            preparedStatement.setString(1, accountId);
+            preparedStatement.setString(2, currencyName);
+            preparedStatement.setDouble(3, newBalance);
             preparedStatement.setDouble(4, newBalance);
-            preparedStatement.setDouble(5, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to setBalance for accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
             exception.printStackTrace();
         } finally {
             try {
@@ -234,7 +229,88 @@ public class Database {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to close SQLConnection for setBalance with accountType '" + accountType + "', accountId '" + accountId + "', currencyName '" + currencyName + "', balance '" + newBalance + "'. Stack trace:");
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    public double getBankBalance(String accountId, String currencyName, AccountType ownerAccountType, String ownerId) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        String table = getTableName(AccountType.BankAccount, currencyName);
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountId=? AND currencyName=? AND ownerAccountType=? AND ownerId=?;");
+            preparedStatement.setString(1, accountId);
+            preparedStatement.setString(2, currencyName);
+            preparedStatement.setString(3, ownerAccountType.toString());
+            preparedStatement.setString(4, ownerId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getDouble("balance");
+            } else {
+                double defaultBalance = instance.getCurrencyManager().getCurrency(currencyName).getDefaultBalance();
+                setBankBalance(accountId, currencyName, defaultBalance, ownerAccountType, ownerId);
+                return defaultBalance;
+            }
+        } catch (SQLException | InvalidCurrencyException exception) {
+            exception.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        return 0;
+    }
+
+    public void setBankBalance(String accountId, String currencyName, double newBalance, AccountType ownerAccountType, String ownerId) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        String table = getTableName(AccountType.BankAccount, currencyName);
+
+        try {
+            connection = getConnection();
+            switch (getDatabaseType()) {
+                case MYSQL:
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
+                    break;
+                case SQLITE:
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountType,accountId,currencyName,ownerAccountType,ownerId) DO UPDATE SET balance=?;");
+                    break;
+                default:
+                    preparedStatement.close();
+                    connection.close();
+                    throw new IllegalStateException("Unexpected database type " + getDatabaseType().toString());
+            }
+
+            preparedStatement.setString(1, accountId);
+            preparedStatement.setString(2, currencyName);
+            preparedStatement.setDouble(3, newBalance);
+            preparedStatement.setDouble(4, newBalance);
+            preparedStatement.executeUpdate();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
                 exception.printStackTrace();
             }
         }
@@ -243,8 +319,8 @@ public class Database {
     public HashMap<UUID, Double> getBaltopMap(Currency currency) throws SQLException {
         if (baltopMap.size() == 0) {
             Connection connection = getConnection();
-            String table = getTableName("PlayerAccount", currency.getName());
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE accountType='PlayerAccount',currencyName=?;");
+            String table = getTableName(AccountType.PlayerAccount, currency.getName());
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE currencyName=?;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -264,7 +340,7 @@ public class Database {
         if (serverTotal == -1) {
             serverTotal = 0.0; //This value is shown if nobody has a balance yet
             connection = getConnection();
-            String table = getTableName("PlayerAccount", currency.getName());
+            String table = getTableName(AccountType.PlayerAccount, currency.getName());
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(balance) FROM " + table + " WHERE currencyName=?;");
             preparedStatement.setString(1, currency.getName());
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -279,15 +355,14 @@ public class Database {
         return serverTotal;
     }
 
-    public boolean hasAccount(String accountType, String accountId, Currency currency) {
+    public boolean hasAccount(AccountType accountType, String accountId, Currency currency) {
         boolean hasAccount = false;
         Connection connection = getConnection();
         String table = getTableName(accountType, currency.getName());
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT accountId FROM " + table + " WHERE accountType=? AND accountId=?;");
-            preparedStatement.setString(1, accountType);
-            preparedStatement.setString(2, accountId);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT accountId FROM " + table + " WHERE accountId=?;");
+            preparedStatement.setString(1, accountId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -295,16 +370,47 @@ public class Database {
                 close(connection, preparedStatement, resultSet);
             }
         } catch (SQLException exception) {
-            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7A database error has occured whilst running hasAccount. Details: accountType = '" + accountType + "', accountId = '" + accountId + "', table = '" + table + "'. Stack trace:");
             exception.printStackTrace();
         }
 
         return hasAccount;
     }
 
-    public void createAccount(String accountType, String accountId) throws InvalidCurrencyException {
+    public boolean hasBankAccount(String accountId, Currency currency, AccountType ownerAccountType, String ownerId) {
+        boolean hasAccount = false;
+        Connection connection = getConnection();
+        String table = getTableName(AccountType.BankAccount, currency.getName());
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT accountId FROM " + table + " WHERE accountId=? AND currencyName=? AND ownerAccountType=? AND ownerId=?;");
+            preparedStatement.setString(1, accountId);
+            preparedStatement.setString(2, currency.getName());
+            preparedStatement.setString(3, ownerAccountType.toString());
+            preparedStatement.setString(4, ownerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                close(connection, preparedStatement, resultSet);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public void createAccount(AccountType accountType, String accountId) throws InvalidCurrencyException {
         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
             setBalance(accountType, accountId, currency.getName(), currency.getDefaultBalance());
+        }
+    }
+
+    public void createBankAccount(String accountId, AccountType ownerAccountType, String ownerId) throws InvalidCurrencyException {
+        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
+            setBankBalance(accountId, currency.getName(), currency.getDefaultBalance(), ownerAccountType, ownerId);
         }
     }
 
@@ -319,7 +425,6 @@ public class Database {
                 connection.close();
             }
         } catch (SQLException exception) {
-            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to close the SQL connection. Stack trace:");
             exception.printStackTrace();
         }
     }
@@ -333,7 +438,6 @@ public class Database {
                 resultSet.close();
             }
         } catch (SQLException exception) {
-            instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7An SQLException occured whilst trying to close PreparedStatement and ResultSet. Stack trace:");
             exception.printStackTrace();
         }
     }

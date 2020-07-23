@@ -7,7 +7,7 @@ import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsExcep
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
-import io.github.lokka30.phantomlib.enums.LogLevel;
+import io.github.lokka30.phantomeconomy.enums.AccountType;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -40,12 +40,12 @@ public class VaultProvider extends AbstractEconomy {
 
     @Override
     public boolean hasBankSupport() {
-        return false;
-    } //TODO this should change when bank support is actually added.
+        return true;
+    }
 
     @Override
     public int fractionalDigits() {
-        return -1;
+        return 2;
     }
 
     @Override
@@ -85,15 +85,30 @@ public class VaultProvider extends AbstractEconomy {
 
         // Check if it is a player or not first.
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            return accountManager.hasPlayerAccount(offlinePlayer);
+            try {
+                return accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         } else {
-            return accountManager.hasNonPlayerAccount(name);
+            try {
+                return accountManager.hasNonPlayerAccount(name, instance.getCurrencyManager().getVaultCurrency());
+            } catch (InvalidCurrencyException e) {
+                e.printStackTrace();
+            }
         }
+        return false;
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        return accountManager.hasPlayerAccount(offlinePlayer);
+        try {
+            return accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     @Override
@@ -299,53 +314,89 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public EconomyResponse createBank(String s, String s1) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+    @SuppressWarnings("deprecation")
+    public EconomyResponse createBank(String bankId, String ownerId) {
+        AccountType accountType;
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerId);
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+            accountType = AccountType.PlayerAccount;
+            ownerId = offlinePlayer.getUniqueId().toString();
+        } else {
+            accountType = AccountType.NonPlayerAccount;
+        }
+        try {
+            instance.getAccountManager().createBankAccount(bankId, instance.getCurrencyManager().getVaultCurrency(), accountType, ownerId);
+        } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "");
     }
 
     @Override
-    public EconomyResponse createBank(String name, OfflinePlayer player) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+    public EconomyResponse createBank(String bankId, OfflinePlayer player) {
+        try {
+            instance.getAccountManager().createBankAccount(bankId, instance.getCurrencyManager().getVaultCurrency(), AccountType.PlayerAccount, player.getUniqueId().toString());
+        } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "");
     }
 
     @Override
-    public EconomyResponse deleteBank(String s) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+    public EconomyResponse deleteBank(String ownerId) {
+        //TODO
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
     }
 
     @Override
-    public EconomyResponse bankBalance(String s) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+    public EconomyResponse bankBalance(String ownerId) {
+        double balance = 0;
+        try {
+            balance = instance.getAccountManager().getBankAccountFromId(ownerId).getBalance(instance.getCurrencyManager().getVaultCurrency());
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+        return new EconomyResponse(balance, balance, EconomyResponse.ResponseType.SUCCESS, "");
     }
 
     @Override
     public EconomyResponse bankHas(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        try {
+            if (instance.getAccountManager().getBankAccountFromId(s).getBalance(instance.getCurrencyManager().getVaultCurrency()) >= v) {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "Bank has more than or equal to specified funds");
+            } else {
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Bank does not have specified funds");
+            }
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+        }
+
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "An internal error occured.");
     }
 
     @Override
     public EconomyResponse bankWithdraw(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, ""); //todo
     }
 
     @Override
     public EconomyResponse bankDeposit(String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
     }
 
     @Override
     public EconomyResponse isBankOwner(String s, String s1) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
     }
 
     @Override
     public EconomyResponse isBankMember(String name, String worldName) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "PE does not support banks.");
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "");
     }
 
     @Override
@@ -367,36 +418,44 @@ public class VaultProvider extends AbstractEconomy {
             createPlayerAccount(Bukkit.getOfflinePlayer(name));
             return true;
         } else {
-            if (accountManager.hasNonPlayerAccount(name)) {
-                return false;
-            } else {
-                try {
-                    accountManager.createNonPlayerAccount(name);
-                    return true;
-                } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
-                    instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(Str) but the NonPlayerAccount already exists. The developer should check if this is the case before doing so.");
-                    e.printStackTrace();
+            try {
+                if (accountManager.hasNonPlayerAccount(name, instance.getCurrencyManager().getVaultCurrency())) {
                     return false;
+                } else {
+                    try {
+                        accountManager.createNonPlayerAccount(name, instance.getCurrencyManager().getVaultCurrency());
+                        return true;
+                    } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
                 }
+            } catch (InvalidCurrencyException exception) {
+                exception.printStackTrace();
             }
         }
-
+        return false;
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        if (accountManager.hasPlayerAccount(offlinePlayer)) {
-            return false;
-        } else {
-            try {
-                accountManager.createPlayerAccount(offlinePlayer);
-                return true;
-            } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
-                instance.getPhantomLogger().log(LogLevel.WARNING, "A plugin using the Vault API has tried to run createPlayerAccount(offP) but the player already has an account. The developer should check if this is the case before doing so.");
-                e.printStackTrace();
+        try {
+            if (accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency())) {
                 return false;
+            } else {
+                try {
+                    accountManager.createPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
+                    return true;
+                } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
+        } catch (InvalidCurrencyException exception) {
+            exception.printStackTrace();
         }
+
+        return false;
     }
 
     @Override

@@ -9,7 +9,6 @@ database:
   # In this section, you can change the table names for each account.
   # Using MySQL and want to sync account balances over each server? Check this link:
   # https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
-  # TODO: THE PAGE ABOVE HAS NOT BEEN UPDATED YET!
   # ONLY CHANGE THE TABLES SETTINGS IF YOU KNOW WHAT YOU ARE DOING. :)
   tables:
     account-type-suffixes: # Unless you want specific account types to not synchronise with the same currency suffix to another server, leave these empty.
@@ -23,7 +22,7 @@ database:
       points: 'skyblock_points'
 
 
-  # If you have used 'MySQL' above, then these settings will be used to connect to manage data.
+  # If you have used 'MySQL' above, then these settings will be used to connect to it.
   mysql-settings:
 
     # Expected: [String], Default: ['localhost']
@@ -40,11 +39,6 @@ database:
 
     # Expected: [String], Default: ['minecraft']
     database: 'minecraft'
-
-    # Expected: [String], Default: ['true']
-    # Warning: Remember to keep this as a String, not a Boolean!
-    ssl: 'true'
-
 
 # You can customise each currency here.
 currencies:

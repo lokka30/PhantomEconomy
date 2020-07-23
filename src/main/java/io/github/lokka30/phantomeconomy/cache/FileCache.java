@@ -20,7 +20,6 @@ public class FileCache {
     public String SETTINGS_DATABASE_MYSQL_DATABASE;
     public String SETTINGS_DATABASE_MYSQL_USERNAME;
     public String SETTINGS_DATABASE_MYSQL_PASSWORD;
-    public String SETTINGS_DATABASE_MYSQL_SSL;
     public int SETTINGS_DATABASE_MYSQL_PORT;
     public String SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT;
     public String SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
@@ -68,7 +67,6 @@ public class FileCache {
         SETTINGS_DATABASE_MYSQL_DATABASE = settings.get("database.mysql.database", "minecraft");
         SETTINGS_DATABASE_MYSQL_USERNAME = settings.get("database.mysql.username", "root");
         SETTINGS_DATABASE_MYSQL_PASSWORD = settings.get("database.mysql.password", "password");
-        SETTINGS_DATABASE_MYSQL_SSL = settings.get("database.mysql.ssl", "true");
         SETTINGS_DATABASE_MYSQL_PORT = settings.get("database.mysql.port", 3306);
         SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT = settings.get("database.tables.account-type-suffixes.PlayerAccount", "");
         SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT = settings.get("database.tables.account-type-suffixes.NonPlayerAccount", "");
