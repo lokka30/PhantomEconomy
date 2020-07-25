@@ -4,6 +4,7 @@ import io.github.lokka30.phantomeconomy.api.AccountManager;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
+import io.github.lokka30.phantomeconomy.enums.AccountType;
 
 import java.util.HashMap;
 
@@ -26,11 +27,11 @@ public class NonPlayerAccount {
     public double getBalance(Currency currency) {
         if (!accountManager.cachedNonPlayerAccountBalances.containsKey(getName())) {
             HashMap<String, Double> balanceMap = new HashMap<>();
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("NonPlayerAccount", getName(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance(AccountType.NonPlayerAccount, getName(), currency.getName()));
             accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
         } else if (!accountManager.cachedNonPlayerAccountBalances.get(getName()).containsKey(currency.getName())) {
             HashMap<String, Double> balanceMap = accountManager.cachedNonPlayerAccountBalances.get(getName());
-            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance("NonPlayerAccount", getName(), currency.getName()));
+            balanceMap.put(currency.getName(), accountManager.getInstance().getDatabase().getBalance(AccountType.NonPlayerAccount, getName(), currency.getName()));
             accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
         }
 
@@ -44,7 +45,7 @@ public class NonPlayerAccount {
             HashMap<String, Double> balanceMap = new HashMap<>();
             balanceMap.put(currency.getName(), amount);
             accountManager.cachedNonPlayerAccountBalances.put(getName(), balanceMap);
-            accountManager.getInstance().getDatabase().setBalance("NonPlayerAccount", getName(), currency.getName(), amount);
+            accountManager.getInstance().getDatabase().setBalance(AccountType.NonPlayerAccount, getName(), currency.getName(), amount);
         }
     }
 

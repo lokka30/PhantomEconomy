@@ -28,9 +28,9 @@ public class JoinListener implements Listener {
             player.sendMessage("§7Thanks.  §b§o~ lokka30");
             player.sendMessage(" ");
         }
-        if (!instance.getAccountManager().hasPlayerAccount(player)) {
+        if (!instance.getAccountManager().hasPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency())) {
             try {
-                instance.getAccountManager().createPlayerAccount(player);
+                instance.getAccountManager().createPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency());
             } catch (AccountAlreadyExistsException exception) {
                 exception.printStackTrace();
             }
