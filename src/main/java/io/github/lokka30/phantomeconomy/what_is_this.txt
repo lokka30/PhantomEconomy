@@ -45,11 +45,6 @@ To-do List, in order:
 
 - Test bank accounts
 
-- Baltop Command
-  - Start working on it
-  - Make 'Command to give money to all online and/or offline players'
-    - simply go into the 'eco add' command and allow '*' as a player argument, for example
-
 - Economy Command
   - Start
 
@@ -57,9 +52,19 @@ To-do List, in order:
   - Start
   - Add /paytoggle
 
+- Baltop Command
+  - Start working on it
+  - Make 'Command to give money to all online and/or offline players'
+    - simply go into the 'eco add' command and allow '*' as a player argument, for example
+
 - Configurable Messages
   - For all commands
   - Customisable 'console added $x to your account' message
+
+- PhantomEconomy Command
+  - Finish backup and compatibility subcommands
+  - Add an import command to import Essentials economy data and TheNewEconomy economy data
+  - Add configurable messages.
 
 - Add placeholderapi placeholders
   - %phantomeconomy_baltop_pos1_balance%
@@ -68,11 +73,6 @@ To-do List, in order:
   - %phantomeconomy_baltop_pos5_balance%, etc.
   - %phantomeconomy_servertotal%
   - %phantomeconomy_balance%
-
-- PhantomEconomy Command
-  - Finish backup and compatibility subcommands
-  - Add an import command to import Essentials economy data and TheNewEconomy economy data
-  - Add configurable messages.
 
 - Update https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
 

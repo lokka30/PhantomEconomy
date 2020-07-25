@@ -12,26 +12,26 @@ softdepend: [Vault, PlaceholderAPI, Essentials]
 commands:
   balance:
     description: Check an account's balance.
-    usage: /<command> [currency] [player]
+    usage: '/<command> [currency] [player]'
     aliases: [bal, purse, money, wallet]
 
   baltop:
     description: View the top balances on the server.
-    usage: /<command> [page]
+    usage: '/<command> [page]'
     aliases: [balancetop, topbalance, topbalances, topbal]
 
   economy:
     description: Manage account balances for each currency.
-    usage: /<command> <action> <player/*> <amount> [currency]
+    usage: '/<command> <add/give/remove/take/set> <player/*> <amount> [currency] -or- /<command> reset <player/*>'
     aliases: [eco, econ]
 
   pay:
     description: Send money from your account to the target's account.
-    usage: /<command> <player/*> <amount> [currency]
+    usage: '/<command> <player/*> <amount> [currency]'
 
   phantomeconomy:
     description: View information about the plugin or manage it.
-    usage: /<command> <info/reload/backup/compatibility/forceBaltopUpdate/clearCache>
+    usage: '/<command> <info/reload/backup/compatibility/forceBaltopUpdate/clearCache>'
     aliases: [pe, peconomy, phantomeco, phantomecon]
 
 permissions:
@@ -60,7 +60,7 @@ permissions:
     default: op
 
   phantomeconomy.economy.subtract:
-    description: Allows the user/s to run the '/eco subtract' command.
+    description: Allows the user/s to run the '/eco take' command.
     default: op
 
   phantomeconomy.economy.set:
