@@ -1,7 +1,7 @@
 name: PhantomEconomy
 version: ${project.version}
 main: io.github.lokka30.phantomeconomy.PhantomEconomy
-author: lokka30
+authors: [lokka30, Hugo5551]
 api-version: '1.13'
 website: https://www.spigotmc.org/resources/phantomeconomy-your-simple-open-source-economy.75053/
 description: ${project.description}

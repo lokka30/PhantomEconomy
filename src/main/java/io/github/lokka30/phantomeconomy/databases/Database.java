@@ -369,7 +369,8 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                close(connection, preparedStatement, resultSet);
+                connection.close();
+                resultSet.close();
                 return resultSet.getString("accountId") != null;
             }
         } catch (SQLException exception) {

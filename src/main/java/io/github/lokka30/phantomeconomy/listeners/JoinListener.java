@@ -21,11 +21,13 @@ public class JoinListener implements Listener {
         final Player player = event.getPlayer();
         if (player.isOp()) {
             player.sendMessage(" ");
-            player.sendMessage("§4§l--- PHANTOMECONOMY WARNING ---");
-            player.sendMessage("§cYou are using a §nhighly unstable§c build of PhantomEconomy, v2.0.0 PRE-RELEASE.");
-            player.sendMessage("§cTHE PLUGIN WILL MOST LIKELY HAVE MINOR AND MAJOR ISSUES.");
-            player.sendMessage("§7YOU RUN THIS VERSION AT YOUR OWN RISK.");
-            player.sendMessage("§7Thanks.  §b§o~ lokka30");
+            player.sendMessage("§b§nPhantomEconomy Pre-Release Warning:");
+            player.sendMessage(" ");
+            player.sendMessage("§7PhantomEconomy v2.0.0-PRE-RELEASE is §chighly unstable§7, it is only meant to be used on test servers.");
+            player.sendMessage("§cThis pre-release version will most likely contain major issues.");
+            player.sendMessage("§7The server owner uses this plugin at their own risk, damages will not be compensated for by the plugin authors.");
+            player.sendMessage(" ");
+            player.sendMessage("§8This message is only displayed to operators.");
             player.sendMessage(" ");
         }
         if (!instance.getAccountManager().hasPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency())) {

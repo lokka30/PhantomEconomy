@@ -37,7 +37,7 @@ public class BalanceCommand implements TabExecutor {
                         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
                             final double balance = instance.getAccountManager().getPlayerAccount(player).getBalance(currency);
                             final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
-                            sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)87: §b%balance%"
+                            sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)§7: §b%balance%"
                                     .replace("%currencyName%", currencyName)
                                     .replace("%balance%", currency.formatFinalBalance(balance)));
                         }
