@@ -115,20 +115,22 @@ public class Database {
         }
     }
 
-    public void load() throws SQLException {
+    public void load() throws SQLException, InvalidCurrencyException {
         connection = getConnection();
 
-        Statement statement1 = connection.createStatement();
-        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
-        statement1.close();
+        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
+            Statement statement1 = connection.createStatement();
+            statement1.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            statement1.close();
 
-        Statement statement2 = connection.createStatement();
-        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
-        statement2.close();
+            Statement statement2 = connection.createStatement();
+            statement2.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            statement2.close();
 
-        Statement statement3 = connection.createStatement();
-        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
-        statement3.close();
+            Statement statement3 = connection.createStatement();
+            statement3.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
+            statement3.close();
+        }
 
         if (connection != null) {
             connection.close();
@@ -207,7 +209,7 @@ public class Database {
                     preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance) VALUES (?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance) VALUES (?,?,?) ON CONFLICT(accountType,accountId,currencyName) DO UPDATE SET balance=?;");
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance) VALUES (?,?,?) ON CONFLICT(accountId,currencyName) DO UPDATE SET balance=?;");
                     break;
                 default:
                     preparedStatement.close();

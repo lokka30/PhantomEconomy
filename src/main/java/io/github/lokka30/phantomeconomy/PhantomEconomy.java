@@ -95,7 +95,7 @@ public class PhantomEconomy extends JavaPlugin {
         loadFiles();
         try {
             loadDatabase();
-        } catch (SQLException e) {
+        } catch (SQLException | InvalidCurrencyException e) {
             e.printStackTrace();
         }
         registerEvents();
@@ -176,7 +176,7 @@ public class PhantomEconomy extends JavaPlugin {
         fileCache.loadFromFiles();
     }
 
-    private void loadDatabase() throws SQLException {
+    private void loadDatabase() throws SQLException, InvalidCurrencyException {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
         database = new Database(this);
         database.load();
