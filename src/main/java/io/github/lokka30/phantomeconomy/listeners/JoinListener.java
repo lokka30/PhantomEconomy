@@ -20,15 +20,15 @@ public class JoinListener implements Listener {
     public void onJoin(final PlayerJoinEvent event) throws InvalidCurrencyException {
         final Player player = event.getPlayer();
         if (player.isOp()) {
+            player.sendMessage("§8§m+---");
+            player.sendMessage("§b§l§nPhantomEconomy Pre-Release Warning:");
             player.sendMessage(" ");
-            player.sendMessage("§b§nPhantomEconomy Pre-Release Warning:");
+            player.sendMessage("§7PhantomEconomy v2.0.0-PRE-RELEASE is §c§nhighly unstable§7, it is only meant to be used on test servers.");
+            player.sendMessage("§cThis pre-release version will most likely contain §nmajor issues§c.");
+            player.sendMessage("§7The server owner uses this plugin §cat their own risk§7 (damages will not be compensated for by the plugin authors).");
             player.sendMessage(" ");
-            player.sendMessage("§7PhantomEconomy v2.0.0-PRE-RELEASE is §chighly unstable§7, it is only meant to be used on test servers.");
-            player.sendMessage("§cThis pre-release version will most likely contain major issues.");
-            player.sendMessage("§7The server owner uses this plugin at their own risk, damages will not be compensated for by the plugin authors.");
-            player.sendMessage(" ");
-            player.sendMessage("§8This message is only displayed to operators.");
-            player.sendMessage(" ");
+            player.sendMessage("§7§oThis message is only displayed to operators.");
+            player.sendMessage("§8§m+---");
         }
         if (!instance.getAccountManager().hasPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency())) {
             try {
