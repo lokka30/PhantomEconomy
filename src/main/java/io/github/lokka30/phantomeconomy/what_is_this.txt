@@ -59,7 +59,7 @@ To-do List, in order:
     - Test
   - Configurable messages for both commands
   - Test both commands
-  
+
 - Baltop Command
   - Start working on it
   - Add '%displayname%' placeholder
