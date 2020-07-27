@@ -44,6 +44,7 @@ To-do List, in order:
 ========================================================================
 
 - Test bank accounts
+  - NOTE: Unable to find a plugin to test this feature -- this will be halted until I have found a suitable plugin to do so.
 
 - Economy Command
   - Test
