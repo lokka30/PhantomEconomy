@@ -369,11 +369,10 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                connection.close();
                 boolean result = resultSet.getString("accountId") != null;
-                connection.close();
-                preparedStatement.close();
                 resultSet.close();
+                preparedStatement.close();
+                connection.close();
                 return result;
             }
         } catch (SQLException exception) {
