@@ -54,6 +54,7 @@ To-do List, in order:
 
 - Baltop Command
   - Start working on it
+  - Add '%displayname%' placeholder
   - Make 'Command to give money to all online and/or offline players'
     - simply go into the 'eco add' command and allow '*' as a player argument, for example
 
