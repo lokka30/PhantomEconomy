@@ -370,8 +370,11 @@ public class Database {
 
             if (resultSet.next()) {
                 connection.close();
+                boolean result = resultSet.getString("accountId") != null;
+                connection.close();
                 preparedStatement.close();
-                return resultSet.getString("accountId") != null;
+                resultSet.close();
+                return result;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

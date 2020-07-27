@@ -99,11 +99,10 @@ currencies:
 
     # An example 'coins' currency. You can delete it if you want. It is disabled by default as it is not added to the 'enabled-currencies' list.
     coins:
-      default-balance: 10.50
+      default-balance: 123.45
       formatting:
-        storage-rounding: 2
-        decimal-readable-format: '0.00'
-        final-readable-format: '%balance% %word%'
+        decimal-format: '0.00'
+        final-format: '%balance% %word%'
         words:
           singular: 'coin'
           plural: 'coins'
