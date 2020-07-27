@@ -36,18 +36,7 @@ import java.util.HashMap;
 
 public class PhantomEconomy extends JavaPlugin {
 
-    /*
-    DATABASE LAYOUT
-
-    AccountType, AccountId, CurrencyName, Balance
-    ---------------------------------------------
-    NonPlayerAccount, TownyNationBal, dollars, 25.23
-    PlayerAccount, notch-uuid-eh51-35151, dollars, 23.13
-    PlayerAccount, notch-uuid-eh51-35151, coins, 3.19
-    BankAccount, lokka30sbank, dollars, 2536156.67
-     */
-
-    public String prefix = "&b&lPhantomEconomy: &7";
+    public String PREFIX = "&b&lPhantomEconomy: &7";
     private Utils utils;
     private FileCache fileCache;
     private AccountManager accountManager;
@@ -91,16 +80,16 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Started) &8+-----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+-----+ &f(Enable Started) &8+-----+");
         final long timeStart = System.currentTimeMillis();
 
-        phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
-        phantomLogger.log(LogLevel.SEVERE, prefix, "&4&lWARNING! &7PhantomEconomy v2.0.0 is &chighly unstable&7 and is likely " +
+        phantomLogger.log(LogLevel.SEVERE, PREFIX, "&8--------------------------------");
+        phantomLogger.log(LogLevel.SEVERE, PREFIX, "&4&lWARNING! &7PhantomEconomy v2.0.0 is &chighly unstable&7 and is likely " +
                 "to completely not function on your server. Unintentional effects of running this pre-release may cause damage to your server. " +
                 "&cYou are running this at your own risk. &7Please wait until the actual release on SpigotMC if you wish to use PhantomEconomy v2. " +
                 "If you are testing this resource, please do so on a server where there is nothing too good to lose. " +
                 "Thank you, and please be careful!");
-        phantomLogger.log(LogLevel.SEVERE, prefix, "&8--------------------------------");
+        phantomLogger.log(LogLevel.SEVERE, PREFIX, "&8--------------------------------");
 
         checkCompatibility();
         loadFiles();
@@ -115,7 +104,7 @@ public class PhantomEconomy extends JavaPlugin {
         registerMetrics();
 
         final long timeTaken = System.currentTimeMillis() - timeStart;
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+-----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+-----+ &f(Enable Complete, took &b" + timeTaken + "ms&f) &8+-----+");
 
         try {
             ensureOnlinePlayersHaveAccounts();
@@ -129,7 +118,7 @@ public class PhantomEconomy extends JavaPlugin {
     }
 
     private void checkCompatibility() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &31&8/&37&8) &7Checking compatibility...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &31&8/&37&8) &7Checking compatibility...");
 
         //Check server version
         final String currentVersion = getServer().getVersion();
@@ -141,15 +130,15 @@ public class PhantomEconomy extends JavaPlugin {
             }
         }
         if (!isSupported) {
-            phantomLogger.log(LogLevel.WARNING, prefix, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not provide support for. Use at your own risk, and do not contact support if you have issues.");
+            phantomLogger.log(LogLevel.WARNING, PREFIX, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not provide support for. Use at your own risk, and do not contact support if you have issues.");
         }
     }
 
     private void loadFiles() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &32&8/&37&8) &7Loading files...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &32&8/&37&8) &7Loading files...");
 
         if (getDataFolder().mkdir()) {
-            phantomLogger.log(LogLevel.INFO, prefix, "&7File &bdataFolder &7didn't exist, it has been created.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&7File &bdataFolder &7didn't exist, it has been created.");
         }
 
         settings = LightningBuilder
@@ -166,71 +155,72 @@ public class PhantomEconomy extends JavaPlugin {
         final File messagesFile = new File(getDataFolder() + File.separator + "messages.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
-            phantomLogger.log(LogLevel.INFO, prefix, "File '&bsettings.yml&7' doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "File '&bsettings.yml&7' doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
         }
 
         if (!(messagesFile.exists() && !messagesFile.isDirectory())) {
-            phantomLogger.log(LogLevel.INFO, prefix, "File '&bmessages.yml&7' doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "File '&bmessages.yml&7' doesn't exist. Creating it now.");
             saveResource("messages.yml", false);
         }
 
         //Check their versions
         if (settings.get("other-options.file-version", 0) != utils.getLatestSettingsFileVersion()) {
-            phantomLogger.log(LogLevel.SEVERE, prefix, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+            phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
         if (messages.get("other-options.file-version", 0) != utils.getLatestMessagesFileVersion()) {
-            phantomLogger.log(LogLevel.SEVERE, prefix, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
+            phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bmessages.yml&7 is out of date! Errors are likely to occur! Reset it or merge the old values to the new file.");
         }
 
         fileCache.loadFromFiles();
     }
 
     private void loadDatabase() throws SQLException {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
         database = new Database(this);
         database.load();
-        phantomLogger.log(LogLevel.INFO, prefix, "... connection completed.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "... connection completed.");
     }
 
     private void registerEvents() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &34&8/&37&8) &7Registering events...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &34&8/&37&8) &7Registering events...");
 
         pluginManager.registerEvents(new JoinListener(this), this);
         pluginManager.registerEvents(new QuitListener(this), this);
     }
 
     private void hookAvailablePlugins() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &35&8/&37&8) &7Hooking to available plugins...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &35&8/&37&8) &7Hooking to available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
-            phantomLogger.log(LogLevel.INFO, prefix, "Plugin '&bVault&7' installed, attempting to hook ...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "Plugin '&bVault&7' installed, attempting to hook ...");
             vaultProvider = new VaultProvider(this);
             Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
-            phantomLogger.log(LogLevel.INFO, prefix, "... plugin '&bVault&7' hooked.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "... plugin '&bVault&7' hooked.");
         }
     }
 
     private void registerCommands() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &36&8/&37&8) &7Registering commands...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &36&8/&37&8) &7Registering commands...");
 
         getCommandRegister().registerCommand(this, "balance", new BalanceCommand(this));
         getCommandRegister().registerCommand(this, "baltop", new BaltopCommand(this));
         getCommandRegister().registerCommand(this, "economy", new EconomyCommand(this));
         getCommandRegister().registerCommand(this, "pay", new PayCommand(this));
+        getCommandRegister().registerCommand(this, "paytoggle", new PayToggleCommand(this));
         getCommandRegister().registerCommand(this, "phantomeconomy", new PhantomEconomyCommand(this));
     }
 
     private void registerMetrics() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Startup &8- &37&8/&37&8) &7Starting bStats...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &37&8/&37&8) &7Starting bStats...");
 
         new Metrics(this, 6463);
     }
 
     private void startRepeatingTasks() {
-        long fifteenMinutes = 20 * 60 * 15;
-        long fourtyFiveMinutes = 20 * 60 * 45;
+        final long fifteenMinutes = 20 * 60 * 15;
+        final long fourtyFiveMinutes = 20 * 60 * 45;
 
         if (getFileCache().SETTINGS_STARTUP_TASKS_CLEAR_BALTOP_CACHE) {
             new BukkitRunnable() {
@@ -300,14 +290,14 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void checkForUpdates() {
         if (fileCache.SETTINGS_OTHER_USE_UPDATE_CHECKER) {
-            phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Update Checker&8) &7Checking for updates...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Update Checker&8) &7Checking for updates...");
             new UpdateChecker(this, 75053).getVersion(version -> {
                 final String currentVersion = getDescription().getVersion();
 
                 if (currentVersion.equals(version)) {
-                    phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Update Checker&8) &7You're running the latest version '&b" + currentVersion + "&7'.");
+                    phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Update Checker&8) &7You're running the latest version '&b" + currentVersion + "&7'.");
                 } else {
-                    phantomLogger.log(LogLevel.WARNING, prefix, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + currentVersion + "&7'.");
+                    phantomLogger.log(LogLevel.WARNING, PREFIX, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + currentVersion + "&7'.");
                 }
             });
         }
@@ -315,31 +305,31 @@ public class PhantomEconomy extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Started) &8+-----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+-----+ &f(Disable Started) &8+-----+");
         final long startTime = System.currentTimeMillis();
 
         unhookAvailablePlugins();
         disconnectDatabase();
 
         final long totalTime = System.currentTimeMillis() - startTime;
-        phantomLogger.log(LogLevel.INFO, prefix, "&8+-----+ &f(Disable Complete, took &b" + totalTime + "ms&f) &8+-----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+-----+ &f(Disable Complete, took &b" + totalTime + "ms&f) &8+-----+");
     }
 
     private void unhookAvailablePlugins() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &31&8/&32&8) &7Unhooking from available plugins...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Shutdown &8- &31&8/&32&8) &7Unhooking from available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
-            phantomLogger.log(LogLevel.INFO, prefix, "Plugin '&bVault&7' installed, attempting to unhook ...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "Plugin '&bVault&7' installed, attempting to unhook ...");
             Bukkit.getServicesManager().unregister(Economy.class, vaultProvider);
 
-            phantomLogger.log(LogLevel.INFO, prefix, "... plugin '&bVault&7' unhooked.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "... plugin '&bVault&7' unhooked.");
         }
     }
 
     private void disconnectDatabase() {
-        phantomLogger.log(LogLevel.INFO, prefix, "&8(&3Shutdown &8- &32&8/&32&8) &7 &7Disconnecting database ...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Shutdown &8- &32&8/&32&8) &7 &7Disconnecting database ...");
         database.close();
-        phantomLogger.log(LogLevel.INFO, prefix, "... database disconnected.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "... database disconnected.");
     }
 
     public Database getDatabase() {

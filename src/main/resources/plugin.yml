@@ -22,12 +22,16 @@ commands:
 
   economy:
     description: Manage account balances for each currency.
-    usage: '/<command> <add/give/remove/take/set> <player/*> <amount> [currency] -or- /<command> reset <player/*>'
+    usage: '/<command> <add/give/remove/take/set/reset> <player/*>'
     aliases: [eco, econ]
 
   pay:
     description: Send money from your account to the target's account.
     usage: '/<command> <player/*> <amount> [currency]'
+
+  paytoggle:
+    description: Toggle if you want to receive payments or not.
+    usage: '/<command> [player]'
 
   phantomeconomy:
     description: View information about the plugin or manage it.
@@ -54,6 +58,10 @@ permissions:
     default: true
     children:
       phantomeconomy.baltop: true
+
+  phantomeconomy.economy:
+    description: Allows the user/s to run the '/eco' command.
+    default: op
 
   phantomeconomy.economy.add:
     description: Allows the user/s to run the '/eco add' command.

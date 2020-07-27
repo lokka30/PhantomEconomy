@@ -50,7 +50,8 @@ To-do List, in order:
 
 - Pay Command
   - Start
-  - Add /paytoggle
+
+- Pay Toggle Command
 
 - Baltop Command
   - Start working on it
@@ -67,13 +68,17 @@ To-do List, in order:
   - Add an import command to import Essentials economy data and TheNewEconomy economy data
   - Add configurable messages.
 
+- Test if towny is compatible
+
 - Add placeholderapi placeholders
   - %phantomeconomy_baltop_pos1_balance%
-  - %phantomeconomy_baltop_pos1_name%
-  - add positions 1-5:
-  - %phantomeconomy_baltop_pos5_balance%, etc.
+  - %phantomeconomy_baltop_pos1_username%
+  - %phantomeconomy_baltop_pos1_uuid%
+  - %phantomeconomy_baltop_pos1_displayname%
+  - add positions 1-5
   - %phantomeconomy_servertotal%
   - %phantomeconomy_balance%
+  - %phantomeconomy_defaultCurrency%
 
 - Update https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
 
