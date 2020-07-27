@@ -1,9 +1,11 @@
 package io.github.lokka30.phantomeconomy.commands;
 
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
+import io.github.lokka30.phantomeconomy.api.accounts.PlayerAccount;
 import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
+import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -113,7 +115,7 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                sender.sendMessage("Added %amount% to balances on %changes% accounts with currency '%currency%'."
+                                sender.sendMessage("Added %amount% to balances on %changes% account/s with currency '%currency%'."
                                         .replace("%amount%", currency.formatFinalBalance(amount))
                                         .replace("%changes%", changes + "")
                                         .replace("%currency%", currency.getName()));
@@ -192,27 +194,42 @@ public class EconomyCommand implements CommandExecutor {
                                     return true;
                                 }
 
-                                int changes = 0;
+                                int successfulChanges = 0;
+                                int unsuccessfulChangesFromOversizedWithdrawal = 0;
                                 for (OfflinePlayer player : playersToActUpon) {
-                                    changes++;
                                     try {
-                                        instance.getAccountManager().getPlayerAccount(player).deposit(currency, amount);
-                                    } catch (NegativeAmountException e) {
+                                        final PlayerAccount playerAccount = instance.getAccountManager().getPlayerAccount(player);
+                                        if (playerAccount.has(currency, amount)) {
+                                            playerAccount.withdraw(currency, amount);
+                                            successfulChanges++;
+                                        } else {
+                                            unsuccessfulChangesFromOversizedWithdrawal++;
+                                        }
+                                    } catch (NegativeAmountException | OversizedWithdrawAmountException e) {
                                         sender.sendMessage("An internal error ocurred whilst attempting to perform this command.");
                                         if (sender.isOp()) {
-                                            sender.sendMessage("A stack trace has been printed in your server's console.");
+                                            sender.sendMessage("A stack trace has been printed into the server's console.");
                                         } else {
                                             sender.sendMessage("Please inform a server administrator about this issue as soon as possible.");
                                         }
-                                        instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Internal error occured whilst attempting to run 'economy remove' command: specified number is negative and has bypassed check meant to prevent this situation. Please report this issue to the plugin support team.");
+                                        e.printStackTrace();
                                         return true;
                                     }
                                 }
 
-                                sender.sendMessage("Removed %amount% from balances on %changes% accounts with currency '%currency%'."
-                                        .replace("%amount%", currency.formatFinalBalance(amount))
-                                        .replace("%changes%", changes + "")
-                                        .replace("%currency%", currency.getName()));
+                                if (successfulChanges == 0) {
+                                    sender.sendMessage("No balances were modified in this operation.");
+                                } else {
+                                    sender.sendMessage("Removed %amount% from balances on %changes% account/s with currency '%currency%'."
+                                            .replace("%amount%", currency.formatFinalBalance(amount))
+                                            .replace("%changes%", successfulChanges + "")
+                                            .replace("%currency%", currency.getName()));
+                                }
+
+                                if (unsuccessfulChangesFromOversizedWithdrawal != 0) {
+                                    sender.sendMessage("(Skipped %changes% account/s as they didn't have enough funds for the operation)"
+                                            .replace("%changes%", unsuccessfulChangesFromOversizedWithdrawal + ""));
+                                }
                             } else {
                                 sender.sendMessage("Usage: /%label% %action% <player/*> <amount> [currency]"
                                         .replace("%label%", label.toLowerCase())
@@ -290,7 +307,7 @@ public class EconomyCommand implements CommandExecutor {
                                 for (OfflinePlayer player : playersToActUpon) {
                                     changes++;
                                     try {
-                                        instance.getAccountManager().getPlayerAccount(player).deposit(currency, amount);
+                                        instance.getAccountManager().getPlayerAccount(player).setBalance(currency, amount);
                                     } catch (NegativeAmountException e) {
                                         sender.sendMessage("An internal error ocurred whilst attempting to perform this command.");
                                         if (sender.isOp()) {
@@ -303,7 +320,7 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                sender.sendMessage("Set balances on %changes% accounts with currency '%currency%' to %amount%."
+                                sender.sendMessage("Set balances on %changes% account/s with currency '%currency%' to %amount%."
                                         .replace("%amount%", currency.formatFinalBalance(amount))
                                         .replace("%changes%", changes + "")
                                         .replace("%currency%", currency.getName()));
@@ -382,7 +399,7 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                sender.sendMessage("Reset balances on %changes% accounts with currency '%currency%'."
+                                sender.sendMessage("Reset balances on %changes% account/s with currency '%currency%'."
                                         .replace("%changes%", changes + "")
                                         .replace("%currency%", currency.getName()));
                             } else {
