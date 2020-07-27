@@ -119,15 +119,15 @@ public class Database {
         connection = getConnection();
 
         Statement statement1 = connection.createStatement();
-        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+        statement1.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
         statement1.close();
 
         Statement statement2 = connection.createStatement();
-        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+        statement2.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
         statement2.close();
 
         Statement statement3 = connection.createStatement();
-        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS " + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
+        statement3.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
         statement3.close();
 
         if (connection != null) {
