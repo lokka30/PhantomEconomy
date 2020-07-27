@@ -46,13 +46,20 @@ To-do List, in order:
 - Test bank accounts
 
 - Economy Command
-  - Start
+  - Test
+  - Configurable messages
+  - Test
 
 - Pay Command
   - Start
-
-- Pay Toggle Command
-
+  - Test
+  - Add HashMap<Player, Boolean> of players that enable/disable receiving payments. Not sure where, probably the main class.
+  - Pay Toggle Command
+    - Start
+    - Test
+  - Configurable messages for both commands
+  - Test both commands
+  
 - Baltop Command
   - Start working on it
   - Add '%displayname%' placeholder
