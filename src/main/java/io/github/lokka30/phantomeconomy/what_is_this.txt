@@ -30,13 +30,7 @@ Here's a list of planned features, improvements and fixes over v1:
 Can I test it early?
 ========================================================================
 - Yep, you can. You assume all responsibility for any errors or damages caused. v2 is strictly in development and is by no means ready for installation on a server that has too much to lose.
-- The database commands haven't been tested at all yet, so make sure you backup or make a new database for testing.
-- Instructions -- if you don't want to follow them, ask lokka30 to make you a jar :)
-  1. If you aren't compiling the plugin: open the latest jar file from Spigot with WinRar, 7-Zip or another suitable program that can open up jar files and view and edit its contents.
-  2. delete all resource files (plugin.yml, settings.yml, messages.yml, data.json) that aren't in the v2 folder. If you are compiling the plugin then this is located in the /src/resources/ folder.
-  2. Move all of the contents of the v2 folder into the parent directory. Delete the v2 folder once complete. You should have v2's plugin.yml, settings.yml and messages.yml now.
-  3. In the plugin.yml file, in the 'main' setting, change it from 'io.github.lokka30.phantomeconomy.PhantomEconomy' to 'io.github.lokka30.phantomeconomy_v2.PhantomEconomy'.
-  4. Save the plugin.yml file and compile/save the jar file.
+- Simply head to the 'developer logs spam' chat on my Discord server and find the latest pre release jar there.
 ========================================================================
 
 
@@ -44,7 +38,8 @@ To-do List, in order:
 ========================================================================
 
 - Test bank accounts
-  - NOTE: Unable to find a plugin to test this feature -- this will be halted until I have found a suitable plugin to do so.
+
+- Convert OfflinePlayer usage to UUIDUsernameCache usage
 
 - Economy Command
   - Configurable messages
