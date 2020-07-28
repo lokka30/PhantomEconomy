@@ -289,6 +289,7 @@ public class VaultProvider extends AbstractEconomy {
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, double amount) {
+        //TODO UPDATE
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't deposit a negative amount.");
         }
@@ -314,6 +315,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse createBank(String bankId, String ownerId) {
+        //TODO UPDATE
         AccountType accountType;
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerId);
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
@@ -362,9 +364,9 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public EconomyResponse bankHas(String s, double v) {
+    public EconomyResponse bankHas(String bankId, double amount) {
         try {
-            if (instance.getAccountManager().getBankAccountFromId(s).getBalance(instance.getCurrencyManager().getVaultCurrency()) >= v) {
+            if (instance.getAccountManager().getBankAccountFromId(bankId).getBalance(instance.getCurrencyManager().getVaultCurrency()) >= amount) {
                 return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "Bank has more than or equal to specified funds");
             } else {
                 return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Bank does not have specified funds");
@@ -377,29 +379,30 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public EconomyResponse bankWithdraw(String s, double v) {
+    public EconomyResponse bankWithdraw(String bankId, double amount) {
         try {
-            instance.getAccountManager().getBankAccountFromId(s).withdraw(instance.getCurrencyManager().getVaultCurrency(), v);
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
+            instance.getAccountManager().getBankAccountFromId(bankId).withdraw(instance.getCurrencyManager().getVaultCurrency(), amount);
+            return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
         } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
+            return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
         }
     }
 
     @Override
-    public EconomyResponse bankDeposit(String s, double v) {
+    public EconomyResponse bankDeposit(String bankId, double amount) {
         try {
-            instance.getAccountManager().getBankAccountFromId(s).deposit(instance.getCurrencyManager().getVaultCurrency(), v);
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
+            instance.getAccountManager().getBankAccountFromId(bankId).deposit(instance.getCurrencyManager().getVaultCurrency(), amount);
+            return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
         } catch (NegativeAmountException | InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
-            return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
+            return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
         }
     }
 
     @Override
     public EconomyResponse isBankOwner(String bankId, String ownerId) {
+        //TODO UPDATE
         @SuppressWarnings("deprecation")
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerId);
         if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
@@ -420,6 +423,7 @@ public class VaultProvider extends AbstractEconomy {
 
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
+        //TODO UPDATE
         try {
             if (instance.getDatabase().isBankOwner(name, AccountType.PlayerAccount, player.getUniqueId().toString())) {
                 return new EconomyResponse(0, 0, EconomyResponse.ResponseType.SUCCESS, "is owner");
@@ -456,6 +460,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public boolean createPlayerAccount(String name) {
+        //TODO UPDATE
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
 
         if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
@@ -483,6 +488,7 @@ public class VaultProvider extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
+        //TODO UPDATE
         try {
             if (accountManager.hasPlayerAccount(offlinePlayer.getUniqueId(), instance.getCurrencyManager().getVaultCurrency())) {
                 return false;

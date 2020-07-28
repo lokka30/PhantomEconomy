@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>PhantomEconomy</artifactId>
-    <version>2.0.0-PRE-RELEASE-5</version>
+    <version>2.0.0-PRE-RELEASE-7</version>
 
     <name>PhantomEconomy</name>
     <description>A very powerful and highly configurable economy plugin for SpigotMC-based servers.</description>

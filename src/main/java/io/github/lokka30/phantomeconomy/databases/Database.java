@@ -294,10 +294,11 @@ public class Database {
             connection = getConnection();
             switch (getDatabaseType()) {
                 case MYSQL:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + "(accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
                     break;
                 case SQLITE:
                     preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountId,currencyName,ownerAccountType,ownerId) DO UPDATE SET balance=?;");
+                    preparedStatement.setDouble(6, newBalance);
                     break;
                 default:
                     preparedStatement.close();
@@ -308,7 +309,8 @@ public class Database {
             preparedStatement.setString(1, accountId);
             preparedStatement.setString(2, currencyName);
             preparedStatement.setDouble(3, newBalance);
-            preparedStatement.setDouble(4, newBalance);
+            preparedStatement.setString(4, ownerAccountType.toString());
+            preparedStatement.setString(5, ownerId);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
