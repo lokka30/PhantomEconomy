@@ -261,15 +261,15 @@ public class PhantomEconomy extends JavaPlugin {
 
     private void ensureOnlinePlayersHaveAccounts() throws InvalidCurrencyException {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!accountManager.hasPlayerAccount(player, getCurrencyManager().getDefaultCurrency())) {
+            if (!accountManager.hasPlayerAccount(player.getUniqueId(), getCurrencyManager().getDefaultCurrency())) {
                 try {
-                    accountManager.createPlayerAccount(player, getCurrencyManager().getDefaultCurrency());
+                    accountManager.createPlayerAccount(player.getUniqueId(), getCurrencyManager().getDefaultCurrency());
                 } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
                     e.printStackTrace();
                 }
             }
 
-            PlayerAccount playerAccount = accountManager.getPlayerAccount(player);
+            PlayerAccount playerAccount = accountManager.getPlayerAccount(player.getUniqueId());
             Currency currency = null;
             HashMap<String, Double> balanceMap = new HashMap<>();
 

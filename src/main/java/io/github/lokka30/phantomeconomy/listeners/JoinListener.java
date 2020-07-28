@@ -31,9 +31,9 @@ public class JoinListener implements Listener {
             player.sendMessage("§8§m+---");
         }
         instance.getDatabase().assignUsernameToUUID(player.getUniqueId(), player.getName());
-        if (!instance.getAccountManager().hasPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency())) {
+        if (!instance.getAccountManager().hasPlayerAccount(player.getUniqueId(), instance.getCurrencyManager().getDefaultCurrency())) {
             try {
-                instance.getAccountManager().createPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency());
+                instance.getAccountManager().createPlayerAccount(player.getUniqueId(), instance.getCurrencyManager().getDefaultCurrency());
             } catch (AccountAlreadyExistsException exception) {
                 exception.printStackTrace();
             }

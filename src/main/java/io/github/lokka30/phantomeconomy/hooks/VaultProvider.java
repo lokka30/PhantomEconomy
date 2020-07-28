@@ -201,7 +201,6 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public EconomyResponse withdrawPlayer(String name, double amount) {
         if (has(name, amount)) {
             Currency currency;
@@ -273,7 +272,7 @@ public class VaultProvider extends AbstractEconomy {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {
-                accountManager.getPlayerAccount(Bukkit.getOfflinePlayer(name)).deposit(currencyManager.getVaultCurrency(), amount);
+                accountManager.getPlayerAccount(offlinePlayer.getUniqueId()).deposit(currencyManager.getVaultCurrency(), amount);
             } catch (NegativeAmountException | InvalidCurrencyException e) {
                 e.printStackTrace();
             }
@@ -294,7 +293,7 @@ public class VaultProvider extends AbstractEconomy {
         }
 
         try {
-            accountManager.getPlayerAccount(offlinePlayer).deposit(currencyManager.getVaultCurrency(), amount);
+            accountManager.getPlayerAccount(offlinePlayer.getUniqueId()).deposit(currencyManager.getVaultCurrency(), amount);
         } catch (NegativeAmountException | InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -355,7 +354,7 @@ public class VaultProvider extends AbstractEconomy {
         double balance = 0;
         try {
             balance = instance.getAccountManager().getBankAccountFromId(ownerId).getBalance(instance.getCurrencyManager().getVaultCurrency());
-        } catch (InvalidCurrencyException e) {
+        } catch (InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
         }
         return new EconomyResponse(balance, balance, EconomyResponse.ResponseType.SUCCESS, "");
@@ -369,7 +368,7 @@ public class VaultProvider extends AbstractEconomy {
             } else {
                 return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Bank does not have specified funds");
             }
-        } catch (InvalidCurrencyException e) {
+        } catch (InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
         }
 
@@ -381,7 +380,7 @@ public class VaultProvider extends AbstractEconomy {
         try {
             instance.getAccountManager().getBankAccountFromId(s).withdraw(instance.getCurrencyManager().getVaultCurrency(), v);
             return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
-        } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
+        } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
             return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
         }
@@ -392,7 +391,7 @@ public class VaultProvider extends AbstractEconomy {
         try {
             instance.getAccountManager().getBankAccountFromId(s).deposit(instance.getCurrencyManager().getVaultCurrency(), v);
             return new EconomyResponse(v, 0, EconomyResponse.ResponseType.SUCCESS, "attempt made");
-        } catch (NegativeAmountException | InvalidCurrencyException e) {
+        } catch (NegativeAmountException | InvalidCurrencyException | SQLException e) {
             e.printStackTrace();
             return new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Exception occurred");
         }
@@ -484,11 +483,11 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
         try {
-            if (accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency())) {
+            if (accountManager.hasPlayerAccount(offlinePlayer.getUniqueId(), instance.getCurrencyManager().getVaultCurrency())) {
                 return false;
             } else {
                 try {
-                    accountManager.createPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
+                    accountManager.createPlayerAccount(offlinePlayer.getUniqueId(), instance.getCurrencyManager().getVaultCurrency());
                     return true;
                 } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
                     e.printStackTrace();
