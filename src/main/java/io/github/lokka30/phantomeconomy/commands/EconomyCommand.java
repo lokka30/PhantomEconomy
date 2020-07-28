@@ -8,7 +8,6 @@ import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class EconomyCommand implements CommandExecutor {
 
@@ -59,24 +59,25 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                ArrayList<OfflinePlayer> playersToActUpon = new ArrayList<>();
+                                ArrayList<UUID> playersToActUpon = new ArrayList<>();
                                 if (args[1].equals("*")) {
                                     if (sender instanceof Player) {
                                         Player player = (Player) sender;
                                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                                             if (player.canSee(onlinePlayer)) {
-                                                playersToActUpon.add(onlinePlayer);
+                                                playersToActUpon.add(onlinePlayer.getUniqueId());
                                             }
                                         }
                                     } else {
-                                        playersToActUpon.addAll(Bukkit.getOnlinePlayers());
+                                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                                            playersToActUpon.add(onlinePlayer.getUniqueId());
+                                        }
                                     }
                                 } else {
-                                    @SuppressWarnings("deprecation") final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-                                    if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
-                                        playersToActUpon.add(offlinePlayer);
+                                    if (instance.getDatabase().isUsernameCached(args[1])) {
+                                        playersToActUpon.add(instance.getDatabase().getUUIDFromUsername(args[1]));
                                     } else {
-                                        sender.sendMessage("%player% hasn't joined this server before.");
+                                        sender.sendMessage("A player by the name of '%player%' isn't available in the database.".replace("%player%", args[1]));
                                         return true;
                                     }
                                 }
@@ -97,10 +98,10 @@ public class EconomyCommand implements CommandExecutor {
                                 }
 
                                 int changes = 0;
-                                for (OfflinePlayer player : playersToActUpon) {
+                                for (UUID uuid : playersToActUpon) {
                                     changes++;
                                     try {
-                                        instance.getAccountManager().getPlayerAccount(player).deposit(currency, amount);
+                                        instance.getAccountManager().getPlayerAccount(uuid).deposit(currency, amount);
                                     } catch (NegativeAmountException e) {
                                         sender.sendMessage("An internal error ocurred whilst attempting to perform this command.");
                                         if (sender.isOp()) {
@@ -155,24 +156,23 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                ArrayList<OfflinePlayer> playersToActUpon = new ArrayList<>();
+                                ArrayList<UUID> playersToActUpon = new ArrayList<>();
                                 if (args[1].equals("*")) {
                                     if (sender instanceof Player) {
                                         Player player = (Player) sender;
                                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                                             if (player.canSee(onlinePlayer)) {
-                                                playersToActUpon.add(onlinePlayer);
+                                                playersToActUpon.add(onlinePlayer.getUniqueId());
                                             }
                                         }
                                     } else {
-                                        playersToActUpon.addAll(Bukkit.getOnlinePlayers());
+                                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                                            playersToActUpon.add(onlinePlayer.getUniqueId());
+                                        }
                                     }
                                 } else {
-                                    @SuppressWarnings("deprecation") final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-                                    if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
-                                        playersToActUpon.add(offlinePlayer);
-                                    } else {
-                                        sender.sendMessage("%player% hasn't joined this server before.");
+                                    if (!instance.getDatabase().isUsernameCached(args[1])) {
+                                        sender.sendMessage("A player by the name of '%player%' isn't available in the database.".replace("%player%", args[1]));
                                         return true;
                                     }
                                 }
@@ -194,9 +194,9 @@ public class EconomyCommand implements CommandExecutor {
 
                                 int successfulChanges = 0;
                                 int unsuccessfulChangesFromOversizedWithdrawal = 0;
-                                for (OfflinePlayer player : playersToActUpon) {
+                                for (UUID uuid : playersToActUpon) {
                                     try {
-                                        final PlayerAccount playerAccount = instance.getAccountManager().getPlayerAccount(player);
+                                        final PlayerAccount playerAccount = instance.getAccountManager().getPlayerAccount(uuid);
                                         if (playerAccount.has(currency, amount)) {
                                             playerAccount.withdraw(currency, amount);
                                             successfulChanges++;
@@ -264,24 +264,25 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                ArrayList<OfflinePlayer> playersToActUpon = new ArrayList<>();
+                                ArrayList<UUID> playersToActUpon = new ArrayList<>();
                                 if (args[1].equals("*")) {
                                     if (sender instanceof Player) {
                                         Player player = (Player) sender;
                                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                                             if (player.canSee(onlinePlayer)) {
-                                                playersToActUpon.add(onlinePlayer);
+                                                playersToActUpon.add(onlinePlayer.getUniqueId());
                                             }
                                         }
                                     } else {
-                                        playersToActUpon.addAll(Bukkit.getOnlinePlayers());
+                                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                                            playersToActUpon.add(onlinePlayer.getUniqueId());
+                                        }
                                     }
                                 } else {
-                                    @SuppressWarnings("deprecation") final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-                                    if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
-                                        playersToActUpon.add(offlinePlayer);
+                                    if (instance.getDatabase().isUsernameCached(args[1])) {
+                                        playersToActUpon.add(instance.getDatabase().getUUIDFromUsername(args[1]));
                                     } else {
-                                        sender.sendMessage("%player% hasn't joined this server before.");
+                                        sender.sendMessage("A player by the name of '%player%' isn't available in the database.");
                                         return true;
                                     }
                                 }
@@ -302,10 +303,10 @@ public class EconomyCommand implements CommandExecutor {
                                 }
 
                                 int changes = 0;
-                                for (OfflinePlayer player : playersToActUpon) {
+                                for (UUID uuid : playersToActUpon) {
                                     changes++;
                                     try {
-                                        instance.getAccountManager().getPlayerAccount(player).setBalance(currency, amount);
+                                        instance.getAccountManager().getPlayerAccount(uuid).setBalance(currency, amount);
                                     } catch (NegativeAmountException e) {
                                         sender.sendMessage("An internal error ocurred whilst attempting to perform this command.");
                                         if (sender.isOp()) {
@@ -358,33 +359,34 @@ public class EconomyCommand implements CommandExecutor {
                                     }
                                 }
 
-                                ArrayList<OfflinePlayer> playersToActUpon = new ArrayList<>();
+                                ArrayList<UUID> playersToActUpon = new ArrayList<>();
                                 if (args[1].equals("*")) {
                                     if (sender instanceof Player) {
                                         Player player = (Player) sender;
                                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                                             if (player.canSee(onlinePlayer)) {
-                                                playersToActUpon.add(onlinePlayer);
+                                                playersToActUpon.add(onlinePlayer.getUniqueId());
                                             }
                                         }
                                     } else {
-                                        playersToActUpon.addAll(Bukkit.getOnlinePlayers());
+                                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                                            playersToActUpon.add(onlinePlayer.getUniqueId());
+                                        }
                                     }
                                 } else {
-                                    @SuppressWarnings("deprecation") final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-                                    if (offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore()) {
-                                        playersToActUpon.add(offlinePlayer);
+                                    if (instance.getDatabase().isUsernameCached(args[1])) {
+                                        playersToActUpon.add(instance.getDatabase().getUUIDFromUsername(args[1]));
                                     } else {
-                                        sender.sendMessage("%player% hasn't joined this server before.");
+                                        sender.sendMessage("A player by the name of '%player%' isn't available in the database.".replace("%player%", args[1]));
                                         return true;
                                     }
                                 }
 
                                 int changes = 0;
-                                for (OfflinePlayer player : playersToActUpon) {
+                                for (UUID uuid : playersToActUpon) {
                                     changes++;
                                     try {
-                                        instance.getAccountManager().getPlayerAccount(player).setBalance(currency, currency.getDefaultBalance());
+                                        instance.getAccountManager().getPlayerAccount(uuid).setBalance(currency, currency.getDefaultBalance());
                                     } catch (NegativeAmountException e) {
                                         sender.sendMessage("An internal error ocurred whilst attempting to perform this command.");
                                         if (sender.isOp()) {

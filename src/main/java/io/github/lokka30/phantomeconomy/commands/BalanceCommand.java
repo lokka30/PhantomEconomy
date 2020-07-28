@@ -6,7 +6,6 @@ import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsExcep
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 
 public class BalanceCommand implements TabExecutor {
 
@@ -35,7 +34,7 @@ public class BalanceCommand implements TabExecutor {
                     sender.sendMessage("§7Your balance:");
                     try {
                         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
-                            final double balance = instance.getAccountManager().getPlayerAccount(player).getBalance(currency);
+                            final double balance = instance.getAccountManager().getPlayerAccount(player.getUniqueId()).getBalance(currency);
                             final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
                             sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)§7: §b%balance%"
                                     .replace("%currencyName%", currencyName)
@@ -49,23 +48,27 @@ public class BalanceCommand implements TabExecutor {
                     sender.sendMessage("§7Usage (console):§b /balance <currency> <player>");
                 }
             } else if (args.length == 1) {
-                @SuppressWarnings("deprecation") final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+                if (instance.getDatabase().isUsernameCached(args[0])) {
+                    UUID uuid = instance.getDatabase().getUUIDFromUsername(args[0]);
 
-                try {
-                    sender.sendMessage("§7Balance for §r%player%§7:"
-                            .replace("%player%", Objects.requireNonNull(target.getName())));
-                    for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
-                        if (!instance.getAccountManager().hasPlayerAccount(target, currency)) {
-                            instance.getAccountManager().createPlayerAccount(target, currency);
+                    try {
+                        sender.sendMessage("§7Balance for §r%player%§7:"
+                                .replace("%player%", args[0]));
+                        for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
+                            if (!instance.getAccountManager().hasPlayerAccount(uuid, currency)) {
+                                instance.getAccountManager().createPlayerAccount(uuid, currency);
+                            }
+                            final double balance = instance.getAccountManager().getPlayerAccount(uuid).getBalance(currency);
+                            final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
+                            sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)§7: §b%balance%"
+                                    .replace("%currencyName%", currencyName)
+                                    .replace("%balance%", currency.formatFinalBalance(balance)));
                         }
-                        final double balance = instance.getAccountManager().getPlayerAccount(target).getBalance(currency);
-                        final String currencyName = WordUtils.capitalize(currency.getName().toLowerCase());
-                        sender.sendMessage("§8 §m->§8 (§3%currencyName%§8)§7: §b%balance%"
-                                .replace("%currencyName%", currencyName)
-                                .replace("%balance%", currency.formatFinalBalance(balance)));
+                    } catch (InvalidCurrencyException | AccountAlreadyExistsException e) {
+                        e.printStackTrace();
                     }
-                } catch (InvalidCurrencyException | AccountAlreadyExistsException e) {
-                    e.printStackTrace();
+                } else {
+                    sender.sendMessage("§7A player by the name of '%player%' wasn't found in the database.".replace("%player%", args[0]));
                 }
             } else {
                 sender.sendMessage("§7Usage: §b/%label% [player]".replace("%label%", label));

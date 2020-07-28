@@ -48,7 +48,7 @@ To-do List, in order:
 
 - Economy Command
   - Configurable messages
-  - Test
+  - Test configurable messages
 
 - Pay Command
   - Start

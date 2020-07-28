@@ -30,6 +30,7 @@ public class JoinListener implements Listener {
             player.sendMessage("§7§oThis message is only displayed to operators.");
             player.sendMessage("§8§m+---");
         }
+        instance.getDatabase().assignUsernameToUUID(player.getUniqueId(), player.getName());
         if (!instance.getAccountManager().hasPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency())) {
             try {
                 instance.getAccountManager().createPlayerAccount(player, instance.getCurrencyManager().getDefaultCurrency());

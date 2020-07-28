@@ -5,8 +5,6 @@ import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
 import io.github.lokka30.phantomeconomy.enums.AccountType;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -15,25 +13,15 @@ import java.util.UUID;
 public class PlayerAccount {
 
     private AccountManager accountManager;
-
-    private OfflinePlayer offlinePlayer;
-
-    public PlayerAccount(AccountManager accountManager, OfflinePlayer offlinePlayer) {
-        this.accountManager = accountManager;
-        this.offlinePlayer = offlinePlayer;
-    }
+    private UUID uuid;
 
     public PlayerAccount(AccountManager accountManager, UUID uuid) {
         this.accountManager = accountManager;
-        this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-    }
-
-    public OfflinePlayer getPlayer() {
-        return offlinePlayer;
+        this.uuid = uuid;
     }
 
     public UUID getUUID() {
-        return offlinePlayer.getUniqueId();
+        return uuid;
     }
 
     public String getUUIDAsString() {
@@ -47,7 +35,7 @@ public class PlayerAccount {
 
     public void setBalance(Currency currency, double amount) throws NegativeAmountException {
         if (amount < 0) {
-            throw new NegativeAmountException("Tried to set balance to PlayerAccount with name '" + getUUID() + "' and amount '" + amount + "' but the amount is lower than 0");
+            throw new NegativeAmountException("Tried to set balance to PlayerAccount with uuid '" + getUUIDAsString() + "' and amount '" + amount + "' but the amount is lower than 0");
         } else {
             cacheCurrencyBalanceIfUnset(currency);
             HashMap<String, Double> currencyBalanceMap = accountManager.cachedPlayerAccountBalances.get(getUUID());

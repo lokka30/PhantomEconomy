@@ -8,8 +8,8 @@ import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.enums.AccountType;
-import org.bukkit.OfflinePlayer;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -29,8 +29,8 @@ public class AccountManager {
         return instance;
     }
 
-    public PlayerAccount getPlayerAccount(final OfflinePlayer offlinePlayer) {
-        return new PlayerAccount(this, offlinePlayer);
+    public PlayerAccount getPlayerAccount(final UUID uuid) {
+        return new PlayerAccount(this, uuid);
     }
 
     public NonPlayerAccount getNonPlayerAccount(final String name) {
@@ -41,13 +41,12 @@ public class AccountManager {
         return new BankAccount(this, bankId, ownerAccountType, ownerId);
     }
 
-    public BankAccount getBankAccountFromId(final String bankId) {
-        //TODO Scan the database for a bank with id 'bankId'.
-        return null;
+    public BankAccount getBankAccountFromId(final String bankId) throws SQLException, InvalidCurrencyException {
+        return instance.getDatabase().getBankAccountFromId(bankId);
     }
 
-    public boolean hasPlayerAccount(final OfflinePlayer offlinePlayer, final Currency currency) {
-        return (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) && instance.getDatabase().hasAccount(AccountType.PlayerAccount, offlinePlayer.getUniqueId().toString(), currency);
+    public boolean hasPlayerAccount(final UUID uuid, final Currency currency) {
+        return instance.getDatabase().hasAccount(AccountType.PlayerAccount, uuid.toString(), currency);
     }
 
     public boolean hasNonPlayerAccount(final String name, final Currency currency) {
@@ -58,11 +57,11 @@ public class AccountManager {
         return instance.getDatabase().hasAccount(AccountType.BankAccount, name, currency);
     }
 
-    public void createPlayerAccount(final OfflinePlayer offlinePlayer, final Currency currency) throws AccountAlreadyExistsException, InvalidCurrencyException {
-        if (hasPlayerAccount(offlinePlayer, currency)) {
-            throw new AccountAlreadyExistsException("Tried to create PlayerAccount with uuid '" + offlinePlayer.getUniqueId().toString() + "' but its account already exists.");
+    public void createPlayerAccount(final UUID uuid, final Currency currency) throws AccountAlreadyExistsException, InvalidCurrencyException {
+        if (hasPlayerAccount(uuid, currency)) {
+            throw new AccountAlreadyExistsException("Tried to create PlayerAccount with uuid '" + uuid.toString() + "' but its account already exists.");
         } else {
-            instance.getDatabase().createAccount(AccountType.PlayerAccount, offlinePlayer.getUniqueId().toString());
+            instance.getDatabase().createAccount(AccountType.PlayerAccount, uuid.toString());
         }
     }
 

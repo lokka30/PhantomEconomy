@@ -3,11 +3,13 @@ package io.github.lokka30.phantomeconomy.hooks;
 import io.github.lokka30.phantomeconomy.PhantomEconomy;
 import io.github.lokka30.phantomeconomy.api.AccountManager;
 import io.github.lokka30.phantomeconomy.api.CurrencyManager;
+import io.github.lokka30.phantomeconomy.api.currencies.Currency;
 import io.github.lokka30.phantomeconomy.api.exceptions.AccountAlreadyExistsException;
 import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.api.exceptions.NegativeAmountException;
 import io.github.lokka30.phantomeconomy.api.exceptions.OversizedWithdrawAmountException;
 import io.github.lokka30.phantomeconomy.enums.AccountType;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -55,8 +57,8 @@ public class VaultProvider extends AbstractEconomy {
             return currencyManager.getVaultCurrency().formatFinalBalance(balance);
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
+            return Double.toString(balance);
         }
-        return Double.toString(balance);
     }
 
     @Override
@@ -65,8 +67,8 @@ public class VaultProvider extends AbstractEconomy {
             return currencyManager.getVaultCurrency().getPlural();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
+            return "dollars";
         }
-        return "dollars";
     }
 
     @Override
@@ -75,36 +77,32 @@ public class VaultProvider extends AbstractEconomy {
             return currencyManager.getVaultCurrency().getSingular();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
+            return "dollar";
         }
-        return "dollar";
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean hasAccount(String name) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+        Currency currency;
 
-        // Check if it is a player or not first.
-        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            try {
-                return accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                return accountManager.hasNonPlayerAccount(name, instance.getCurrencyManager().getVaultCurrency());
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
+        try {
+            currency = currencyManager.getVaultCurrency();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
+
+        if (instance.getDatabase().isUsernameCached(name)) {
+            return accountManager.hasPlayerAccount(instance.getDatabase().getUUIDFromUsername(name), currency);
+        } else {
+            return accountManager.hasNonPlayerAccount(name, currency);
+        }
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
         try {
-            return accountManager.hasPlayerAccount(offlinePlayer, instance.getCurrencyManager().getVaultCurrency());
+            return accountManager.hasPlayerAccount(offlinePlayer.getUniqueId(), currencyManager.getVaultCurrency());
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
         }
@@ -123,39 +121,33 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public double getBalance(String name) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-
-        //Check if it is a player account first
-        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            try {
-                return accountManager.getPlayerAccount(offlinePlayer).getBalance(currencyManager.getVaultCurrency());
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                return accountManager.getNonPlayerAccount(name).getBalance(currencyManager.getVaultCurrency());
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
+        Currency currency;
+        try {
+            currency = currencyManager.getVaultCurrency();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+            return 0.00;
         }
 
-        //In case the vault currency setting is invalid, it will return 0.00.
-        return 0.00;
+        if (instance.getDatabase().isUsernameCached(name)) {
+            return accountManager.getPlayerAccount(instance.getDatabase().getUUIDFromUsername(name)).getBalance(currency);
+        } else {
+            return accountManager.getNonPlayerAccount(name).getBalance(currency);
+        }
     }
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
+        Currency currency;
         try {
-            return accountManager.getPlayerAccount(offlinePlayer).getBalance(currencyManager.getVaultCurrency());
+            currency = currencyManager.getVaultCurrency();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
+            return 0.00;
         }
 
-        //In case the vault currency setting is invalid, it will return 0.00.
-        return 0.00;
+        return accountManager.getPlayerAccount(offlinePlayer.getUniqueId()).getBalance(currency);
     }
 
     @Override
@@ -164,43 +156,38 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public double getBalance(OfflinePlayer offlinePlayer, String world) {
+    public double getBalance(OfflinePlayer offlinePlayer, String worldName) {
         return getBalance(offlinePlayer);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean has(String name, double amount) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-
-        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-            try {
-                return accountManager.getPlayerAccount(offlinePlayer).has(currencyManager.getVaultCurrency(), amount);
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                return accountManager.getNonPlayerAccount(name).has(currencyManager.getVaultCurrency(), amount);
-            } catch (InvalidCurrencyException e) {
-                e.printStackTrace();
-            }
+        Currency currency;
+        try {
+            currency = currencyManager.getVaultCurrency();
+        } catch (InvalidCurrencyException e) {
+            e.printStackTrace();
+            return false;
         }
 
-        //In case the vault currency setting is invalid, it will return false.
-        return false;
+        if (instance.getDatabase().isUsernameCached(name)) {
+            return accountManager.getPlayerAccount(instance.getDatabase().getUUIDFromUsername(name)).has(currency, amount);
+        } else {
+            return accountManager.getNonPlayerAccount(name).has(currency, amount);
+        }
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double amount) {
+        Currency currency;
         try {
-            return accountManager.getPlayerAccount(offlinePlayer).has(currencyManager.getVaultCurrency(), amount);
+            currency = currencyManager.getVaultCurrency();
         } catch (InvalidCurrencyException e) {
             e.printStackTrace();
+            return false;
         }
 
-        //In case the vault currency setting is invalid, it will return false.
-        return false;
+        return accountManager.getPlayerAccount(offlinePlayer.getUniqueId()).has(currency, amount);
     }
 
     @Override
@@ -216,24 +203,34 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse withdrawPlayer(String name, double amount) {
-        if (amount < 0) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't withdraw a negative amount.");
-        }
-
         if (has(name, amount)) {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            Currency currency;
+            try {
+                currency = currencyManager.getVaultCurrency();
+            } catch (InvalidCurrencyException e) {
+                instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Invalid vault currency specified in the settings.yml file. Fix this ASAP!");
+                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Invalid Vault Currency in configuration");
+            }
 
-            if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+            if (instance.getDatabase().isUsernameCached(name)) {
                 try {
-                    accountManager.getPlayerAccount(offlinePlayer).withdraw(currencyManager.getVaultCurrency(), amount);
-                } catch (NegativeAmountException | OversizedWithdrawAmountException | InvalidCurrencyException e) {
-                    e.printStackTrace();
+                    accountManager.getPlayerAccount(instance.getDatabase().getUUIDFromUsername(name)).withdraw(currency, amount);
+                } catch (NegativeAmountException e) {
+                    instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was negative. Please inform the plugin developer.");
+                    return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.FAILURE, "Negative amount specified");
+                } catch (OversizedWithdrawAmountException e) {
+                    instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was more than the account's balance. Please inform the plugin developer.");
+                    return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.FAILURE, "Oversized withdrawal");
                 }
             } else {
                 try {
-                    accountManager.getNonPlayerAccount(name).withdraw(currencyManager.getVaultCurrency(), amount);
-                } catch (InvalidCurrencyException | NegativeAmountException | OversizedWithdrawAmountException e) {
-                    e.printStackTrace();
+                    accountManager.getNonPlayerAccount(name).withdraw(currency, amount);
+                } catch (NegativeAmountException e) {
+                    instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was negative. Please inform the plugin developer.");
+                    return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.FAILURE, "Negative amount specified");
+                } catch (OversizedWithdrawAmountException e) {
+                    instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was more than the account's balance. Please inform the plugin developer.");
+                    return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.FAILURE, "Oversized withdrawal");
                 }
             }
             return new EconomyResponse(amount, getBalance(name), EconomyResponse.ResponseType.SUCCESS, "Success");
@@ -244,14 +241,17 @@ public class VaultProvider extends AbstractEconomy {
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, double amount) {
-        if (amount < 0) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't withdraw a negative amount.");
-        }
-
         try {
-            accountManager.getPlayerAccount(offlinePlayer).withdraw(currencyManager.getVaultCurrency(), amount);
-        } catch (NegativeAmountException | InvalidCurrencyException | OversizedWithdrawAmountException e) {
-            e.printStackTrace();
+            accountManager.getPlayerAccount(offlinePlayer.getUniqueId()).withdraw(currencyManager.getVaultCurrency(), amount);
+        } catch (NegativeAmountException e) {
+            instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was negative. Please inform the plugin developer.");
+            return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.FAILURE, "Negative amount specified");
+        } catch (InvalidCurrencyException e) {
+            instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Invalid vault currency specified in the settings.yml file. Fix this ASAP!");
+            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Invalid Vault Currency in configuration");
+        } catch (OversizedWithdrawAmountException e) {
+            instance.getPhantomLogger().log(LogLevel.SEVERE, instance.PREFIX, "Another plugin using the Vault API attempted to withdraw funds from an account, but the amount specified was more than the account's balance. Please inform the plugin developer.");
+            return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.FAILURE, "Oversized withdrawal");
         }
         return new EconomyResponse(amount, getBalance(offlinePlayer), EconomyResponse.ResponseType.SUCCESS, "Success");
     }
@@ -269,10 +269,7 @@ public class VaultProvider extends AbstractEconomy {
     @Override
     @SuppressWarnings("deprecation")
     public EconomyResponse depositPlayer(String name, double amount) {
-        if (amount < 0) {
-            return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You can't deposit a negative amount.");
-        }
-
+        //TODO UPDATE
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
             try {

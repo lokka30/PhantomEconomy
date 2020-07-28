@@ -7,6 +7,8 @@ import io.github.lokka30.phantomeconomy.api.exceptions.InvalidCurrencyException;
 import io.github.lokka30.phantomeconomy.enums.AccountType;
 import io.github.lokka30.phantomeconomy.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,18 +121,21 @@ public class Database {
         connection = getConnection();
 
         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
-            Statement statement1 = connection.createStatement();
-            statement1.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
-            statement1.close();
+            Statement playerAccountStatement = connection.createStatement();
+            playerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            playerAccountStatement.close();
 
-            Statement statement2 = connection.createStatement();
-            statement2.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
-            statement2.close();
+            Statement nonPlayerAccountStatement = connection.createStatement();
+            nonPlayerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            nonPlayerAccountStatement.close();
 
-            Statement statement3 = connection.createStatement();
-            statement3.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
-            statement3.close();
+            Statement bankAccountStatement = connection.createStatement();
+            bankAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
+            bankAccountStatement.close();
         }
+
+        Statement statement4 = connection.createStatement();
+        statement4.executeUpdate("CREATE TABLE IF NOT EXISTS UUIDUsernameCache('uuid' VARCHAR(32) NOT NULL, 'username' VARCHAR(16) NOT NULL, PRIMARY KEY('uuid'));");
 
         if (connection != null) {
             connection.close();
@@ -291,7 +296,7 @@ public class Database {
                     preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountType,accountId,currencyName,ownerAccountType,ownerId) DO UPDATE SET balance=?;");
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountId,currencyName,ownerAccountType,ownerId) DO UPDATE SET balance=?;");
                     break;
                 default:
                     preparedStatement.close();
@@ -547,6 +552,141 @@ public class Database {
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
+        }
+    }
+
+    public boolean isUsernameCached(String username) {
+        try {
+            boolean isUsernameCached = false;
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM UUIDUsernameCache WHERE 'username'=?;");
+            preparedStatement.setString(1, username.toLowerCase());
+            ResultSet resultSet = preparedStatement.getResultSet();
+            boolean next = resultSet.next();
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+            return next;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void checkForUsernameDuplicates(String username) {
+        try {
+            List<UUID> associatedUUIDs = new ArrayList<>();
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM UUIDUsernameCache WHERE 'username'=?;");
+            preparedStatement.setString(1, username.toLowerCase());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                UUID uuid = UUID.fromString(resultSet.getString(1));
+                associatedUUIDs.add(uuid);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+
+            if (associatedUUIDs.size() > 1) {
+                for (UUID uuid : associatedUUIDs) {
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+                        String actualUsername = offlinePlayer.getName();
+                        if (actualUsername != null && !actualUsername.equalsIgnoreCase(username)) {
+                            assignUsernameToUUID(uuid, actualUsername.toLowerCase());
+                        }
+                    } else {
+                        deleteUUIDEntry(uuid);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isUUIDCached(UUID uuid) {
+        boolean isUUIDCached = false;
+        try {
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM UUIDUsernameCache WHERE 'uuid'=?;");
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            isUUIDCached = resultSet.next();
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isUUIDCached;
+    }
+
+    public String getUsernameFromUUID(UUID uuid) {
+        String username = null;
+        try {
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM UUIDUsernameCache WHERE 'uuid'=?;");
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                username = resultSet.getString(2);
+            }
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return username;
+    }
+
+    public UUID getUUIDFromUsername(String username) {
+        UUID uuid = null;
+        try {
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM UUIDUsernameCache WHERE 'username'=?;");
+            preparedStatement.setString(1, username.toLowerCase());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                uuid = UUID.fromString(resultSet.getString(1));
+            }
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return uuid;
+    }
+
+    public void assignUsernameToUUID(UUID uuid, String username) {
+        try {
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE UUIDUsernameCache SET 'username'=? WHERE uuid=?;");
+            preparedStatement.setString(1, username.toLowerCase());
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteUUIDEntry(UUID uuid) {
+        try {
+            Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM UUIDUsernameCache WHERE 'uuid'=?;");
+            preparedStatement.setString(1, uuid.toString());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
