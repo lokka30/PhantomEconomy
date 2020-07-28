@@ -17,6 +17,7 @@ import org.bukkit.OfflinePlayer;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class VaultProvider extends AbstractEconomy {
@@ -330,9 +331,9 @@ public class VaultProvider extends AbstractEconomy {
     }
 
     @Override
-    public EconomyResponse createBank(String bankId, OfflinePlayer player) {
+    public EconomyResponse createBank(String bankId, OfflinePlayer offlinePlayer) {
         try {
-            instance.getAccountManager().createBankAccount(bankId, instance.getCurrencyManager().getVaultCurrency(), AccountType.PlayerAccount, player.getUniqueId().toString());
+            instance.getAccountManager().createBankAccount(bankId, instance.getCurrencyManager().getVaultCurrency(), AccountType.PlayerAccount, Objects.requireNonNull(offlinePlayer.getUniqueId()).toString());
         } catch (AccountAlreadyExistsException | InvalidCurrencyException e) {
             e.printStackTrace();
         }

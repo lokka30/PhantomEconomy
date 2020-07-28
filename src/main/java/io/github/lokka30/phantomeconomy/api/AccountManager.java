@@ -73,11 +73,11 @@ public class AccountManager {
         }
     }
 
-    public void createBankAccount(final String name, final Currency currency, final AccountType ownerAccountType, final String ownerId) throws AccountAlreadyExistsException, InvalidCurrencyException {
-        if (hasBankAccount(name, currency)) {
-            throw new AccountAlreadyExistsException("Tried to create BankAccount with name '" + name + "' but its account already exists.");
+    public void createBankAccount(final String bankId, final Currency currency, final AccountType ownerAccountType, final String ownerId) throws AccountAlreadyExistsException, InvalidCurrencyException {
+        if (hasBankAccount(bankId, currency)) {
+            throw new AccountAlreadyExistsException("Tried to create BankAccount with bankId '" + bankId + "' but its account already exists.");
         } else {
-            instance.getDatabase().createBankAccount(name, ownerAccountType, ownerId);
+            instance.getDatabase().createBankAccount(bankId, ownerAccountType, ownerId);
         }
     }
 }

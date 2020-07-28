@@ -9,6 +9,7 @@ import io.github.lokka30.phantomeconomy.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -283,7 +284,7 @@ public class Database {
         return 0;
     }
 
-    public void setBankBalance(String accountId, String currencyName, double newBalance, AccountType ownerAccountType, String ownerId) {
+    public void setBankBalance(@NotNull String accountId, @NotNull String currencyName, double newBalance, @NotNull AccountType ownerAccountType, @NotNull String ownerId) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
@@ -418,7 +419,7 @@ public class Database {
         }
     }
 
-    public void createBankAccount(String accountId, AccountType ownerAccountType, String ownerId) throws InvalidCurrencyException {
+    public void createBankAccount(@NotNull String accountId, @NotNull AccountType ownerAccountType, @NotNull String ownerId) throws InvalidCurrencyException {
         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
             setBankBalance(accountId, currency.getName(), currency.getDefaultBalance(), ownerAccountType, ownerId);
         }
