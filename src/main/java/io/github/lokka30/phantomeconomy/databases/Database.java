@@ -298,7 +298,6 @@ public class Database {
                     break;
                 case SQLITE:
                     preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountId,currencyName) DO UPDATE SET balance=?;");
-                    preparedStatement.setDouble(6, newBalance);
                     break;
                 default:
                     preparedStatement.close();
@@ -311,6 +310,7 @@ public class Database {
             preparedStatement.setDouble(3, newBalance);
             preparedStatement.setString(4, ownerAccountType.toString());
             preparedStatement.setString(5, ownerId);
+            preparedStatement.setDouble(6, newBalance);
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -669,9 +669,23 @@ public class Database {
     public void assignUsernameToUUID(UUID uuid, String username) {
         try {
             Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE UUIDUsernameCache SET 'username'=? WHERE uuid=?;");
-            preparedStatement.setString(1, username.toLowerCase());
-            preparedStatement.setString(2, uuid.toString());
+
+            PreparedStatement preparedStatement;
+
+            switch (getDatabaseType()) {
+                case MYSQL:
+                    preparedStatement = connection.prepareStatement("INSERT INTO UUIDUsernameCache(uuid,username) VALUES (?,?) ON DUPLICATE KEY UPDATE username=?;");
+                    break;
+                case SQLITE:
+                    preparedStatement = connection.prepareStatement("INSERT INTO UUIDUsernameCache(uuid,username) VALUES (?,?) ON CONFLICT(uuid,username) DO UPDATE SET username=?;");
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected database type " + getDatabaseType().toString());
+            }
+
+            preparedStatement.setString(1, uuid.toString());
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, username);
             preparedStatement.executeUpdate();
             preparedStatement.close();
             connection.close();

@@ -184,7 +184,7 @@ public class PhantomEconomy extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
         database = new Database(this);
         database.load();
-        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... connection completed.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... connection established.");
     }
 
     private void registerEvents() {
@@ -192,7 +192,7 @@ public class PhantomEconomy extends JavaPlugin {
 
         pluginManager.registerEvents(new JoinListener(this), this);
         pluginManager.registerEvents(new QuitListener(this), this);
-        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... events completed.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... events registered.");
     }
 
     private void hookAvailablePlugins() {
