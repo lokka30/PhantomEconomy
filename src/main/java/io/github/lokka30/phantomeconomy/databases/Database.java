@@ -8,16 +8,12 @@ import io.github.lokka30.phantomeconomy.enums.AccountType;
 import io.github.lokka30.phantomeconomy.enums.DatabaseType;
 import io.github.lokka30.phantomlib.enums.LogLevel;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class Database {
@@ -576,36 +572,23 @@ public class Database {
         }
     }
 
-    public void checkForUsernameDuplicates(String username) {
+    public void checkForUsernameDuplicates(String username, UUID uuid) {
         try {
-            List<UUID> associatedUUIDs = new ArrayList<>();
             Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM UUIDUsernameCache WHERE username=?;");
-            preparedStatement.setString(1, username.toLowerCase());
-            ResultSet resultSet = preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = connection.prepareStatement("select username, uuid from UUIDUsernameCache where username = ? and uuid != ?");
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, uuid.toString());
+            ResultSet resultSet = preparedStatement.getResultSet();
 
             while (resultSet.next()) {
-                UUID uuid = UUID.fromString(resultSet.getString(1));
-                associatedUUIDs.add(uuid);
+                UUID otherUUID = UUID.fromString(resultSet.getString(1));
+                String otherUsername = Objects.requireNonNull(Bukkit.getOfflinePlayer(otherUUID).getName());
+                assignUsernameToUUID(otherUUID, otherUsername);
             }
 
             resultSet.close();
             preparedStatement.close();
             connection.close();
-
-            if (associatedUUIDs.size() > 1) {
-                for (UUID uuid : associatedUUIDs) {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
-                        String actualUsername = offlinePlayer.getName();
-                        if (actualUsername != null && !actualUsername.equalsIgnoreCase(username)) {
-                            assignUsernameToUUID(uuid, actualUsername.toLowerCase());
-                        }
-                    } else {
-                        deleteUUIDEntry(uuid);
-                    }
-                }
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -669,7 +652,6 @@ public class Database {
     public void assignUsernameToUUID(UUID uuid, String username) {
         try {
             Connection connection = getConnection();
-
             PreparedStatement preparedStatement;
 
             switch (getDatabaseType()) {
@@ -677,7 +659,7 @@ public class Database {
                     preparedStatement = connection.prepareStatement("INSERT INTO UUIDUsernameCache(uuid,username) VALUES (?,?) ON DUPLICATE KEY UPDATE username=?;");
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO UUIDUsernameCache(uuid,username) VALUES (?,?) ON CONFLICT(uuid,username) DO UPDATE SET username=?;");
+                    preparedStatement = connection.prepareStatement("INSERT INTO UUIDUsernameCache(uuid,username) VALUES (?,?) ON CONFLICT(uuid) DO UPDATE SET username=?;");
                     break;
                 default:
                     throw new IllegalStateException("Unexpected database type " + getDatabaseType().toString());
