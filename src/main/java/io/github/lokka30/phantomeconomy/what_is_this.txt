@@ -37,7 +37,7 @@ Can I test it early?
 To-do List, in order:
 ========================================================================
 
-- Test bank accounts
+- Fix bank accounts -- testing with GriefDefender
 
 - Convert OfflinePlayer usage to UUIDUsernameCache usage
 
@@ -82,9 +82,13 @@ To-do List, in order:
   - %phantomeconomy_balance%
   - %phantomeconomy_defaultCurrency%
 
-- Update https://github.com/lokka30/PhantomEconomy/wiki/%5Bv2%5D-Sharing-account-data-across-servers
+- Update the whole wiki.
 
 - Test everything
+
+- Remove pre-release warning messages (on Enable, on Join)
+
+- Change version to v2.0.0-RELEASE
 
 - Compile, push to github, release on Spigot, announce on Discord server
 ========================================================================

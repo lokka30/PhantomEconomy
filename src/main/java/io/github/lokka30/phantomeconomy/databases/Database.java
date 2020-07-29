@@ -123,15 +123,15 @@ public class Database {
 
         for (Currency currency : instance.getCurrencyManager().getEnabledCurrencies()) {
             Statement playerAccountStatement = connection.createStatement();
-            playerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS PlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            playerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS " + getTableName(AccountType.PlayerAccount, currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
             playerAccountStatement.close();
 
             Statement nonPlayerAccountStatement = connection.createStatement();
-            nonPlayerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS NonPlayerAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
+            nonPlayerAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS " + getTableName(AccountType.NonPlayerAccount, currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, PRIMARY KEY('accountId', 'currencyName'));");
             nonPlayerAccountStatement.close();
 
             Statement bankAccountStatement = connection.createStatement();
-            bankAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS BankAccount" + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT + "_" + instance.getFileCache().SETTINGS_DATABASE_TABLES_CURRENCY_SUFFIXES_MAP.get(currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
+            bankAccountStatement.executeUpdate("CREATE TABLE IF NOT EXISTS " + getTableName(AccountType.BankAccount, currency.getName()) + "('accountId' VARCHAR(48) NOT NULL, 'currencyName' VARCHAR(48) NOT NULL, 'balance' DECIMAL(48,2) NOT NULL, 'ownerAccountType' VARCHAR(48), 'ownerId' VARCHAR(48), PRIMARY KEY('accountId', 'currencyName'));");
             bankAccountStatement.close();
         }
 
@@ -150,15 +150,15 @@ public class Database {
             case PlayerAccount:
                 accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_PLAYERACCOUNT;
                 break;
+            default:
+                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7Unexpected account type '" + accountType.toString() + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
+                accountType = AccountType.NonPlayerAccount;
+                //Should continue to next switch check below ...
             case NonPlayerAccount:
                 accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
                 break;
             case BankAccount:
                 accountTypeTablePrefix = accountType.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_BANKACCOUNT;
-                break;
-            default:
-                instance.getPhantomLogger().log(LogLevel.SEVERE, "&b&lPhantomEconomy: &7", "&cDatabase Error: &7Unexpected account type '" + accountType.toString() + "'! using fallback NonPlayerAccount. this should be fixed immediately!");
-                accountTypeTablePrefix = AccountType.NonPlayerAccount.toString() + instance.getFileCache().SETTINGS_DATABASE_TABLES_ACCOUNT_TYPE_SUFFIXES_NONPLAYERACCOUNT;
                 break;
         }
 
@@ -297,7 +297,7 @@ public class Database {
                     preparedStatement = connection.prepareStatement("INSERT INTO " + table + "(accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE balance=?;");
                     break;
                 case SQLITE:
-                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountId,currencyName,ownerAccountType,ownerId) DO UPDATE SET balance=?;");
+                    preparedStatement = connection.prepareStatement("INSERT INTO " + table + " (accountId,currencyName,balance,ownerAccountType,ownerId) VALUES (?,?,?,?,?) ON CONFLICT(accountId,currencyName) DO UPDATE SET balance=?;");
                     preparedStatement.setDouble(6, newBalance);
                     break;
                 default:

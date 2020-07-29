@@ -132,6 +132,8 @@ public class PhantomEconomy extends JavaPlugin {
         if (!isSupported) {
             phantomLogger.log(LogLevel.WARNING, PREFIX, "Server version detected as '&b" + currentVersion + "&7', which this version of the plugin does not provide support for. Use at your own risk, and do not contact support if you have issues.");
         }
+
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... compatibility check completed with no severities.");
     }
 
     private void loadFiles() {
@@ -174,13 +176,15 @@ public class PhantomEconomy extends JavaPlugin {
         }
 
         fileCache.loadFromFiles();
+
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... files loaded.");
     }
 
     private void loadDatabase() throws SQLException, InvalidCurrencyException {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&37&8) &7Connecting to the database...");
         database = new Database(this);
         database.load();
-        phantomLogger.log(LogLevel.INFO, PREFIX, "... connection completed.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... connection completed.");
     }
 
     private void registerEvents() {
@@ -188,16 +192,17 @@ public class PhantomEconomy extends JavaPlugin {
 
         pluginManager.registerEvents(new JoinListener(this), this);
         pluginManager.registerEvents(new QuitListener(this), this);
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... events completed.");
     }
 
     private void hookAvailablePlugins() {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &35&8/&37&8) &7Hooking to available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
-            phantomLogger.log(LogLevel.INFO, PREFIX, "Plugin '&bVault&7' installed, attempting to hook ...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&7Plugin '&bVault&7' installed, attempting to hook ...");
             vaultProvider = new VaultProvider(this);
             Bukkit.getServicesManager().register(Economy.class, vaultProvider, this, ServicePriority.Highest);
-            phantomLogger.log(LogLevel.INFO, PREFIX, "... plugin '&bVault&7' hooked.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&7... plugin '&bVault&7' hooked.");
         }
     }
 
@@ -210,12 +215,16 @@ public class PhantomEconomy extends JavaPlugin {
         getCommandRegister().registerCommand(this, "pay", new PayCommand(this));
         getCommandRegister().registerCommand(this, "paytoggle", new PayToggleCommand(this));
         getCommandRegister().registerCommand(this, "phantomeconomy", new PhantomEconomyCommand(this));
+
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... commands registered.");
     }
 
     private void registerMetrics() {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &37&8/&37&8) &7Starting bStats...");
 
         new Metrics(this, 6463);
+
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... bStats started.");
     }
 
     private void startRepeatingTasks() {
@@ -319,17 +328,17 @@ public class PhantomEconomy extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Shutdown &8- &31&8/&32&8) &7Unhooking from available plugins...");
 
         if (pluginManager.getPlugin("Vault") != null) {
-            phantomLogger.log(LogLevel.INFO, PREFIX, "Plugin '&bVault&7' installed, attempting to unhook ...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&7Plugin '&bVault&7' installed, attempting to unhook ...");
             Bukkit.getServicesManager().unregister(Economy.class, vaultProvider);
 
-            phantomLogger.log(LogLevel.INFO, PREFIX, "... plugin '&bVault&7' unhooked.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&7... plugin '&bVault&7' unhooked.");
         }
     }
 
     private void disconnectDatabase() {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Shutdown &8- &32&8/&32&8) &7 &7Disconnecting database ...");
         database.close();
-        phantomLogger.log(LogLevel.INFO, PREFIX, "... database disconnected.");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&7... database disconnected.");
     }
 
     public Database getDatabase() {
