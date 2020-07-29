@@ -580,7 +580,7 @@ public class Database {
         try {
             List<UUID> associatedUUIDs = new ArrayList<>();
             Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM UUIDUsernameCache WHERE 'username'=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM UUIDUsernameCache WHERE username=?;");
             preparedStatement.setString(1, username.toLowerCase());
             ResultSet resultSet = preparedStatement.executeQuery();
 
